@@ -1,0 +1,22 @@
+import React from "react";
+import { Navigate } from "react-router-dom";
+import {PathConstants} from "./pathConstants";
+
+import { MdDashboard, MdOutlineEvent } from "react-icons/md";
+
+const Home = React.lazy(() => import("@pages"));
+const About = React.lazy(() => import("@pages"));
+const Page1 = React.lazy(() => import("@pages"));
+const Page2 = React.lazy(() => import("@pages"));
+const Eventos = React.lazy(() => import("@pages"));
+
+// SOLO PARA EL SIDEBAR
+const routes = [
+  //{ path: PathConstants.HOME, element: <Home />, name: "Home" },
+  //{ path: PathConstants.ABOUT, element: <About />, name: "About" },
+  { path: PathConstants.EVENTOS, element: <Eventos />, name: "Eventos", icon: <MdOutlineEvent size={20} /> },
+  { path: PathConstants.PAGE1, element: <Page1 />, name: "Page1", icon: <MdDashboard size={20} />, },
+  { path: PathConstants.PAGE2, element: <Page2 />, name: "Page2", icon: <MdDashboard size={20} />, },
+];
+
+export default routes;

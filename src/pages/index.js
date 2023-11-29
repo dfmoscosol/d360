@@ -1,0 +1,9 @@
+export { default as About } from "./About/About";
+export { default as Eventos } from "./Eventos/Eventos";
+export { default as VerEvento } from "./Eventos/VerEvento";
+export { default as EditarEvento } from "./Eventos/EditarEvento";
+export { default as Home } from "./Home/Home";
+export { default as Page1 } from "./Page1/Page1";
+export { default as Page2 } from "./Page2/Page2";
+export { default as Page404 } from "./Page404/Page404";
+export { default as CrearJornadaInnovacion } from "./Eventos/JornadaInnovacion/CrearJornadaInnovacion";
