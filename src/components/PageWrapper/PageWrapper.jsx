@@ -9,7 +9,7 @@ const PageWrapper = (props) => {
 
   return (
     <div
-      className={`duration-500 bg-white ${
+      className={`duration-500 bg-primary_gray_1 ${
         isOpen ? "md:ml-72" : "md:ml-20"
       } h-screen`}
       {...rest}

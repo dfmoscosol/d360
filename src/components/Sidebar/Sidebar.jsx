@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Link, NavLink } from "react-router-dom";
-import { MdMenu, MdMenuOpen } from "react-icons/md";
+import { MdMenu, MdMenuOpen, MdLogout } from "react-icons/md";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setOpen } from "@redux/features/sidebar/sidebarSlice";
@@ -18,7 +18,7 @@ const Sidebar = () => {
     <div
       className={`${
         isOpen ? "w-72" : "md:w-20 w-0"
-      } py-10 transition-all ease-in-out duration-500 min-h-screen fixed h-screen z-50 flex flex-col bg-white border-r border-primary_gray_5`}
+      } py-10 transition-all ease-in-out duration-500 min-h-screen fixed h-screen z-50 flex flex-col bg-white`}
     >
       <div className="flex flex-col h-full justify-between px-4">
         <div className="flex flex-col h-full">
@@ -48,21 +48,23 @@ const Sidebar = () => {
           </div>
 
           <div className="mt-12 h-full flex flex-col justify-between">
-            <div className=" flex flex-col gap-2 ">
+            <div className="flex flex-col gap-2">
               {routes.map((route, index) => (
                 <div className="relative" key={index}>
                   <NavLink to={`/${route.path}`} key={index}>
                     {({ isActive }) => (
                       <div
-                        className={`flex py-2 px-4 rounded-lg items-center justify-center ${
+                        className={`flex py-2 px-4 rounded-lg items-center justify-center  ${
                           isActive
-                            ? "bg-primary_gray_1 "
+                            ? "bg-primary_gray_1"
                             : "hover:bg-primary_gray_1"
                         } `}
                       >
                         <span
                           className={`${
-                            isActive ? "text-primary_color_1" : "text-primary_gray_2"
+                            isActive
+                              ? "text-primary_color_1"
+                              : "text-primary_gray_3"
                           } `}
                         >
                           {route.icon}
@@ -71,7 +73,9 @@ const Sidebar = () => {
                           className={`overflow-hidden text-base font-normal ${
                             isOpen ? "w-full ml-2" : "w-0"
                           }  ${
-                            isActive ? "text-primary_color_1 font-medium" : " text-primary_gray_2"
+                            isActive
+                              ? "text-primary_color_1 font-semibold"
+                              : "text-primary_gray_4 font-medium"
                           } transition-all ease-in-out duration-500`}
                         >
                           {route.name}
@@ -91,7 +95,18 @@ const Sidebar = () => {
               <div className="py-5">
                 <hr />
               </div>
-              <div className="bg-primary_gray_1 rounded-lg p-2">Cerrar Sesión</div>
+              <div className="rounded-lg p-2 bg-primary_gray_1 text-primary_color_2 flex py-2 px-4 items-center justify-center">
+                <span>
+                  <MdLogout size={20} />
+                </span>
+                <div
+                  className={`overflow-hidden text-base font-medium whitespace-nowrap ${
+                    isOpen ? "w-full ml-2" : "w-0"
+                  } transition-all ease-in-out duration-500`}
+                >
+                  Cerrar Sesión
+                </div>
+              </div>
             </div>
           </div>
         </div>

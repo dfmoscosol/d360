@@ -3,7 +3,7 @@ import { MdAdd, MdDelete } from "react-icons/md";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
-import ComboBox from "./components/ComboBox/ComboBox";
+import ComboBox from "../ui/components/ComboBox/ComboBox";
 import { MdSave } from "react-icons/md";
 import { Oval } from "react-loader-spinner";
 import { Notification } from "@components";

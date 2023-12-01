@@ -24,4 +24,7 @@ export const PathNamesTranslations = {
   nuevoEvento: "Nuevo Evento",
   jornadaInnovacion: "Jornada de Innovación",
   editarEvento: "Editar Evento",
+  charla: "Charla",
+  taller: "Taller",
+  observacionAulica: "Observación Áulica",
 };

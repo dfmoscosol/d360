@@ -4,16 +4,37 @@ import { Link } from "react-router-dom";
 import { Pill } from "@components";
 
 import {
+  MdAccessTimeFilled,
+  MdCheckCircle,
+  MdDateRange,
   MdOutlineEmojiPeople,
   MdSupervisorAccount,
-  MdDateRange,
+  MdOutlinePerson,
 } from "react-icons/md";
 
-import { SiGoogleclassroom } from "react-icons/si";
+import { GiTeamIdea } from "react-icons/gi";
+import { GrWorkshop } from "react-icons/gr";
 
-const ObservacionAulicaCard = (props) => {
-  const { allow_inscripcion, id_capacitacion, nombre, fechas, horas, cupo } =
-    props;
+const CharlaCard = (props) => {
+  const {
+    allow_asistencia,
+    allow_inscripcion,
+    cupo,
+    direccion,
+    fechas,
+    horas,
+    id_capacitacion,
+    nombre,
+    nombre_tutor,
+    isPresencial,
+  } = props;
+
+  let modalidad = "";
+  if (isPresencial) {
+    modalidad = "Presencial";
+  } else {
+    modalidad = "Virtual";
+  }
 
   return (
     <div className="h-full bg-white rounded-lg p-4 flex flex-col justify-between gap-4 items-start hover:shadow-lg transition-shadow duration-300">
@@ -22,15 +43,15 @@ const ObservacionAulicaCard = (props) => {
         className="flex flex-col gap-4 w-full justify-between h-full"
       >
         <div className="flex gap-2 items-start">
-          <div className="p-2 bg-teal-100 text-teal-900 rounded-lg flex items-center ">
-            <SiGoogleclassroom size={28} />
+          <div className="p-2 bg-blue-100 text-blue-900 rounded-lg flex items-center ">
+            <GrWorkshop size={28} />
           </div>
           <div className="flex flex-col items-start">
             <span className="text-base font-medium text-primary_color_1">
               {nombre}
             </span>
             <span className="font-normal text-xs text-primary_gray_2">
-              Observación Áulica
+              Charla
             </span>
             {/**allow_inscripcion && (
               <div className="flex items-center justify-center gap-1 rounded-lg bg-green-200 py-1 px-2 text-green-700">
@@ -41,34 +62,39 @@ const ObservacionAulicaCard = (props) => {
         </div>
         <div className="flex flex-col">
           <span className="text-primary_gray_2 font-normal text-xs ">
-            Fechas
+            Tutor
           </span>
           <span className="text-sm text-primary_gray_4 font-medium">
-            {fechas.map((fecha, index) => {
-              <span key={index}>
-                {fecha}
-              </span>;
-            })}
+            {nombre_tutor}
           </span>
         </div>
-
-        <div className="flex gap-2 w-full mt-2">
+        <div className="flex flex-col">
+          <span className="text-primary_gray_2 font-normal text-xs ">
+            Modalidad
+          </span>
+          <span className="text-sm text-primary_gray_4 font-medium">
+            {modalidad}
+          </span>
+        </div>
+        {/** 
+        <div className="flex gap-2 w-full ">
           <Pill
             icon={<MdDateRange size={20} />}
             title={"Días"}
             description={fechas.length}
-            type={2}
+            type={3}
           />
           <Pill
             icon={<MdSupervisorAccount size={20} />}
-            title={"Cupo"}
+            title={"cupo"}
             description={cupo}
-            type={2}
+            type={3}
           />
         </div>
+        */}
       </Link>
     </div>
   );
 };
 
-export default ObservacionAulicaCard;
+export default CharlaCard;

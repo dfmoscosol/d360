@@ -8,19 +8,26 @@ import {
   MdCheckCircle,
   MdDateRange,
   MdOutlineEmojiPeople,
+  MdSupervisorAccount,
 } from "react-icons/md";
+
+import { FaChalkboardTeacher } from "react-icons/fa";
 
 import { GiTeamIdea } from "react-icons/gi";
 import { GrWorkshop } from "react-icons/gr";
 
-const JornadaInnovacionCard = (props) => {
+const TallerCard = (props) => {
   const {
+    allow_asistencia,
+    allow_inscripcion,
+    cupo,
+    direccion,
+    fechas,
+    horas,
     id_capacitacion,
     nombre,
-    allow_inscripcion,
-    horas,
-    length_talleres,
-    fechas,
+    nombre_tutor,
+    isPresencial,
   } = props;
 
   return (
@@ -30,36 +37,36 @@ const JornadaInnovacionCard = (props) => {
         className="flex flex-col gap-4 w-full justify-between h-full"
       >
         <div className="flex gap-2 items-start">
-          <div className="p-2 bg-amber-100 text-amber-900 rounded-lg flex items-center ">
-            <GiTeamIdea size={28} />
+          <div className="p-2 bg-rose-100 text-rose-900 rounded-lg flex items-center ">
+            <FaChalkboardTeacher size={28} />
           </div>
           <div className="flex flex-col items-start">
             <span className="text-base font-medium text-primary_color_1">
               {nombre}
             </span>
             <span className="font-normal text-xs text-primary_gray_2">
-              Jornada de Innovación
+              Taller
             </span>
             {/**allow_inscripcion && (
-              <div className="flex items-center justify-center gap-1 rounded-xl py-1 px-2 bg-green-200  text-green-700 mt-2 text-xs font-medium">
-                { <MdOutlineEmojiPeople size={20} />}
-                Inscripciones Abiertas
+              <div className="flex items-center justify-center gap-1 rounded-lg bg-green-200 py-1 px-2 text-green-700">
+                <MdOutlineEmojiPeople size={20} />
               </div>
             )*/}
           </div>
         </div>
+
         <div className="flex gap-2 w-full mt-2">
           <Pill
             icon={<MdDateRange size={20} />}
             title={"Días"}
             description={fechas.length}
-            type={1}
+            type={4}
           />
           <Pill
-            icon={<GrWorkshop size={20} />}
-            title={"Talleres"}
-            description={length_talleres}
-            type={1}
+            icon={<MdSupervisorAccount size={20} />}
+            title={"cupo"}
+            description={cupo}
+            type={4}
           />
         </div>
       </Link>
@@ -67,4 +74,4 @@ const JornadaInnovacionCard = (props) => {
   );
 };
 
-export default JornadaInnovacionCard;
+export default TallerCard;

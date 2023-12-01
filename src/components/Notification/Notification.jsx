@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { MdCheckCircle, MdClose } from "react-icons/md";
+import { MdCheckCircle, MdClose, MdError } from "react-icons/md";
 
 const Notification = ({ isError, message }) => {
   const [visible, setVisible] = useState(true);
@@ -28,11 +28,20 @@ const Notification = ({ isError, message }) => {
       }  rounded flex items-center justify-start`}
       style={{ zIndex: 1000 }}
     >
-      <div className="flex relative gap-2 py-6 pl-4 pr-12">
-        <MdCheckCircle size={20} className="text-green-700" />
-        <span className="text-primary_color_1 font-medium text-sm">
-          {message}
-        </span>
+      <div className="flex relative gap-4 py-6 pl-4 pr-12 items-center">
+        <div>
+          {isError ? (
+            <MdError size={25} className="text-red-700" />
+          ) : (
+            <MdCheckCircle size={25} className="text-green-700" />
+          )}
+        </div>
+
+        <div className="flex flex-col text-primary_color_1">
+          {isError ? <span className="font-semibold">Error!</span> : <span className="font-semibold">Éxito!</span>}
+          <span className=" font-medium text-sm">{message}</span>
+        </div>
+
         <button
           className="ml-4 absolute top-2 right-2 text-primary_color_1"
           onClick={handleClose}

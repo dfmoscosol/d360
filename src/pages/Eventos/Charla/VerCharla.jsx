@@ -7,7 +7,7 @@ import {
 import { Notification, Modal } from "@components";
 import { Link } from "react-router-dom";
 
-import { GiTeamIdea } from "react-icons/gi";
+import { GrWorkshop } from "react-icons/gr";
 import {
   MdLockPerson,
   MdOutlineLockOpen,
@@ -18,9 +18,9 @@ import {
   MdOutlineEdit,
 } from "react-icons/md";
 
-const VerJornadaInnovacion = (props) => {
+const VerCharla = (props) => {
   /**
-   * Para enviar los updates
+   * Para actualizar y borrar la capacitacion
    */
   const [
     editCapacitacion,
@@ -49,7 +49,6 @@ const VerJornadaInnovacion = (props) => {
     nombre,
     nombre_tutor,
     isPresencial,
-    talleres,
   } = props;
 
   let modalidad = "";
@@ -60,8 +59,8 @@ const VerJornadaInnovacion = (props) => {
     modalidad = "Virtual";
   }
 
-  const shouldShowNotification = response && (response.estado || isError);
-  const message = isError ? response?.error : response?.respuesta;
+  const shouldShowNotification = isSuccess || isError;
+  const message = isError ? error?.data.error : response?.respuesta;
 
   const handleCloseInscripcion = () => {
     console.log(id_capacitacion);
@@ -135,17 +134,19 @@ const VerJornadaInnovacion = (props) => {
         <div className="w-full flex items-center justify-start">
           <div className="flex gap-2 items-center">
             {/***/}
-            <div className="bg-amber-100 text-amber-900 p-2 rounded-lg">
-              <GiTeamIdea size={25} />
+            <div className="bg-blue-100 text-blue-900 p-2 rounded-lg">
+              <GrWorkshop size={25} />
             </div>
             <span className="font-medium text-base text-primary_gray_2">
-              Jornada de Innovación
+              Charla
             </span>
           </div>
         </div>
+
         <span className="font-medium text-3xl text-primary_color_1 py-8">
           {nombre}
         </span>
+
         <div className="flex gap-2">
           {allow_inscripcion ? (
             <div className="flex items-center gap-1 rounded-xl bg-green-200 text-green-700 px-3 py-2">
@@ -218,30 +219,8 @@ const VerJornadaInnovacion = (props) => {
           <span className="col-span-3 text-base font-medium text-primary_color_1">
             {modalidad}
           </span>
-          <span className="col-span-1 text-base font-light text-primary_gray_2">
-            Talleres
-          </span>
-          <span className="col-span-3 text-base font-medium text-primary_color_1">
-            {talleres.length}
-          </span>
         </div>
-        <div className="mt-6 flex flex-col">
-          <span className="font-medium text-xl text-primary_color_1">
-            Talleres <span className="text-base">({talleres.length})</span>
-          </span>
-          <div className="flex gap-2 mt-2">
-            {talleres.map((taller, index) => (
-              <div
-                className="flex gap-2 items-center rounded-lg bg-primary_gray_1 py-2 px-4"
-                key={index}
-              >
-                <span className="font-medium text-base text-primary_gray_4">
-                  {taller.nombre}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+
         <div className="flex mt-6 gap-2  w-full justify-between">
           {allow_inscripcion ? (
             <button
@@ -298,4 +277,4 @@ const VerJornadaInnovacion = (props) => {
   );
 };
 
-export default VerJornadaInnovacion;
+export default VerCharla;

@@ -7,3 +7,6 @@ export { default as Page1 } from "./Page1/Page1";
 export { default as Page2 } from "./Page2/Page2";
 export { default as Page404 } from "./Page404/Page404";
 export { default as CrearJornadaInnovacion } from "./Eventos/JornadaInnovacion/CrearJornadaInnovacion";
+export { default as CrearCharla } from "./Eventos/Charla/CrearCharla";
+export { default as CrearTaller } from "./Eventos/Taller/CrearTaller";
+export { default as CrearObservacionAulica } from "./Eventos/ObservacionAulica/CrearObservacionAulica";

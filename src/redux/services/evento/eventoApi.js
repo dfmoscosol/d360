@@ -33,6 +33,13 @@ export const eventoApi = createApi({
       query: () => `/capacitaciones`,
       providesTags: ["getAll"],
     }),
+    deleteEvento: builder.mutation({
+      query: (params) => ({
+        url: `/eliminar_capacitacion/${params.id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["getAll"],
+    }),
   }),
 });
 
@@ -41,4 +48,5 @@ export const {
   useGetAllCapacitacionesQuery,
   useGetCapacitacionQuery,
   useEditCapacitacionMutation,
+  useDeleteEventoMutation,
 } = eventoApi;

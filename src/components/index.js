@@ -6,3 +6,4 @@ export { default as Dropdown } from "./Dropdown/Dropdown";
 export { default as Notification } from "./Notification/Notification";
 export { default as Loader } from "./Loader/Loader";
 export { default as FetchError } from "./Errors/FetchError";
+export { default as Modal } from "./Modal/Modal";

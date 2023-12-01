@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 
-import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
-import { Notification } from "@components";
+import {
+  useEditCapacitacionMutation,
+  useDeleteEventoMutation,
+} from "@redux/services/evento/eventoApi";
+import { Notification, Modal } from "@components";
 import { Link } from "react-router-dom";
 
 import {
-  MdLockPerson,
-  MdOutlineLockOpen,
   MdDoNotTouch,
   MdOutlineEmojiPeople,
   MdDateRange,
@@ -21,8 +22,18 @@ const VerObservacionAulica = (props) => {
     { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
   ] = useEditCapacitacionMutation();
 
+  const [
+    deleteCapacitacion,
+    {
+      data: responseDelete,
+      isLoading: isUpdatingDelete,
+      isSuccess: isSuccessDelete,
+      isError: isErrorDelete,
+      error: errorDelete,
+    },
+  ] = useDeleteEventoMutation();
+
   const {
-    allow_asistencia,
     allow_inscripcion,
     cupo,
     direccion,
@@ -30,7 +41,6 @@ const VerObservacionAulica = (props) => {
     horas,
     id_capacitacion,
     nombre,
-    nombre_tutor,
     isPresencial,
   } = props;
 
@@ -42,8 +52,8 @@ const VerObservacionAulica = (props) => {
     modalidad = "Virtual";
   }
 
-  const shouldShowNotification = response && (response.estado || isError);
-  const message = isError ? response?.error : response?.respuesta;
+  const shouldShowNotification = isSuccess || isError;
+  const message = isError ? error?.data.error : response?.respuesta;
 
   const handleCloseInscripcion = () => {
     console.log(id_capacitacion);
@@ -79,61 +89,78 @@ const VerObservacionAulica = (props) => {
     editCapacitacion(dataBody);
   };
 
-  console.log("shouldShowNotification");
-  console.log(shouldShowNotification);
+  /**
+   * Para el modal
+   */
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleConfirmDelete = () => {
+    const dataBody = {
+      id: id_capacitacion,
+    };
+    console.log("confirm");
+    setModalOpen(false);
+    deleteCapacitacion(dataBody);
+  };
 
   return (
     <div className="flex justify-center pb-12">
+      <Modal
+        isOpen={isModalOpen}
+        message="¿Desea eliminar este evento?"
+        onClose={() => setModalOpen(false)}
+        type={"error"}
+        title={"Eliminar Evento"}
+      >
+        <button
+          className="font-medium px-4 py-1 rounded-lg bg-red-600 text-white hover:bg-red-500 active:bg-red-600 hover:text-white transition-all duration-200"
+          onClick={handleConfirmDelete}
+        >
+          Eliminar Evento
+        </button>
+      </Modal>
+
       {shouldShowNotification && (
         <Notification message={message} isError={isError} />
       )}
-      <div className="px-10 py-8 flex flex-col items-start w-[600px] border border-primary_gray_5 rounded-lg">
+      <div className="px-10 py-8 flex flex-col items-start w-[600px] bg-white rounded-lg">
         <div className="w-full flex items-center justify-start">
-          <div className="flex gap-1 items-center text-primary_gray_2 px-3 py-1 bg-primary_gray_1 rounded-lg">
+          <div className="flex gap-2 items-center">
             {/***/}
-            <SiGoogleclassroom size={18} />
-            <span className="font-normal text-sm">Observación Áulica</span>
+            <div className="bg-teal-100 text-teal-900 p-2 rounded-lg">
+              <SiGoogleclassroom size={25} />
+            </div>
+            <span className="font-medium text-base text-primary_gray_2">
+              Observación Áulica
+            </span>
           </div>
         </div>
 
-        <span className="font-medium text-2xl text-primary_color_1 mt-4">
+        <span className="font-medium text-3xl text-primary_color_1 py-8">
           {nombre}
         </span>
-
-        <div className="flex gap-2 mt-4">
+        <div className="flex gap-2">
           {allow_inscripcion ? (
-            <div className="flex items-center gap-1 rounded-xl bg-green-200 text-green-700 px-3 py-2 mt-2">
+            <div className="flex items-center gap-1 rounded-xl bg-green-200 text-green-700 px-3 py-2">
               <MdOutlineEmojiPeople size={20} />
               <span className="text-sm font-normal">
                 Inscripciones Abiertas
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-1 rounded-xl bg-yellow-200 text-yellow-700 px-3 py-2 mt-2">
+            <div className="flex items-center gap-1 rounded-xl bg-yellow-200 text-yellow-700 px-3 py-2">
               <MdDoNotTouch size={20} />
               <span className="text-sm font-normal">
                 Inscripciones Cerradas
               </span>
             </div>
           )}
-          {allow_asistencia ? (
-            <div className="flex items-center gap-1 rounded-xl bg-green-200 text-green-700 px-3 py-2 mt-2">
-              <MdOutlineLockOpen size={20} />
-              <span className="text-sm font-normal">Asistencia Habilitada</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 rounded-xl bg-yellow-200 text-yellow-700 px-3 py-2 mt-2">
-              <MdLockPerson size={20} />
-              <span className="text-sm font-normal">
-                Asistencia Deshabilitada
-              </span>
-            </div>
-          )}
         </div>
+
         <div className="flex gap-2 ">
           {fechas.map((fecha, index) => (
             <div
-              className="flex items-center gap-1 rounded-xl bg-primary_gray_1 text-primary_color_1 px-3 py-2 mt-2"
+              className="flex items-center gap-1 rounded-xl bg-primary_gray_1 text-primary_gray_4 px-3 py-1 mt-2"
               key={index}
             >
               <MdDateRange size={20} />
@@ -142,12 +169,6 @@ const VerObservacionAulica = (props) => {
           ))}
         </div>
         <div className="grid grid-cols-4 w-full mt-6 gap-2">
-          <span className="col-span-1 text-base font-light text-primary_gray_2">
-            Tutor
-          </span>
-          <span className="col-span-3 text-base font-medium text-primary_color_1">
-            {nombre_tutor}
-          </span>
           <span className="col-span-1 text-base font-light text-primary_gray_2">
             Dirección
           </span>
@@ -174,7 +195,7 @@ const VerObservacionAulica = (props) => {
           </span>
         </div>
 
-        <div className="flex mt-6 gap-2  w-full justify-between">
+        <div className="flex mt-6 gap-2  w-full justify-center">
           {allow_inscripcion ? (
             <button
               onClick={handleCloseInscripcion}
@@ -193,31 +214,19 @@ const VerObservacionAulica = (props) => {
             </button>
           )}
 
-          {allow_asistencia ? (
-            <button
-              onClick={handleCloseAsistencia}
-              className="w-full flex gap-1 items-center justify-center p-2 rounded-lg border border-yellow-600 text-yellow-600 hover:bg-yellow-500 hover:text-white transition-all duration-200"
-            >
-              <MdLockPerson size={20} />
-              <span className="text-sm font-medium">Asistencia</span>
-            </button>
-          ) : (
-            <button
-              onClick={handleOpenAsistencia}
-              className="w-full flex gap-1 items-center justify-center p-2 rounded-lg border border-green-600 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-200"
-            >
-              <MdOutlineLockOpen size={20} />
-              <span className="text-sm font-medium">Asistencia</span>
-            </button>
-          )}
-
-          <Link to={`/eventos/editarEvento/${id_capacitacion}`}>
+          <Link
+            to={`/eventos/editarEvento/${id_capacitacion}`}
+            className="w-full"
+          >
             <button className="w-full flex gap-1 items-center justify-center p-2 rounded-lg border border-primary_color_1 text-primary_color_1 hover:bg-primary_color_1 hover:text-white transition-all duration-200">
               <MdOutlineEdit size={20} />
               <span className="text-sm font-medium">Editar</span>
             </button>
           </Link>
-          <button className="w-full flex gap-1 items-center justify-center p-2 rounded-lg border border-red-600 text-red-600 hover:bg-red-500 hover:text-white transition-all duration-200">
+          <button
+            onClick={() => setModalOpen(true)}
+            className="w-full flex gap-1 items-center justify-center p-2 rounded-lg border border-red-600 text-red-600 hover:bg-red-500 hover:text-white transition-all duration-200"
+          >
             <MdDelete size={20} />
             <span className="text-sm font-medium">Borrar</span>
           </button>

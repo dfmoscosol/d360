@@ -14,6 +14,9 @@ import {
   VerEvento,
   EditarEvento,
   CrearJornadaInnovacion,
+  CrearCharla,
+  CrearTaller,
+  CrearObservacionAulica
 } from "@pages";
 
 import { PathConstants } from "@routes/pathConstants";
@@ -48,6 +51,19 @@ function App() {
         {
           path: "eventos/nuevoEvento/jornadaInnovacion",
           element: <CrearJornadaInnovacion />,
+        },
+
+        {
+          path: "eventos/nuevoEvento/charla",
+          element: <CrearCharla />,
+        },
+        {
+          path: "eventos/nuevoEvento/taller",
+          element: <CrearTaller />,
+        },
+        {
+          path: "eventos/nuevoEvento/observacionAulica",
+          element: <CrearObservacionAulica />,
         },
         {
           path: "/page1",
