@@ -16,6 +16,7 @@ import {
   MdDateRange,
   MdDelete,
   MdOutlineEdit,
+  MdAdd,
 } from "react-icons/md";
 
 const VerCharla = (props) => {
@@ -131,18 +132,25 @@ const VerCharla = (props) => {
         <Notification message={message} isError={isError} />
       )}
       <div className="px-10 py-8 flex flex-col items-start w-[600px] bg-white rounded-lg">
-        <div className="w-full flex items-center justify-start">
+        <div className="w-full flex items-center justify-between">
           <div className="flex gap-2 items-center">
             {/***/}
-            <div className="bg-blue-100 text-blue-900 p-2 rounded-lg">
+            <div className="bg-blue-100 text-blue-600 p-2 rounded-lg">
               <GrWorkshop size={25} />
             </div>
             <span className="font-medium text-base text-primary_gray_2">
               Charla
             </span>
           </div>
+          <Link to={"/eventos/nuevoEvento/charla"}>
+            <div className="bg-blue-100 text-blue-600 rounded-full flex items-center p-1 hover:shadow-lg transition-all duration-200">
+              <MdAdd size={25} />
+            </div>
+          </Link>
         </div>
-
+        <div className="w-full pt-4">
+          <hr className="border-primary_gray_5" />
+        </div>
         <span className="font-medium text-3xl text-primary_color_1 py-8">
           {nombre}
         </span>
@@ -221,7 +229,10 @@ const VerCharla = (props) => {
           </span>
         </div>
 
-        <div className="flex mt-6 gap-2  w-full justify-between">
+        <div className="w-full pt-8 pb-4 ">
+          <hr className="border-primary_gray_5" />
+        </div>
+        <div className="flex gap-2 w-full justify-between">
           {allow_inscripcion ? (
             <button
               onClick={handleCloseInscripcion}

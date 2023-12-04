@@ -1,23 +1,33 @@
 import React, { useState } from "react";
-import { MdAdd, MdDelete } from "react-icons/md";
 import { useForm } from "react-hook-form";
-import DatePicker from "react-multi-date-picker";
+import DatePicker, { DateObject } from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
-import { MdSave } from "react-icons/md";
+import { MdSave, MdClose } from "react-icons/md";
 import { Oval } from "react-loader-spinner";
 import { Notification } from "@components";
+import { useNavigate } from "react-router-dom";
 
-import { useAddEventoMutation } from "@redux/services/evento/eventoApi";
+import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
 
-const CrearCharla = () => {
+const EditarObservacionAulica = (props) => {
+  const {
+    cupo,
+    direccion,
+    fechas,
+    horas,
+    id_capacitacion,
+    nombre,
+    isPresencial,
+  } = props;
+
   /**
    * PARA LAS SOLICITUDES POST
    */
   const [
-    addEvento, // This is the mutation trigger
+    editCapacitacion,
     { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
-  ] = useAddEventoMutation();
+  ] = useEditCapacitacionMutation();
 
   /**
    * MANUAL VALIDATIONS
@@ -46,7 +56,10 @@ const CrearCharla = () => {
       console.log("Se ha elegido más de una fecha.");
       setValidDate(true);
       areValidDates = true;
-      validDatesList.push(dates.format("DD-MM-YYYY"));
+      dates.sort((a, b) => a - b);
+      dates.forEach((date) => {
+        validDatesList.push(date.format("DD-MM-YYYY"));
+      });
     }
 
     let isModalidadPresencial = false;
@@ -58,14 +71,16 @@ const CrearCharla = () => {
       console.log("Se puede enviar el formulario");
       data.fechas = validDatesList;
       data.presencial = isModalidadPresencial;
-      data.allow_inscripcion = false;
-      data.allow_asistencia = true;
       data.horas = Number(data.horas);
       data.cupo = Number(data.cupo);
-      data.tipo = "Charla";
-      //console.log(data);
+      data.tipo = "Observación Aulica";
+      data.nombre_tutor = ".";
+      console.log(data);
       console.log("Se enviará el formulario");
-      addEvento(data);
+      /*editCapacitacion({
+        id: id_capacitacion,
+        body: data,
+      });*/
       console.log("Enviado");
     } else {
       console.log("No se puede enviar el formulario");
@@ -75,8 +90,18 @@ const CrearCharla = () => {
   /**
    * PARA EL DATE PICKER
    */
+
+  const fechasDateFormat = [];
+  fechas.forEach((fecha, index) => {
+    const parts = fecha.split("-");
+    // Cambia el orden de los elementos para adaptarse al formato MM-DD-YYYY
+    const formattedDate = `${parts[1]}-${parts[0]}-${parts[2]}`;
+    //console.log(formattedDate);
+    fechasDateFormat.push(new DateObject(new Date(formattedDate)));
+  });
+
+  const [dates, setDates] = useState(fechasDateFormat);
   const today = new Date();
-  const [dates, setDates] = useState([]);
   const weekDays = ["D", "L", "M", "M", "J", "V", "S"];
   const months = [
     "Enero",
@@ -122,18 +147,27 @@ const CrearCharla = () => {
 
   // Definir los elementos a seleccionar
   const listModalidades = ["Virtual", "Presencial"];
+  let selectedModalidadProp;
+  if (isPresencial) {
+    selectedModalidadProp = "Presencial";
+  } else {
+    selectedModalidadProp = "Virtual";
+  }
+
   // Estado para almacenar el valor seleccionado
-  const [selectedModalidad, setSelectedModalidad] = useState("");
+  const [selectedModalidad, setSelectedModalidad] = useState(
+    selectedModalidadProp
+  );
 
   const handleSelect = (value) => {
     setSelectedModalidad(value);
     /*if (value === "") {
-        setValidModalidad(false);
-        console.log("no válido");
-      } else {
-        setValidModalidad(true);
-        console.log("válido");
-      }*/
+      setValidModalidad(false);
+      console.log("no válido");
+    } else {
+      setValidModalidad(true);
+      console.log("válido");
+    }*/
   };
 
   /**
@@ -143,13 +177,17 @@ const CrearCharla = () => {
   const shouldShowNotification = isSuccess || isError;
   const message = isError ? error?.data.error : response?.respuesta;
 
+  /**
+   * NAVIGATION
+   */
+  const navigate = useNavigate();
+
   return (
     <>
       <div className="flex justify-center rounded-lg pb-10">
-        {/* Resto del componente */}
         {shouldShowNotification && (
           <Notification message={message} isError={isError} />
-        )}{" "}
+        )}
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="px-10 py-8 rounded-lg grid grid-cols-12 gap-6 w-[600px] bg-white">
             {/**Nombre */}
@@ -158,7 +196,7 @@ const CrearCharla = () => {
                 Nombre
               </span>
               <input
-                //value="Jornada de Innovación Test"
+                defaultValue={nombre}
                 type="text"
                 className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
                 placeholder="Jornada 1"
@@ -171,35 +209,29 @@ const CrearCharla = () => {
               )}
             </div>
 
-            {/**Tutor */}
-            <div className="col-span-5 flex flex-col">
+            {/**Modalidad */}
+            <div className="col-span-6 flex flex-col">
               <span className="text-base font-medium text-primary_color_1 ">
-                Tutor
+                Modalidad
               </span>
               <div className="w-full">
-                <input
-                  type="text"
-                  //value="Ing. Juan Perez"
-                  className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
-                  placeholder="Ing. Juan Perez"
-                  {...register("nombre_tutor", { required: true })}
+                <ComboBox
+                  items={listModalidades}
+                  onSelect={handleSelect}
+                  hasBeenSelected={true}
+                  selected={selectedModalidad}
                 />
               </div>
-              {errors.nombre_tutor && (
-                <span className="text-red-600 text-sm font-light px-1">
-                  Ingrese un valor válido.
-                </span>
-              )}
             </div>
 
             {/**Fecha */}
-            <div className="col-span-5 flex flex-col">
+            <div className="col-span-6 flex flex-col">
               <span className="text-base font-medium text-primary_color_1">
                 Fecha
               </span>
               <div className="w-full flex flex-col">
                 <DatePicker
-                  //multiple
+                  range
                   plugins={[<DatePanel />]}
                   weekStartDayIndex={1}
                   showOtherDays={true}
@@ -210,6 +242,7 @@ const CrearCharla = () => {
                   style={{
                     width: "100%",
                   }}
+                  value={dates}
                   format="DD-MM-YYYY"
                   render={<CustomInput />}
                 />
@@ -221,15 +254,30 @@ const CrearCharla = () => {
               </div>
             </div>
 
+            {/**Dirección */}
+            <div className="col-span-6 flex flex-col">
+              <span className="text-base font-medium text-primary_color_1 ">
+                Dirección
+              </span>
+              <div className="w-full">
+                <input
+                  type="text"
+                  defaultValue={direccion}
+                  className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                  {...register("direccion", { required: false })}
+                />
+              </div>
+            </div>
+
             {/**Horas */}
-            <div className="col-span-2 flex flex-col">
+            <div className="col-span-3 flex flex-col">
               <span className="text-base font-medium text-primary_color_1 ">
                 Horas
               </span>
               <div className="w-full">
                 <input
                   type="number"
-                  //value={10}
+                  defaultValue={horas}
                   className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
                   {...register("horas", { required: true })}
                 />
@@ -241,43 +289,14 @@ const CrearCharla = () => {
               )}
             </div>
 
-            {/**Modalidad */}
-            <div className="col-span-5 flex flex-col">
-              <span className="text-base font-medium text-primary_color_1 ">
-                Modalidad
-              </span>
-              <div className="w-full">
-                <ComboBox items={listModalidades} onSelect={handleSelect} />
-              </div>
-              {/*!isValidModalidad && (
-                <span className="text-red-600 text-sm font-light px-1">
-                  Seleccione una opción
-                </span>
-              )*/}
-            </div>
-
-            {/**Dirección */}
-            <div className="col-span-5 flex flex-col">
-              <span className="text-base font-medium text-primary_color_1 ">
-                Dirección
-              </span>
-              <div className="w-full">
-                <input
-                  type="text"
-                  className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
-                  {...register("direccion", { required: false })}
-                />
-              </div>
-            </div>
-
             {/**Cupos */}
-            <div className="col-span-2 flex flex-col">
+            <div className="col-span-3 flex flex-col">
               <span className="text-base font-medium text-primary_color_1 ">
                 Cupos
               </span>
               <div className="w-full h-full ">
                 <input
-                  //value={5}
+                  defaultValue={cupo}
                   type="number"
                   className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
                   {...register("cupo", { required: true })}
@@ -294,14 +313,23 @@ const CrearCharla = () => {
             <div className="py-4 col-span-12 text-primary_gray_5">
               <hr />
             </div>
-            <div className="flex items-center justify-center col-span-12">
+            <div className="flex items-center justify-center col-span-12 gap-4">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="flex gap-1 items-center justify-center px-3 py-2 rounded-lg border border-primary_gray_3 text-primary_gray_3 hover:bg-primary_gray_3 hover:text-white transition-all duration-200"
+              >
+                <MdClose size={20} />
+                <span className="text-sm font-medium">Cancelar</span>
+              </button>
+
               <button
                 type="submit"
                 className={`${
                   isUpdating
                     ? "bg-primary_color_1_bg_light cursor-not-allowed active:bg-primary_color_1_bg_light"
                     : "bg-primary_color_1 cursor-pointer"
-                } flex gap-2 items-center px-3 py-2 text-base font-medium rounded-lg  text-primary_color_1_text_light hover:bg-primary_color_1_bg_light active:bg-primary_color_1 transition duration-200`}
+                } border border-primary_color_1 flex gap-2 items-center px-3 py-2 text-base font-medium rounded-lg  text-primary_color_1_text_light hover:bg-primary_color_1_bg_light active:bg-primary_color_1 transition duration-200`}
                 disabled={isUpdating}
               >
                 {isUpdating ? (
@@ -318,9 +346,9 @@ const CrearCharla = () => {
                     strokeWidthSecondary={2}
                   />
                 ) : (
-                  <MdSave size={24} />
+                  <MdSave size={20} />
                 )}
-                <span>GUARDAR</span>
+                <span className="text-sm font-medium">Guardar</span>
               </button>
             </div>
           </div>
@@ -330,4 +358,4 @@ const CrearCharla = () => {
   );
 };
 
-export default CrearCharla;
+export default EditarObservacionAulica;

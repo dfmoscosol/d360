@@ -10,3 +10,5 @@ export { default as CrearJornadaInnovacion } from "./Eventos/JornadaInnovacion/C
 export { default as CrearCharla } from "./Eventos/Charla/CrearCharla";
 export { default as CrearTaller } from "./Eventos/Taller/CrearTaller";
 export { default as CrearObservacionAulica } from "./Eventos/ObservacionAulica/CrearObservacionAulica";
+export { default as NuevoEvento } from "./Eventos/NuevoEvento";
+export { default as Keywords } from "./Keywords/Keywords";

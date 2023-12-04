@@ -260,7 +260,6 @@ const CrearJornadaInnovacion = () => {
               <div className="w-full">
                 <input
                   type="text"
-                  //value="Ing. Juan Perez"
                   className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
                   placeholder="Ing. Juan Perez"
                   {...register("nombre_tutor", { required: true })}

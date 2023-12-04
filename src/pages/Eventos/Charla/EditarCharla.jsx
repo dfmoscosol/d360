@@ -1,54 +1,27 @@
 import React, { useState } from "react";
-import {
-  MdAdd,
-  MdDelete,
-  MdOutlineEdit,
-  MdSave,
-  MdClose,
-} from "react-icons/md";
+import { MdAdd, MdDelete, MdClose } from "react-icons/md";
 import { useForm } from "react-hook-form";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
+import { MdSave } from "react-icons/md";
 import { Oval } from "react-loader-spinner";
-import { Notification, Modal } from "@components";
-import { Link, useNavigate } from "react-router-dom";
+import { Notification } from "@components";
+import { useNavigate } from "react-router-dom";
 
 import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
-import {
-  useEditTallerMutation,
-  useDeleteTallerMutation,
-} from "@redux/services/taller/tallerApi";
 
-const EditarJornadaInnovacion = (props) => {
+const EditarCharla = (props) => {
   const {
-    nombre,
-    nombre_tutor,
+    cupo,
+    direccion,
     fechas,
     horas,
-    isPresencial,
-    direccion,
-    cupo,
-    talleres,
-    allow_asistencia,
-    allow_inscripcion,
     id_capacitacion,
+    nombre,
+    nombre_tutor,
+    isPresencial,
   } = props;
-
-  let allTalleresList = [];
-
-  talleres.forEach((taller, index) => {
-    allTalleresList.push({
-      id_taller: taller.id_taller,
-      id: index + 1,
-      value: taller.nombre,
-      isEmpty: false,
-      isEnabled: false,
-      enableEdit: false,
-      index: index,
-      originalValue: taller.nombre,
-    });
-  });
 
   /**
    * PARA LAS SOLICITUDES POST
@@ -57,28 +30,6 @@ const EditarJornadaInnovacion = (props) => {
     editCapacitacion,
     { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
   ] = useEditCapacitacionMutation();
-
-  const [
-    editTaller,
-    {
-      data: responseTaller,
-      isLoading: isUpdatingTaller,
-      isSuccess: isSuccessTaller,
-      isError: isErrorTaller,
-      error: errorTaller,
-    },
-  ] = useEditTallerMutation();
-
-  const [
-    deleteTaller,
-    {
-      data: responseDeleteTaller,
-      isLoading: isUpdatingDeleteTaller,
-      isSuccess: isSuccessDeleteTaller,
-      isError: isErrorDeleteTaller,
-      error: errorDeleteTaller,
-    },
-  ] = useDeleteTallerMutation();
 
   /**
    * MANUAL VALIDATIONS
@@ -98,10 +49,10 @@ const EditarJornadaInnovacion = (props) => {
     console.log(data);
     let areValidDates;
     let validDatesList = [];
-    let validInputsList = [];
 
     console.log(dates);
-    if (dates.length == 0) {
+
+    if (dates === null || dates.length == 0) {
       console.log("ERROR: No se ha elegido más de una fecha.");
       setValidDate(false);
       areValidDates = false;
@@ -109,27 +60,7 @@ const EditarJornadaInnovacion = (props) => {
       console.log("Se ha elegido más de una fecha.");
       setValidDate(true);
       areValidDates = true;
-      dates.sort((a, b) => a - b);
-      dates.forEach((date) => {
-        validDatesList.push(date.format("DD-MM-YYYY"));
-      });
-    }
-
-    const areAllInputsFilled = inputs.every(
-      (input) => input.value.trim() !== ""
-    );
-    if (!areAllInputsFilled) {
-      console.log("ERROR: Todos los talleres deben tener un nombre.");
-      inputs.forEach((input) => {
-        if (input.value.trim() === "") {
-          input.isEmpty = true;
-        } else {
-          input.isEmpty = false;
-        }
-      });
-    } else {
-      console.log("Todos los talleres tienen un nombre.");
-      validInputsList = inputs.map((input) => ({ nombre: input.value }));
+      validDatesList.push(dates.format("DD-MM-YYYY"));
     }
 
     let isModalidadPresencial = false;
@@ -137,55 +68,32 @@ const EditarJornadaInnovacion = (props) => {
       isModalidadPresencial = true;
     }
 
-    if (areValidDates && areAllInputsFilled) {
+    if (areValidDates) {
       console.log("Se puede enviar el formulario");
       data.fechas = validDatesList;
       data.presencial = isModalidadPresencial;
-      data.talleres = validInputsList;
       data.horas = Number(data.horas);
       data.cupo = Number(data.cupo);
-      data.tipo = "Jornada";
       console.log(data);
       console.log("Se enviará el formulario");
       editCapacitacion({
         id: id_capacitacion,
         body: data,
       });
-      console.log("editado");
+      console.log("Enviado");
     } else {
       console.log("No se puede enviar el formulario");
     }
   };
 
   /**
-   * PARA LOS INPUTS DINÁMICOS
-   */
-  const [inputs, setInputs] = useState(allTalleresList);
-  const handleInputChange = (id, newValue) => {
-    setInputs(
-      inputs.map((input) => {
-        if (input.id === id) {
-          return { ...input, value: newValue, isEmpty: false };
-        }
-        return input;
-      })
-    );
-  };
-
-  /**
    * PARA EL DATE PICKER
    */
-  const fechasDateFormat = [];
-  fechas.forEach((fecha, index) => {
-    const parts = fecha.split("-");
-    // Cambia el orden de los elementos para adaptarse al formato MM-DD-YYYY
-    const formattedDate = `${parts[1]}-${parts[0]}-${parts[2]}`;
-    //console.log(formattedDate);
-    fechasDateFormat.push(new DateObject(new Date(formattedDate)));
-  });
+  const parts = fechas[0].split("-");
+  const formattedDate = `${parts[1]}-${parts[0]}-${parts[2]}`;
 
-  const [dates, setDates] = useState(fechasDateFormat);
-
+  const [dates, setDates] = useState(new DateObject(new Date(formattedDate)));
+  const today = new Date();
   const weekDays = ["D", "L", "M", "M", "J", "V", "S"];
   const months = [
     "Enero",
@@ -255,84 +163,11 @@ const EditarJornadaInnovacion = (props) => {
   };
 
   /**
-   * Para manejar el edit
-   */
-  const handleEnableEdit = (index) => {
-    setInputs(
-      inputs.map((input) => {
-        if (input.index === index) {
-          return { ...input, enableEdit: true };
-        }
-        return input;
-      })
-    );
-  };
-
-  /**
-   * Para el boton de cancelar
-   */
-  const handleCancelEdit = (index) => {
-    console.log("cancelando");
-    console.log(index);
-    setInputs(
-      inputs.map((input) => {
-        if (input.index === index) {
-          return { ...input, enableEdit: false, value: input.originalValue };
-        }
-        return input;
-      })
-    );
-  };
-
-  /**
-   * Para el boton guardar
-   */
-  const handleSaveEdit = (index) => {
-    console.log("guardando");
-    console.log(index);
-    setInputs(
-      inputs.map((input) => {
-        if (input.index === index) {
-          const dataBody = {
-            id: input.id_taller,
-            body: { nombre: input.value },
-          };
-          console.log(dataBody);
-          editTaller(dataBody);
-          console.log("editado");
-          return { ...input, enableEdit: false };
-        }
-        return input;
-      })
-    );
-  };
-
-  /**
    * Para la notificación
    */
 
-  //const shouldShowNotification = response && (response.estado || isError);
-  //const message = isError ? response?.error : response?.respuesta;
-
-  /**
-   * Para borrar el taller
-   */
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [idTallerToDelete, setIdTallerToDelete] = useState(null);
-
-  const handleConfirmDelete = () => {
-    const dataBody = {
-      id: idTallerToDelete,
-    };
-    console.log(dataBody);
-    setModalOpen(false);
-    deleteTaller(dataBody);
-  };
-
-  const handleDeleteTaller = (id) => {
-    setIdTallerToDelete(id);
-    setModalOpen(true);
-  };
+  const shouldShowNotification = isSuccess || isError;
+  const message = isError ? error?.data.error : response?.respuesta;
 
   /**
    * NAVIGATION
@@ -341,39 +176,24 @@ const EditarJornadaInnovacion = (props) => {
 
   return (
     <>
+      {" "}
       <div className="flex justify-center rounded-lg pb-10">
-        {/* Resto del componente 
+        {/* Resto del componente */}
         {shouldShowNotification && (
           <Notification message={message} isError={isError} />
-        )}*/}
-
-        <Modal
-          isOpen={isModalOpen}
-          message="¿Desea eliminar este taller?"
-          onClose={() => setModalOpen(false)}
-          type={"error"}
-          title={"Eliminar Taller"}
-        >
-          <button
-            className="font-medium px-4 py-1 rounded-lg bg-red-600 text-white hover:bg-red-500 active:bg-red-600 hover:text-white transition-all duration-200"
-            onClick={handleConfirmDelete}
-          >
-            Eliminar Taller
-          </button>
-        </Modal>
-
+        )}{" "}
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="px-10 py-8 rounded-lg grid grid-cols-12 gap-6 w-[600px]  bg-white">
+          <div className="px-10 py-8 rounded-lg grid grid-cols-12 gap-6 w-[600px] bg-white">
             {/**Nombre */}
             <div className="col-span-12 flex flex-col">
               <span className="text-base font-medium text-primary_color_1">
                 Nombre
               </span>
               <input
+                defaultValue={nombre}
                 type="text"
                 className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
                 placeholder="Jornada 1"
-                defaultValue={nombre}
                 {...register("nombre", { required: true })}
               />
               {errors.nombre && (
@@ -411,11 +231,11 @@ const EditarJornadaInnovacion = (props) => {
               </span>
               <div className="w-full flex flex-col">
                 <DatePicker
-                  multiple
-                  //plugins={[<DatePanel />]}
+                  //multiple
+                  plugins={[<DatePanel />]}
                   weekStartDayIndex={1}
                   showOtherDays={true}
-                  //minDate={today}
+                  minDate={today}
                   weekDays={weekDays}
                   months={months}
                   onChange={handleDateChange}
@@ -467,6 +287,11 @@ const EditarJornadaInnovacion = (props) => {
                   selected={selectedModalidad}
                 />
               </div>
+              {/*!isValidModalidad && (
+            <span className="text-red-600 text-sm font-light px-1">
+              Seleccione una opción
+            </span>
+          )*/}
             </div>
 
             {/**Dirección */}
@@ -502,84 +327,6 @@ const EditarJornadaInnovacion = (props) => {
                   Ingrese un valor válido
                 </span>
               )}
-            </div>
-
-            {/**Talleres */}
-            <div className="flex flex-col col-span-12">
-              <span className="text-base font-medium text-primary_color_1">
-                Talleres <span className="text-base">({talleres.length})</span>
-              </span>
-              <div className="flex flex-col gap-3 mt-2">
-                {inputs.map((input, index) => (
-                  <div key={input.id} className="flex gap-4">
-                    <div className="flex flex-col w-full bg-white rounded-lg p-3 gap-1 border-[1px]">
-                      <span className="text-sm font-medium text-primary_color_1">
-                        Nombre del Taller
-                      </span>
-                      <input
-                        type="text"
-                        value={input.value}
-                        onChange={(e) =>
-                          handleInputChange(input.id, e.target.value)
-                        }
-                        className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
-                        placeholder={`Taller ${input.id}`}
-                        disabled={!input.enableEdit}
-                        //{...register(`taller_${input.id}`, { required: true })}
-                      />
-                      {input.isEmpty && (
-                        <span className="text-red-600 text-sm font-light px-1">
-                          Ingrese un nombre válido
-                        </span>
-                      )}
-
-                      {!input.enableEdit ? (
-                        <div className="flex mt-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleEnableEdit(index)}
-                            className="flex gap-1 items-center justify-center p-2 rounded-lg border border-primary_color_1 text-primary_color_1 hover:bg-primary_color_1 hover:text-white transition-all duration-200"
-                          >
-                            <MdOutlineEdit size={20} />
-                            <span className="text-sm font-medium">Editar</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteTaller(input.id)}
-                            className="flex gap-1 items-center justify-center p-2 rounded-lg border border-red-600 text-red-600 hover:bg-red-500 hover:text-white transition-all duration-200"
-                          >
-                            <MdDelete size={20} />
-                            <span className="text-sm font-medium">
-                              Eliminar
-                            </span>
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex mt-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleCancelEdit(index)}
-                            className="flex gap-1 items-center justify-center p-2 rounded-lg border border-primary_gray_3 text-primary_gray_3 hover:bg-primary_gray_3 hover:text-white transition-all duration-200"
-                          >
-                            <MdClose size={20} />
-                            <span className="text-sm font-medium">
-                              Cancelar
-                            </span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleSaveEdit(index)}
-                            className="flex gap-1 items-center justify-center p-2 rounded-lg border border-green-600 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-200"
-                          >
-                            <MdSave size={20} />
-                            <span className="text-sm font-medium">Guardar</span>
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/**Footer */}
@@ -631,4 +378,4 @@ const EditarJornadaInnovacion = (props) => {
   );
 };
 
-export default EditarJornadaInnovacion;
+export default EditarCharla;

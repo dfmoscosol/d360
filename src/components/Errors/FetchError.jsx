@@ -6,7 +6,7 @@ const FetchError = ({ error }) => {
   console.log(error.error)
   return (
     <>
-      <div className="bg-red-50 p-4 border border-red-200 rounded-lg flex items-center gap-2 text-primary_color_2">
+      <div className="bg-white px-4 py-8 border-l-4 border-l-red-600 flex items-center gap-2 text-red-600">
         <MdOutlineError size={25}/>
         <span className="font-medium ">Error al cargar los datos.</span>
       </div>

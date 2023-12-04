@@ -17,7 +17,7 @@ const Pill = (props) => {
   return (
     <div className="w-full border  border-primary_gray_5  px-3 py-1 rounded-lg flex items-center justify-start gap-3 ">
       <div
-        className={`flex items-center justify-center p-2 rounded-lg bg-primary_gray_1 text-primary_gray_4 `} // ${colorsBg}
+        className={`flex items-center justify-center p-2 rounded-lg bg-primary_gray_1 text-primary_gray_4`} // ${colorsBg}
       >
         {icon}
       </div>

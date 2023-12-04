@@ -48,46 +48,57 @@ const Sidebar = () => {
           </div>
 
           <div className="mt-12 h-full flex flex-col justify-between">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-8">
               {routes.map((route, index) => (
-                <div className="relative" key={index}>
-                  <NavLink to={`/${route.path}`} key={index}>
-                    {({ isActive }) => (
-                      <div
-                        className={`flex py-2 px-4 rounded-lg items-center justify-center  ${
-                          isActive
-                            ? "bg-primary_gray_1"
-                            : "hover:bg-primary_gray_1"
-                        } `}
-                      >
-                        <span
-                          className={`${
-                            isActive
-                              ? "text-primary_color_1"
-                              : "text-primary_gray_3"
-                          } `}
-                        >
-                          {route.icon}
-                        </span>
-                        <div
-                          className={`overflow-hidden text-base font-normal ${
-                            isOpen ? "w-full ml-2" : "w-0"
-                          }  ${
-                            isActive
-                              ? "text-primary_color_1 font-semibold"
-                              : "text-primary_gray_4 font-medium"
-                          } transition-all ease-in-out duration-500`}
-                        >
-                          {route.name}
-                        </div>
-                        {isActive && (
+                <div className="flex flex-col" key={index}>
+                  <span
+                    className={`text-sm font-normal text-primary_gray_2 overflow-hidden ${
+                      isOpen ? "w-full ml-2" : "w-0"
+                    }  transition-all ease-in-out duration-500`}
+                  >
+                    {route.title}
+                  </span>
+                  {route.routes.map((item, index) => (
+                    <div className="relative mt-1" key={index}>
+                      <NavLink to={`/${item.path}`} key={index}>
+                        {({ isActive }) => (
                           <div
-                            className={`absolute top-0 -right-4 h-full w-1 bg-primary_color_2 rounded-lg`}
-                          ></div>
+                            className={`flex py-2 px-4 rounded-lg items-center justify-center  ${
+                              isActive
+                                ? "bg-primary_gray_1"
+                                : "hover:bg-primary_gray_1"
+                            } `}
+                          >
+                            <span
+                              className={`${
+                                isActive
+                                  ? "text-primary_color_1"
+                                  : "text-primary_gray_3"
+                              } `}
+                            >
+                              {item.icon}
+                            </span>
+                            <div
+                              className={`overflow-hidden text-base font-normal ${
+                                isOpen ? "w-full ml-2" : "w-0"
+                              }  ${
+                                isActive
+                                  ? "text-primary_color_1 font-semibold"
+                                  : "text-primary_gray_4 font-medium"
+                              } transition-all ease-in-out duration-500`}
+                            >
+                              {item.name}
+                            </div>
+                            {isActive && (
+                              <div
+                                className={`absolute top-0 -right-4 h-full w-1 bg-primary_color_2 rounded-lg`}
+                              ></div>
+                            )}
+                          </div>
                         )}
-                      </div>
-                    )}
-                  </NavLink>
+                      </NavLink>
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
@@ -95,7 +106,7 @@ const Sidebar = () => {
               <div className="py-5">
                 <hr />
               </div>
-              <div className="rounded-lg p-2 bg-primary_gray_1 text-primary_color_2 flex py-2 px-4 items-center justify-center">
+              <div className="rounded-lg p-2 bg-primary_gray_1 text-red-600 flex py-2 px-4 items-center justify-center">
                 <span>
                   <MdLogout size={20} />
                 </span>

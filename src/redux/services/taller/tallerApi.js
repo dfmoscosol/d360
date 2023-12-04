@@ -2,51 +2,51 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const BASE_URL = "https://d360api.ucuenca.edu.ec";
 
-export const eventoApi = createApi({
-  reducerPath: "eventoApi",
+export const tallerApi = createApi({
+  reducerPath: "tallerApi",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
   }),
-  tagTypes: ["getAll", "getCapacitacion"],
+  //tagTypes: ["getAll", "getCapacitacion"],
   endpoints: (builder) => ({
-    getCapacitacion: builder.query({
+    /*getCapacitacion: builder.query({
       query: (params) => `/capacitacion/${params.value}`,
       providesTags: ["getCapacitacion"],
-    }),
-    addEvento: builder.mutation({
+    }),*/
+    /*addEvento: builder.mutation({
       query: (params) => ({
         url: `/crear_capacitacion`,
         method: "POST",
         body: params,
       }),
       invalidatesTags: ["getAll"],
-    }),
-    editCapacitacion: builder.mutation({
+    }),*/
+    editTaller: builder.mutation({
       query: (params) => ({
-        url: `/actualizar_capacitacion/${params.id}`,
+        url: `/actualizar_taller/${params.id}`,
         method: "PUT",
         body: params.body,
       }),
       //invalidatesTags: ["getCapacitacion", "getAll"],
     }),
-    getAllCapacitaciones: builder.query({
+    /*getAllCapacitaciones: builder.query({
       query: () => `/capacitaciones`,
       providesTags: ["getAll"],
-    }),
-    deleteEvento: builder.mutation({
+    }),*/
+    deleteTaller: builder.mutation({
       query: (params) => ({
-        url: `/eliminar_capacitacion/${params.id}`,
+        url: `/eliminar_taller/${params.id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["getAll"],
+      //invalidatesTags: ["getAll"],
     }),
   }),
 });
 
 export const {
-  useAddEventoMutation,
-  useGetAllCapacitacionesQuery,
-  useGetCapacitacionQuery,
-  useEditCapacitacionMutation,
-  useDeleteEventoMutation,
-} = eventoApi;
+  //useAddEventoMutation,
+  //useGetAllCapacitacionesQuery,
+  //useGetCapacitacionQuery,
+  useEditTallerMutation,
+  useDeleteTallerMutation,
+} = tallerApi;
