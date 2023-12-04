@@ -111,7 +111,7 @@ const Sidebar = () => {
                   <MdLogout size={20} />
                 </span>
                 <div
-                  className={`overflow-hidden text-base font-medium whitespace-nowrap ${
+                  className={`overflow-hidden text-base font-normal whitespace-nowrap ${
                     isOpen ? "w-full ml-2" : "w-0"
                   } transition-all ease-in-out duration-500`}
                 >
