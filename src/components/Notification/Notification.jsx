@@ -2,24 +2,22 @@ import React, { useState, useEffect } from "react";
 
 import { MdCheckCircle, MdClose, MdError } from "react-icons/md";
 
-const Notification = ({ isError, message }) => {
-  const [visible, setVisible] = useState(true);
+import { useDispatch, useSelector } from "react-redux";
+import { hideNotification } from "@redux/features/notification/notificationSlice";
 
-  // Cerrar la notificación después de 5 segundos
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setVisible(false);
-    }, 8000);
-    return () => clearTimeout(timer);
-  }, []);
+const Notification = () => {
+  const dispatch = useDispatch();
+  const { isVisible, message, isError } = useSelector(
+    (state) => state.notificationState
+  );
 
   // Función para cerrar la notificación manualmente
   const handleClose = () => {
-    setVisible(false);
+    dispatch(hideNotification());
   };
 
   // Renderizar condicionalmente en base a `visible`
-  if (!visible) return null;
+  if (!isVisible) return null;
 
   return (
     <div
@@ -38,7 +36,11 @@ const Notification = ({ isError, message }) => {
         </div>
 
         <div className="flex flex-col text-primary_color_1">
-          {isError ? <span className="font-semibold">Error!</span> : <span className="font-semibold">Éxito!</span>}
+          {isError ? (
+            <span className="font-semibold">Error!</span>
+          ) : (
+            <span className="font-semibold">Éxito!</span>
+          )}
           <span className=" font-medium text-sm">{message}</span>
         </div>
 

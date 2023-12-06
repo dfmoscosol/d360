@@ -23,7 +23,7 @@ const EditarEvento = () => {
   const capacitacion = data.respuesta.capacitacion;
   const tipo_evento = capacitacion.tipo;
 
-  if (tipo_evento === "Jornada") {
+  if (tipo_evento === "jornada") {
     return (
       <EditarJornadaInnovacion
         nombre={capacitacion.nombre}
@@ -39,7 +39,7 @@ const EditarEvento = () => {
         id_capacitacion={capacitacion.id_capacitacion}
       />
     );
-  } else if (tipo_evento === "Charla") {
+  } else if (tipo_evento === "charla") {
     return (
       <EditarCharla
         cupo={capacitacion.cupo}
@@ -52,7 +52,7 @@ const EditarEvento = () => {
         isPresencial={capacitacion.presencial}
       />
     );
-  } else if (tipo_evento === "Observación Aulica") {
+  } else if (tipo_evento === "observacion") {
     return (
       <EditarObservacionAulica
         cupo={capacitacion.cupo}
@@ -64,7 +64,7 @@ const EditarEvento = () => {
         isPresencial={capacitacion.presencial}
       />
     );
-  } else if (tipo_evento === "Taller") {
+  } else if (tipo_evento === "taller") {
     return (
       <EditarTaller
         cupo={capacitacion.cupo}

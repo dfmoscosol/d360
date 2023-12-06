@@ -7,3 +7,6 @@ export { default as Notification } from "./Notification/Notification";
 export { default as Loader } from "./Loader/Loader";
 export { default as FetchError } from "./Errors/FetchError";
 export { default as Modal } from "./Modal/Modal";
+export { default as InfoPill } from "./InfoPill/InfoPill";
+export { default as ContainerPage } from "./Container/ContainerPage";
+export { default as Button } from "./Button/Button";

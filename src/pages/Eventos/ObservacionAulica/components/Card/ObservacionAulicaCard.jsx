@@ -1,13 +1,7 @@
 import React from "react";
 
 import { Link } from "react-router-dom";
-
-import {
-  MdOutlineEmojiPeople,
-  MdSupervisorAccount,
-  MdDateRange,
-  MdClose,
-} from "react-icons/md";
+import { InfoPill } from "@components";
 
 import { SiGoogleclassroom } from "react-icons/si";
 
@@ -30,21 +24,27 @@ const ObservacionAulicaCard = (props) => {
               Observación Áulica
             </span>
           </div>
-          <div className="p-2 bg-primary_gray_1 text-primary_gray_4 rounded-lg flex items-center "> {/** bg-teal-100 text-teal-600*/}
+          <div className="p-2 bg-primary_gray_1 text-primary_gray_4 rounded-lg flex items-center ">
+            {" "}
+            {/** bg-teal-100 text-teal-600*/}
             <SiGoogleclassroom size={23} />
           </div>
         </div>
         <div className="flex flex-col items-start">
           {allow_inscripcion ? (
-            /*<div className="flex items-center justify-center gap-1 rounded-lg bg-green-200 py-1 px-2 text-green-700">
-              <MdOutlineEmojiPeople size={20} />
-            </div>*/
-            <span>xxxx</span>
+            <InfoPill
+              value="Inscripciones"
+              size="small"
+              type="success"
+              icon="inscripciones"
+            />
           ) : (
-            <div className="flex items-center gap-1 bg-red-200 py-1 px-2 text-red-700 rounded-xl text-xs font-medium">
-              <MdClose size={18} />
-              <span className="">Inscripciones</span>
-            </div>
+            <InfoPill
+              value="Inscripciones"
+              size="small"
+              type="warning"
+              icon="close"
+            />
           )}
         </div>
         <div className="flex flex-col border-l-4 pl-2 border-teal-100">

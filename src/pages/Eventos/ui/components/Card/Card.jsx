@@ -8,7 +8,7 @@ import TallerCard from "../../../Taller/components/Card/TallerCard";
 const Card = (props) => {
   const { type, data } = props;
 
-  if (type === "Jornada") {
+  if (type === "jornada") {
     return (
       <JornadaInnovacionCard
         id_capacitacion={data.id_capacitacion}
@@ -19,7 +19,7 @@ const Card = (props) => {
         length_talleres={data.talleres.length}
       />
     );
-  } else if (type === "Observación Aulica") {
+  } else if (type === "observacion") {
     return (
       <ObservacionAulicaCard
         allow_inscripcion={data.allow_inscripcion}
@@ -30,10 +30,11 @@ const Card = (props) => {
         cupo={data.cupo}
       />
     );
-  } else if (type === "Charla") {
+  } else if (type === "charla") {
     return (
       <CharlaCard
-        allow_asistencia={data.allow_asistencia}
+        allow_asistencia_entrada={data.allow_asistencia_entrada}
+        allow_asistencia_salida={data.allow_asistencia_salida}
         allow_inscripcion={data.allow_inscripcion}
         cupo={data.cupo}
         direccion={data.direccion}
@@ -42,10 +43,11 @@ const Card = (props) => {
         id_capacitacion={data.id_capacitacion}
         nombre={data.nombre}
         nombre_tutor={data.nombre_tutor}
+        numero_inscritos={data.numero_inscritos}
         isPresencial={data.presencial}
       />
     );
-  } else if (type === "Taller") {
+  } else if (type === "taller") {
     return (
       <TallerCard
         allow_asistencia={data.allow_asistencia}

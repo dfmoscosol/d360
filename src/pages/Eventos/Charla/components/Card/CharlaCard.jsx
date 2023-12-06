@@ -1,18 +1,7 @@
 import React from "react";
 
 import { Link } from "react-router-dom";
-import { Pill } from "@components";
 
-import {
-  MdAccessTimeFilled,
-  MdCheckCircle,
-  MdDateRange,
-  MdOutlineEmojiPeople,
-  MdSupervisorAccount,
-  MdOutlinePerson,
-} from "react-icons/md";
-
-import { GiTeamIdea } from "react-icons/gi";
 import { GrWorkshop } from "react-icons/gr";
 
 const CharlaCard = (props) => {
@@ -51,14 +40,12 @@ const CharlaCard = (props) => {
               Charla
             </span>
           </div>
-          <div className="p-2 bg-primary_gray_1 text-primary_gray_4  rounded-lg flex items-center "> {/**bg-blue-100 text-blue-600 */}
+          <div className="p-2 bg-primary_gray_1 text-primary_gray_4  rounded-lg flex items-center ">
             <GrWorkshop size={23} />
           </div>
         </div>
         <div className="flex flex-col border-l-4 pl-2 border-blue-100">
-          <span className="text-primary_gray_2 font-normal text-xs">
-            Tutor
-          </span>
+          <span className="text-primary_gray_2 font-normal text-xs">Tutor</span>
           <span className="text-sm text-primary_gray_4 font-medium">
             {nombre_tutor}
           </span>
@@ -71,22 +58,6 @@ const CharlaCard = (props) => {
             {modalidad}
           </span>
         </div>
-        {/** 
-        <div className="flex gap-2 w-full ">
-          <Pill
-            icon={<MdDateRange size={20} />}
-            title={"Días"}
-            description={fechas.length}
-            type={3}
-          />
-          <Pill
-            icon={<MdSupervisorAccount size={20} />}
-            title={"cupo"}
-            description={cupo}
-            type={3}
-          />
-        </div>
-        */}
       </Link>
     </div>
   );

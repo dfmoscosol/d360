@@ -22,10 +22,9 @@ const VerEvento = () => {
   const capacitacion = data.respuesta.capacitacion;
   const tipo_evento = capacitacion.tipo;
 
-  console.log(capacitacion);
-  console.log(tipo_evento);
+  console.log(capacitacion)
 
-  if (tipo_evento === "Jornada") {
+  if (tipo_evento === "jornada") {
     return (
       <VerJornadaInnovacion
         allow_asistencia={capacitacion.allow_asistencia}
@@ -41,13 +40,16 @@ const VerEvento = () => {
         talleres={capacitacion.talleres}
       />
     );
-  } else if (tipo_evento === "Charla") {
+  } else if (tipo_evento === "charla") {
     return (
       <VerCharla
-        allow_asistencia={capacitacion.allow_asistencia}
-        allow_inscripcion={capacitacion.allow_inscripcion}
+        allow_asistencia_entrada={capacitacion.allow_asistencia_entrada}
+        allow_asistencia_salida={capacitacion.allow_asistencia_salida}
+        allow_inscripcion={data.allow_inscripcion}
         cupo={capacitacion.cupo}
         direccion={capacitacion.direccion}
+        docentesInscritos = {capacitacion.docentes_inscritos}
+        docentesPendientes = {capacitacion.docentes_pendientes}
         fechas={capacitacion.fechas}
         horas={capacitacion.horas}
         id_capacitacion={capacitacion.id_capacitacion}
@@ -56,7 +58,7 @@ const VerEvento = () => {
         isPresencial={capacitacion.presencial}
       />
     );
-  } else if (tipo_evento === "Taller") {
+  } else if (tipo_evento === "taller") {
     return (
       <VerTaller
         allow_asistencia={capacitacion.allow_asistencia}
@@ -71,7 +73,7 @@ const VerEvento = () => {
         isPresencial={capacitacion.presencial}
       />
     );
-  } else if (tipo_evento === "Observación Aulica") {
+  } else if (tipo_evento === "observacion") {
     return (
       <VerObservacionAulica
         allow_inscripcion={capacitacion.allow_inscripcion}

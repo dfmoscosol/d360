@@ -18,7 +18,7 @@ const Sidebar = () => {
     <div
       className={`${
         isOpen ? "w-72" : "md:w-20 w-0"
-      } py-10 transition-all ease-in-out duration-500 min-h-screen fixed h-screen z-50 flex flex-col bg-white`}
+      } py-10 transition-all ease-in-out duration-500 min-h-screen fixed h-screen z-50 flex flex-col bg-white overflow-hidden`}
     >
       <div className="flex flex-col h-full justify-between px-4">
         <div className="flex flex-col h-full">

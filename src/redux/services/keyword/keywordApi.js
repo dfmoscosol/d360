@@ -30,9 +30,13 @@ export const keywordApi = createApi({
       //invalidatesTags: ["getCapacitacion", "getAll"],
     }),*/
     getAllKeywords: builder.query({
-      query: () => `/terminos/gestion`,
+      query: (params) => `/terminos/${params.value}`,
       //providesTags: ["getAll"],
     }),
+    /*getCapacitacion: builder.query({
+      query: (params) => `/capacitacion/${params.value}`,
+      providesTags: ["getCapacitacion"],
+    }),*/
     /*deleteTaller: builder.mutation({
       query: (params) => ({
         url: `/eliminar_taller/${params.id}`,

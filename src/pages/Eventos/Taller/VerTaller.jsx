@@ -4,7 +4,7 @@ import {
   useEditCapacitacionMutation,
   useDeleteEventoMutation,
 } from "@redux/services/evento/eventoApi";
-import { Notification, Modal } from "@components";
+import { Notification, Modal, InfoPill } from "@components";
 import { Link } from "react-router-dom";
 
 import { FaChalkboardTeacher } from "react-icons/fa";
@@ -14,7 +14,6 @@ import {
   MdOutlineLockOpen,
   MdDoNotTouch,
   MdOutlineEmojiPeople,
-  MdDateRange,
   MdDelete,
   MdOutlineEdit,
   MdAdd,
@@ -158,43 +157,39 @@ const VerTaller = (props) => {
 
         <div className="flex gap-2">
           {allow_inscripcion ? (
-            <div className="flex items-center gap-1 rounded-xl bg-green-200 text-green-700 px-3 py-2">
-              <MdOutlineEmojiPeople size={20} />
-              <span className="text-sm font-normal">
-                Inscripciones Abiertas
-              </span>
-            </div>
+            <InfoPill
+              value="Inscripciones"
+              size="medium"
+              type="success"
+              icon="inscripciones"
+            />
           ) : (
-            <div className="flex items-center gap-1 rounded-xl bg-yellow-200 text-yellow-700 px-3 py-2">
-              <MdDoNotTouch size={20} />
-              <span className="text-sm font-normal">
-                Inscripciones Cerradas
-              </span>
-            </div>
+            <InfoPill
+              value="Inscripciones"
+              size="medium"
+              type="warning"
+              icon="close"
+            />
           )}
           {allow_asistencia ? (
-            <div className="flex items-center gap-1 rounded-xl bg-green-200 text-green-700 px-3 py-2">
-              <MdOutlineLockOpen size={20} />
-              <span className="text-sm font-normal">Asistencia Habilitada</span>
-            </div>
+            <InfoPill
+              value="Asistencia"
+              size="medium"
+              type="success"
+              icon="asistencia"
+            />
           ) : (
-            <div className="flex items-center gap-1 rounded-xl bg-yellow-200 text-yellow-700 px-3 py-2">
-              <MdLockPerson size={20} />
-              <span className="text-sm font-normal">
-                Asistencia Deshabilitada
-              </span>
-            </div>
+            <InfoPill
+              value="Asistencia"
+              size="medium"
+              type="warning"
+              icon="close"
+            />
           )}
         </div>
-        <div className="flex gap-2 ">
+        <div className="flex gap-2 mt-2">
           {fechas.map((fecha, index) => (
-            <div
-              className="flex items-center gap-1 rounded-xl bg-primary_gray_1 text-primary_gray_4 px-3 py-1 mt-2"
-              key={index}
-            >
-              <MdDateRange size={20} />
-              <span className="text-sm font-normal">{fecha}</span>
-            </div>
+            <InfoPill value={fecha} size="medium" type="date" icon="date" />
           ))}
         </div>
         <div className="grid grid-cols-4 w-full mt-6 gap-2">
