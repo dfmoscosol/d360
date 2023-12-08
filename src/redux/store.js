@@ -7,6 +7,7 @@ import notificationReducer from "@redux/features/notification/notificationSlice"
 import { eventoApi } from "./services/evento/eventoApi";
 import { tallerApi } from "./services/taller/tallerApi";
 import { keywordApi } from "./services/keyword/keywordApi";
+import { docenteApi } from "./services/docente/docenteApi";
 
 export const store = configureStore({
   reducer: {
@@ -15,12 +16,14 @@ export const store = configureStore({
     [eventoApi.reducerPath]: eventoApi.reducer,
     [tallerApi.reducerPath]: tallerApi.reducer,
     [keywordApi.reducerPath]: keywordApi.reducer,
+    [docenteApi.reducerPath]: docenteApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([
       eventoApi.middleware,
       tallerApi.middleware,
       keywordApi.middleware,
+      docenteApi.middleware,
     ]),
 });
 

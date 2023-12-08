@@ -22,7 +22,7 @@ const VerEvento = () => {
   const capacitacion = data.respuesta.capacitacion;
   const tipo_evento = capacitacion.tipo;
 
-  console.log(capacitacion)
+  console.log(capacitacion);
 
   if (tipo_evento === "jornada") {
     return (
@@ -45,11 +45,11 @@ const VerEvento = () => {
       <VerCharla
         allow_asistencia_entrada={capacitacion.allow_asistencia_entrada}
         allow_asistencia_salida={capacitacion.allow_asistencia_salida}
-        allow_inscripcion={data.allow_inscripcion}
+        allow_inscripcion={capacitacion.allow_inscripcion}
         cupo={capacitacion.cupo}
         direccion={capacitacion.direccion}
-        docentesInscritos = {capacitacion.docentes_inscritos}
-        docentesPendientes = {capacitacion.docentes_pendientes}
+        docentesInscritos={capacitacion.docentes_inscritos}
+        docentesPendientes={capacitacion.docentes_pendientes}
         fechas={capacitacion.fechas}
         horas={capacitacion.horas}
         id_capacitacion={capacitacion.id_capacitacion}

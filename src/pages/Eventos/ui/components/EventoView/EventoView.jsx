@@ -1,22 +1,22 @@
 import React from "react";
 
-import { Link } from "react-router-dom";
-import { MdAdd } from "react-icons/md";
+import { ToggleSwitch } from "@components";
 
 // Header subcomponent
-export const Header = ({ color, title, icon, linkTo }) => (
-  <div className="w-full flex items-center justify-between">
+export const Header = ({ color, title, icon, subTitle, hasIcon, children }) => (
+  <div className="w-full flex flex-col md:flex-row items-start md:items-center gap-4 justify-between mb-4">
     <div className="flex gap-2 items-center">
-      <div className={`${color} p-2 rounded-lg`}>{icon}</div>
-      <span className="font-medium text-base text-primary_gray_2">{title}</span>
-    </div>
-    <Link to={linkTo}>
-      <div
-        className={`${color} rounded-full flex items-center p-1 hover:shadow-lg transition-all duration-200`}
-      >
-        <MdAdd size={25} />
+      {hasIcon && <div className={`${color} p-2 rounded-lg`}>{icon}</div>}
+      <div className="flex flex-col">
+        <span className="font-medium text-3xl text-primary_color_1">
+          {title}
+        </span>
+        <span className="font-normal text-sm text-primary_gray_2">
+          {subTitle}
+        </span>
       </div>
-    </Link>
+    </div>
+    {children}
   </div>
 );
 
@@ -37,10 +37,10 @@ export const Data = ({ dataList }) => (
   <div className="flex flex-col mt-4">
     {dataList.map((data, index) => (
       <div className="grid grid-cols-4 w-full" key={index}>
-        <span className="col-span-2 sm:col-span-1 text-base font-light text-primary_gray_2">
+        <span className="col-span-2 md:col-span-1 text-base font-light text-primary_gray_2">
           {data.key}
         </span>
-        <span className="col-span-2 sm:col-span-3 text-base font-medium text-primary_color_1">
+        <span className="col-span-2 text-base font-medium text-primary_color_1">
           {data.value}
         </span>
       </div>
@@ -57,11 +57,61 @@ export const Footer = ({ children }) => (
 
 // Title Paner subcomponent
 export const TitlePanel = ({ value }) => (
-  <span className="text-base font-medium text-primary_color_1">{value}</span>
+  <span className="text-lg font-medium text-primary_color_1">{value}</span>
 );
 
-const EventoView = ({ children }) => (
-  <div className="flex flex-col w-full col-span-6 bg-white p-6 rounded-lg">
+// Title Paner subcomponent
+export const Activator = ({ isActivatorActive, value, handleTogle }) => (
+  <div
+    className={`flex items-center justify-between ${
+      isActivatorActive
+        ? "bg-green-100 text-green-600"
+        : "bg-primary_gray_1 text-primary_gray_4"
+    }  px-4 py-2 rounded-lg`}
+  >
+    <span className="font-medium text-sm ">{value}</span>
+    <div>
+      <ToggleSwitch
+        onToggle={(isActive) => handleTogle(isActive)}
+        initialState={isActivatorActive}
+      />
+    </div>
+  </div>
+);
+
+// Title SubTitle subcomponent
+export const SubTitle = ({ extra, value }) => (
+  <span
+    className={`font-medium text-primary_gray_4 mt-6 mb-2 text-lg ${extra}`}
+  >
+    {value}
+  </span>
+);
+
+// Title SubTitle subcomponent
+export const TogglePanel = ({ toggles }) => (
+  <div className="grid grid-cols-4 gap-2">
+    {toggles.map((toggle, index) => (
+      <div className="col-span-4 md:col-span-1" key={index}>
+        {toggle}
+      </div>
+    ))}
+  </div>
+);
+
+
+export const SectionContainer = ({ extra, children }) => (
+  <div
+    className={`flex flex-col rounded-lg p-4 border border-primary_gray_5 mt-4 ${extra}`}
+  >
+    {children}
+  </div>
+);
+
+const EventoView = ({ extra, children }) => (
+  <div
+    className={`flex flex-col w-full bg-white rounded-lg  md:p-6 ${extra}`}
+  >
     {children}
   </div>
 );

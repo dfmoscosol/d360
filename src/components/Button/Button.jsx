@@ -12,11 +12,24 @@ import {
   MdDelete,
   MdKeyboardArrowUp,
   MdKeyboardArrowDown,
+  MdOutlineKeyboardArrowLeft,
+  MdOutlineKeyboardArrowRight,
+  MdAdd,
 } from "react-icons/md";
 
 import { Oval } from "react-loader-spinner";
 
-const Button = ({ type, value, size, icon, onClick, isLoading, isRadial }) => {
+const Button = ({
+  type,
+  value,
+  size,
+  icon,
+  onClick,
+  isLoading,
+  isRadial,
+  isDisabled,
+  extra,
+}) => {
   let colors = "";
   let sizeIcon = "";
   let sizeText = "";
@@ -25,29 +38,31 @@ const Button = ({ type, value, size, icon, onClick, isLoading, isRadial }) => {
 
   if (type === "success") {
     colors =
-      "border-green-700 text-green-700 hover:bg-green-200 active:bg-green-300";
+      "bg-green-100 text-green-600 hover:bg-green-200 active:bg-green-300";
     colorOval = "#15803d";
   } else if (type === "warning") {
     colors =
-      "border-yellow-700 text-yellow-700 hover:bg-yellow-200 active:bg-yellow-300";
+      "bg-yellow-100 text-yellow-600 hover:bg-yellow-200 active:bg-yellow-300";
     colorOval = "#a16207";
   } else if (type === "error") {
-    colors = "border-red-700 text-red-700 hover:bg-red-200 active:bg-red-300";
+    colors = "bg-red-100 text-red-600 hover:bg-red-200 active:bg-red-300";
     colorOval = "#b91c1c";
   } else if (type === "date") {
     colors = "bg-primary_gray_1 text-primary_gray_4";
     colorOval = "#3f3f46";
   } else if (type === "info") {
-    colors =
-      "border-cyan-700 text-cyan-700 hover:bg-cyan-200 active:bg-cyan-300";
+    colors = "bg-cyan-100 text-cyan-600 hover:bg-cyan-200 active:bg-cyan-300";
+    colorOval = "#0e7490";
+  } else if (type === "gray") {
+    colors = "bg-gray-200 text-gray-600 hover:bg-gray-300 active:bg-gray-400";
     colorOval = "#0e7490";
   }
 
   if (size === "small") {
-    sizeIcon = 18;
-    sizeText = "text-xs p-1";
+    sizeIcon = 19;
+    sizeText = "text-xs p-2";
   } else if (size === "medium") {
-    sizeIcon = 23;
+    sizeIcon = 22;
     sizeText = "text-sm p-2";
   }
 
@@ -69,17 +84,27 @@ const Button = ({ type, value, size, icon, onClick, isLoading, isRadial }) => {
     iconPill = <MdKeyboardArrowUp size={sizeIcon} />;
   } else if (icon === "salida") {
     iconPill = <MdKeyboardArrowDown size={sizeIcon} />;
+  } else if (icon === "left") {
+    iconPill = <MdOutlineKeyboardArrowLeft size={sizeIcon} />;
+  } else if (icon === "right") {
+    iconPill = <MdOutlineKeyboardArrowRight size={sizeIcon} />;
+  } else if (icon === "add") {
+    iconPill = <MdAdd size={sizeIcon} />;
   }
 
   return (
     <button
-      disabled={isLoading}
+      disabled={isLoading || isDisabled}
       onClick={onClick}
-      className={`flex w-full gap-1 items-center justify-center   ${
+      className={`flex gap-1 items-center justify-center hover:shadow-lg transition-all duration-300 font-medium ${
         isRadial ? "rounded-full" : "rounded-lg"
-      } border ${colors} ${sizeText} hover:shadow-lg transition-all duration-300 font-medium ${
+      } ${colors} ${sizeText} ${
         isLoading ? "animate-pulse cursor-not-allowed" : "animate-none"
-      } `}
+      } ${extra} ${
+        isDisabled
+          ? "cursor-not-allowed bg-primary_gray_1 border-primary_gray_4 text-primary_gray_4 hover:bg-primary_gray_1 hover:border-primary_gray_4 hover:shadow-none active:bg-primary_gray_1"
+          : "animate-none"
+      }`}
     >
       {isLoading ? (
         <Oval

@@ -10,3 +10,5 @@ export { default as Modal } from "./Modal/Modal";
 export { default as InfoPill } from "./InfoPill/InfoPill";
 export { default as ContainerPage } from "./Container/ContainerPage";
 export { default as Button } from "./Button/Button";
+export { default as DataTable } from "./DataTable/DataTable";
+export { default as ToggleSwitch } from "./ToggleSwitch/ToggleSwitch";
