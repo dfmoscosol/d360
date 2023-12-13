@@ -14,9 +14,15 @@ import EventoView, {
   SectionContainer,
 } from "../ui/components/EventoView/EventoView";
 
+import InformationSection from "../ui/components/Sections/InformationSection";
+import AprobationSection from "../ui/components/Sections/AprobationSection";
+import InscribedSection from "../ui/components/Sections/InscribedSection";
+import EnrollSection from "../ui/components/Sections/EnrollSection";
+
 import {
   useEditCapacitacionMutation,
   useDeleteEventoMutation,
+  useActualizarInscripcionMutation,
 } from "@redux/services/evento/eventoApi";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 
@@ -55,94 +61,8 @@ const VerCharla = (props) => {
     nombre,
     nombre_tutor,
     isPresencial,
+    handleRefetch,
   } = props;
-
-  /**
-   * TEST DATA
-   */
-  const DOCENTESTESTPORACEPTAR = [
-    {
-      correo: "diego.moscosol@ucuenca.edu.ec",
-      docente_id: "4dphEyHljfR8g2QSPXTax9bDo0B3",
-      isaccepted: true,
-      nombres: "DIEGO FERNANDO MOSCOSO LOZANO",
-    },
-    {
-      correo: "xavier.coronel@ucuenca.edu.ec",
-      docente_id: "aO1Qk9x48DW0o71KZecEeehrs3N2",
-      isaccepted: false,
-      nombres: "Xavier Coronel",
-    },
-  ];
-
-  const DOCENTESTEACEPTADOS = [
-    {
-      correo: "diego.moscosol@ucuenca.edu.ec",
-      docente_id: "4dphEyHljfR8g2QSPXTax9bDo0B3",
-      isaccepted: true,
-      nombres: "DIEGO FERNANDO MOSCOSO LOZANO",
-    },
-    {
-      correo: "xavier.coronel@ucuenca.edu.ec",
-      docente_id: "aO1Qk9x48DW0o71KZecEeehrs3N2",
-      isaccepted: false,
-      nombres: "Xavier Coronel",
-    },
-  ];
-
-  /**
-   * REDUX AND STATES
-   */
-  const dispatch = useDispatch();
-  const [paramUpdated, setParamUpdated] = useState();
-
-  // PARA ACTUALIZAR LA CAPACITACIÓN
-  const [
-    editCapacitacion,
-    {
-      data: responseEdit,
-      isLoading: isUpdatingEdit,
-      isSuccess: isSuccessEdit,
-      isError: isErrorEdit,
-      error: errorEdit,
-    },
-  ] = useEditCapacitacionMutation();
-
-  // PARA BORRAR LA CAPACITACIÓN
-  const [
-    deleteCapacitacion,
-    {
-      data: responseDelete,
-      isLoading: isUpdatingDelete,
-      isSuccess: isSuccessDelete,
-      isError: isErrorDelete,
-      error: errorDelete,
-    },
-  ] = useDeleteEventoMutation();
-
-  // MENSAJES DE NOTIFICACION
-  useEffect(() => {
-    if (isSuccessEdit) {
-      console.log(responseEdit);
-      console.log(paramUpdated);
-      if (paramUpdated.key === "allow_inscripcion") {
-        setIsInscripcionTogleActive(paramUpdated.value);
-      } else if (paramUpdated.key === "allow_asistencia_entrada") {
-        setIsAsistenciaEntradaTogleActive(paramUpdated.value);
-      } else if (paramUpdated.key === "allow_asistencia_salida") {
-        setIsAsistenciaSalidaTogleActive(paramUpdated.value);
-      }
-      triggerNotification(dispatch, {
-        message: "Capacitación actualizada con éxito",
-        type: "success",
-      });
-    } else if (isErrorEdit && errorEdit) {
-      triggerNotification(dispatch, {
-        message: errorEdit.message || "Error al actualizar la capacitación",
-        type: "error",
-      });
-    }
-  }, [isSuccessEdit, isErrorEdit, errorEdit, dispatch]);
 
   /**
    * MODALIDAD
@@ -154,304 +74,90 @@ const VerCharla = (props) => {
     modalidad = "Virtual";
   }
 
-  /**
-   * TOGLES
-   */
-  // PARA LA ENTRADA
-  const [isAsistenciaEntradaTogleActive, setIsAsistenciaEntradaTogleActive] =
-    useState(allow_asistencia_entrada);
-
-  const handleAsistenciaEntradaTogle = (isActive) => {
-    //console.log("asistencia entrada toggle", isActive);
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_asistencia_entrada: isActive },
-    };
-    setParamUpdated({ key: "allow_asistencia_entrada", value: isActive });
-    editCapacitacion(dataBody);
-  };
-
-  // PARA LA SALIDA
-  const [isAsistenciaSalidaTogleActive, setIsAsistenciaSalidaTogleActive] =
-    useState(allow_asistencia_salida);
-
-  const handleAsistenciaSalidaTogle = (isActive) => {
-    console.log("asistencia salida toggle", isActive);
-    //setIsAsistenciaSalidaTogleActive(isActive);
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_asistencia_salida: isActive },
-    };
-    setParamUpdated({ key: "allow_asistencia_salida", value: isActive });
-    editCapacitacion(dataBody);
-  };
-
-  // PARA LA INSCRIPCION
-  const [isInscripcionTogleActive, setIsInscripcionTogleActive] =
-    useState(allow_inscripcion);
-
-  const handleInscripcionTogle = (isActive) => {
-    console.log("inscripcion toggle", isActive);
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_inscripcion: isActive },
-    };
-    console.log(dataBody);
-    setParamUpdated({ key: "allow_inscripcion", value: isActive });
-    editCapacitacion(dataBody);
-  };
-
-  /**
-   * PARA EL MODAL DELETE
-   */
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const handleConfirmDelete = () => {
-    const dataBody = {
-      id: id_capacitacion,
-    };
-    //console.log("confirm");
-    setModalOpen(false);
-    deleteCapacitacion(dataBody);
-  };
-
-  /**
-   * VISTAS
-   */
-  const EventoSection = () => (
-    <EventoView>
-      <Header
-        color="bg-primary_gray_1 text-primary_gray_4"
-        icon={<GrWorkshop size={25} />}
-        title="Charla"
-        subTitle="Capacitación"
-        hasIcon={false}
-      >
-        <div className="flex gap-2 items-center">
-          <Link to={"/eventos/nuevoEvento/charla"}>
-            <Button
-              value="Nuevo"
-              type="success"
-              size="medium"
-              icon="add"
-              extra="w-full"
-              //isRadial={true}
-            />
-          </Link>
-
-          <Link className="" to={`/eventos/editarEvento/${id_capacitacion}`}>
-            <Button
-              value="Editar"
-              type="info"
-              size="medium"
-              icon="edit"
-              extra="w-full"
-              //isRadial={true}
-            />
-          </Link>
-          <Button
-            value="Eliminar"
-            type="error"
-            size="medium"
-            icon="delete"
-            onClick={() => setModalOpen(true)}
-            extra="w-full"
-            //isRadial={true}
-          />
-        </div>
-      </Header>
-      <SectionContainer>
-        <Title value={nombre} />
-        <div className="flex flex-col gap-2">
-          <Info>
-            {fechas.map((fecha, index) => (
-              <InfoPill
-                value={fecha}
-                size="medium"
-                type="date"
-                icon="date"
-                key={index}
-              />
-            ))}
-          </Info>
-        </div>
-        <Data
-          dataList={[
-            {
-              key: "Tutor",
-              value: nombre_tutor,
-            },
-            {
-              key: "Dirección",
-              value: direccion,
-            },
-            {
-              key: "Cupo",
-              value: cupo,
-            },
-            {
-              key: "Horas",
-              value: horas,
-            },
-            {
-              key: "Modalidad",
-              value: modalidad,
-            },
-          ]}
-        />
-        <SubTitle value={"Activadores"} />
-        <TogglePanel
-          toggles={[
-            <Activator
-              isActivatorActive={isAsistenciaEntradaTogleActive}
-              value={"Entrada"}
-              handleTogle={handleAsistenciaEntradaTogle}
-            />,
-            <Activator
-              isActivatorActive={isAsistenciaSalidaTogleActive}
-              value={"Salida"}
-              handleTogle={handleAsistenciaSalidaTogle}
-            />,
-            <Activator
-              isActivatorActive={isInscripcionTogleActive}
-              value={"Inscripción"}
-              handleTogle={handleInscripcionTogle}
-            />,
-          ]}
-        />
-      </SectionContainer>
-    </EventoView>
-  );
-
-  const AprobarSection = () => (
-    <EventoView>
-      <Header
-        color="bg-primary_gray_1 text-primary_gray_4"
-        //icon={<MdOutlineChecklistRtl size={25} />}
-        //title={`Inscripciones por Aprobar (${DOCENTESTESTPORACEPTAR.length})`}
-        title="Aprobar"
-        subTitle="Docentes pendientes de aprobación"
-        hasIcon={false}
-      />
-      <SectionContainer extra={"gap-4"}>
-        {DOCENTESTESTPORACEPTAR.map((docente, index) => (
-          <div>
-            <PillPorInscribir
-              index={index}
-              title={docente.nombres}
-              subTitle={docente.correo}
-            >
-              <div className="flex gap-2">
-                <Button
-                  value="Aceptar"
-                  type="success"
-                  size="small"
-                  icon="check"
-                  //onClick={handleCloseInscripcion}
-                  //isLoading={isUpdatingEdit}
-                />
-                <Button
-                  value="Denegar"
-                  type="error"
-                  size="small"
-                  icon="close"
-                  //onClick={handleCloseInscripcion}
-                  //isLoading={isUpdatingEdit}
-                />
-              </div>
-            </PillPorInscribir>
-          </div>
-        ))}
-      </SectionContainer>
-    </EventoView>
-  );
-
-  const InscritosSection = () => (
-    <EventoView>
-      <Header
-        color="bg-primary_gray_1 text-primary_gray_4"
-        //icon={<MdCheckBox size={25} />}
-        title="Inscritos"
-        subTitle="Docentes inscritos actualmente"
-        hasIcon={false}
-      />
-
-      <SectionContainer extra={"gap-4"}>
-        {DOCENTESTESTPORACEPTAR.map((docente, index) => (
-          <PillInscritos
-            index={index}
-            title={docente.nombres}
-            subTitle={docente.correo}
-          >
-            <Button
-              value=""
-              type="error"
-              size="small"
-              icon="delete"
-              //onClick={handleCloseInscripcion}
-              //isLoading={isUpdatingEdit}
-              isRadial={true}
-            />
-          </PillInscritos>
-        ))}
-      </SectionContainer>
-    </EventoView>
-  );
-
-  const InscribirSection = () => (
-    <EventoView>
-      <Header
-        color="bg-primary_gray_1 text-primary_gray_4"
-        //icon={<MdPersonAddAlt1 size={25} />}
-        title="Inscribir"
-        subTitle="Inscripción manual de docentes"
-        hasIcon={false}
-      />
-      <SectionContainer>
-        <InscripcionesTab id={id_capacitacion} />
-      </SectionContainer>
-    </EventoView>
-  );
-
   return (
     <ContainerPage>
-      {/**Para borrar */}
-      <Modal
-        isOpen={isModalOpen}
-        message="¿Desea eliminar este evento?"
-        onClose={() => setModalOpen(false)}
-        type={"error"}
-        title={"Eliminar Evento"}
-      >
-        <button
-          className="font-medium px-4 py-1 rounded-lg bg-red-600 text-white hover:bg-red-500 active:bg-red-600 hover:text-white transition-all duration-200"
-          onClick={handleConfirmDelete}
-        >
-          Eliminar Evento
-        </button>
-      </Modal>
       <EventoView extra={"p-4 md:p-6"}>
         <Tabs
           tabList={[
             {
               title: "Información",
               icon: <GrWorkshop size={20} />,
-              content: <EventoSection />,
+              content: (
+                <InformationSection
+                  headerIcon={<GrWorkshop size={25} />}
+                  headerTitle="Charla"
+                  headerSubTitle="Capacitación"
+                  headerLinkToNew="/eventos/nuevoEvento/charla"
+                  headerLinkToEdit={`/eventos/editarEvento/${id_capacitacion}`}
+                  idCapacitacion={id_capacitacion}
+                  containerNombre={nombre}
+                  containerFechas={fechas}
+                  containerDataList={[
+                    {
+                      key: "Tutor",
+                      value: nombre_tutor,
+                    },
+                    {
+                      key: "Dirección",
+                      value: direccion,
+                    },
+                    {
+                      key: "Cupo",
+                      value: cupo,
+                    },
+                    {
+                      key: "Horas",
+                      value: horas,
+                    },
+                    {
+                      key: "Modalidad",
+                      value: modalidad,
+                    },
+                    {
+                      key: "Inscritos",
+                      value: docentesInscritos.length,
+                    },
+                    {
+                      key: "Por Aprobar",
+                      value: docentesPendientes.length,
+                    },
+                  ]}
+                  toggleAllowEntrada={allow_asistencia_entrada}
+                  toggleAllowSalida={allow_asistencia_salida}
+                  toggleAllowInscripcion={allow_inscripcion}
+                  handleRefetch={handleRefetch}
+                />
+              ),
             },
             {
-              title: "Aprobar",
+              title: `Aprobar (${docentesPendientes.length})`,
               icon: <MdOutlineChecklistRtl size={20} />,
-              content: <AprobarSection />,
+              content: (
+                <AprobationSection
+                  docentesPendientes={docentesPendientes}
+                  handleRefetch={handleRefetch}
+                />
+              ),
             },
             {
-              title: "Inscritos",
+              title: `Inscritos (${docentesInscritos.length})`,
               icon: <MdCheckBox size={20} />,
-              content: <InscritosSection />,
+              content: (
+                <InscribedSection
+                  docentesInscritos={docentesInscritos}
+                  handleRefetch={handleRefetch}
+                />
+              ),
             },
             {
               title: "Inscribir",
               icon: <MdPersonAddAlt1 size={20} />,
-              content: <InscribirSection />,
+              content: (
+                <EnrollSection
+                  idCapacitacion={id_capacitacion}
+                  handleRefetch={handleRefetch}
+                />
+              ),
             },
           ]}
           activeIndex={0}

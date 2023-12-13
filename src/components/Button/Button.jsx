@@ -5,7 +5,6 @@ import {
   MdClose,
   MdEditNote,
   MdDoDisturbOn,
-  MdBackHand,
   MdEmojiPeople,
   MdDateRange,
   MdOutlineEdit,
@@ -15,6 +14,7 @@ import {
   MdOutlineKeyboardArrowLeft,
   MdOutlineKeyboardArrowRight,
   MdAdd,
+  MdOutlineSaveAs,
 } from "react-icons/md";
 
 import { Oval } from "react-loader-spinner";
@@ -28,7 +28,9 @@ const Button = ({
   isLoading,
   isRadial,
   isDisabled,
+  isPrimary,
   extra,
+  buttonType,
 }) => {
   let colors = "";
   let sizeIcon = "";
@@ -37,24 +39,30 @@ const Button = ({
   let colorOval = "";
 
   if (type === "success") {
-    colors =
-      "bg-green-100 text-green-600 hover:bg-green-200 active:bg-green-300";
+    colors = `${
+      isPrimary ? "bg-green-100 border-green-100" : "bg-white border-green-600"
+    } text-green-600 hover:bg-green-200 active:bg-green-300 border`;
     colorOval = "#15803d";
   } else if (type === "warning") {
-    colors =
-      "bg-yellow-100 text-yellow-600 hover:bg-yellow-200 active:bg-yellow-300";
+    colors = `bg-yellow-100 text-yellow-600 hover:bg-yellow-200 active:bg-yellow-300`;
     colorOval = "#a16207";
   } else if (type === "error") {
-    colors = "bg-red-100 text-red-600 hover:bg-red-200 active:bg-red-300";
+    colors = `${
+      isPrimary ? "bg-red-100 border-red-100" : "bg-white border-red-600"
+    } text-red-600 hover:bg-red-200 active:bg-red-300 border `;
     colorOval = "#b91c1c";
   } else if (type === "date") {
-    colors = "bg-primary_gray_1 text-primary_gray_4";
+    colors = `bg-primary_gray_1 text-primary_gray_4`;
     colorOval = "#3f3f46";
   } else if (type === "info") {
-    colors = "bg-cyan-100 text-cyan-600 hover:bg-cyan-200 active:bg-cyan-300";
+    colors = `${
+      isPrimary ? "bg-cyan-100 border-cyan-100" : "bg-white border-cyan-600"
+    } text-cyan-600 hover:bg-cyan-200 active:bg-cyan-300 border`;
     colorOval = "#0e7490";
   } else if (type === "gray") {
-    colors = "bg-gray-200 text-gray-600 hover:bg-gray-300 active:bg-gray-400";
+    colors = `${
+      isPrimary ? "bg-gray-100 border-gray-100" : "bg-white border-gray-600"
+    } text-gray-600 hover:bg-gray-100 active:bg-gray-300 border`;
     colorOval = "#0e7490";
   }
 
@@ -71,7 +79,7 @@ const Button = ({
   } else if (icon === "inscripciones") {
     iconPill = <MdEditNote size={sizeIcon} />;
   } else if (icon === "close") {
-    iconPill = <MdDoDisturbOn size={sizeIcon} />;
+    iconPill = <MdClose size={sizeIcon} />;
   } else if (icon === "asistencia") {
     iconPill = <MdEmojiPeople size={sizeIcon} />;
   } else if (icon === "date") {
@@ -90,6 +98,8 @@ const Button = ({
     iconPill = <MdOutlineKeyboardArrowRight size={sizeIcon} />;
   } else if (icon === "add") {
     iconPill = <MdAdd size={sizeIcon} />;
+  } else if (icon === "saveEdit") {
+    iconPill = <MdOutlineSaveAs size={sizeIcon} />;
   }
 
   return (
@@ -102,9 +112,10 @@ const Button = ({
         isLoading ? "animate-pulse cursor-not-allowed" : "animate-none"
       } ${extra} ${
         isDisabled
-          ? "cursor-not-allowed bg-primary_gray_1 border-primary_gray_4 text-primary_gray_4 hover:bg-primary_gray_1 hover:border-primary_gray_4 hover:shadow-none active:bg-primary_gray_1"
+          ? "cursor-not-allowed bg-gray-100 hover:bg-gray-100 hover:shadow-none active:bg-white"
           : "animate-none"
       }`}
+      type={buttonType}
     >
       {isLoading ? (
         <Oval
@@ -116,8 +127,8 @@ const Button = ({
           visible={true}
           ariaLabel="oval-loading"
           secondaryColor="#94a3b8"
-          strokeWidth={6}
-          strokeWidthSecondary={2}
+          strokeWidth={8}
+          strokeWidthSecondary={10}
         />
       ) : (
         iconPill

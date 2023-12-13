@@ -10,10 +10,16 @@ import VerObservacionAulica from "./ObservacionAulica/VerObservacionAulica";
 import VerTaller from "./Taller/VerTaller";
 
 const VerEvento = () => {
-  const { idEvento } = useParams();
+  const { idEvento, indexTab } = useParams();
 
-  const { data, error, isLoading, isFetching, isError } =
-    useGetCapacitacionQuery({ value: idEvento });
+  const {
+    data,
+    refetch: refetchVerEvento,
+    error,
+    isLoading,
+    isFetching,
+    isError,
+  } = useGetCapacitacionQuery({ value: idEvento });
 
   if (isLoading || isFetching) return <Loader />;
 
@@ -23,6 +29,11 @@ const VerEvento = () => {
   const tipo_evento = capacitacion.tipo;
 
   console.log(capacitacion);
+
+  const handleRefetch = () => {
+    console.log("refetching handleRefetch");
+    refetchVerEvento();
+  };
 
   if (tipo_evento === "jornada") {
     return (
@@ -56,6 +67,7 @@ const VerEvento = () => {
         nombre={capacitacion.nombre}
         nombre_tutor={capacitacion.nombre_tutor}
         isPresencial={capacitacion.presencial}
+        handleRefetch={handleRefetch}
       />
     );
   } else if (tipo_evento === "taller") {

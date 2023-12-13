@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 
 import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
 
+import { Modal, Button } from "@components";
+
 const EditarCharla = (props) => {
   const {
     cupo,
@@ -76,11 +78,12 @@ const EditarCharla = (props) => {
       data.cupo = Number(data.cupo);
       console.log(data);
       console.log("Se enviará el formulario");
-      editCapacitacion({
+      /*editCapacitacion({
         id: id_capacitacion,
         body: data,
-      });
-      console.log("Enviado");
+      });*/
+      setModalOpen(true);
+      //console.log("Enviado");
     } else {
       console.log("No se puede enviar el formulario");
     }
@@ -174,14 +177,46 @@ const EditarCharla = (props) => {
    */
   const navigate = useNavigate();
 
+  /**
+   * PARA EL MODAL DELETE
+   */
+  const [isModalOpen, setModalOpen] = useState(false);
+
   return (
     <>
-      {" "}
+      <Modal
+        //isOpen={true}
+        isOpen={isModalOpen}
+        message="¿Desea guardar los cambios?"
+        onClose={() => setModalOpen(false)}
+        type={"success"}
+        title={"Editar evento"}
+        //showCancel={!isSuccessDelete}
+      >
+        {false ? (
+          <Link to="/eventos">
+            <Button
+              value="Eliminación exitosa"
+              type="success"
+              size="medium"
+              icon="check"
+              isPrimary={true}
+            />
+          </Link>
+        ) : (
+          <Button
+            value="Eliminar"
+            type="error"
+            size="medium"
+            icon="delete"
+            isPrimary={true}
+            //onClick={handleConfirmDeleteCapacitacion}
+            //isLoading={isUpdatingDelete}
+          />
+        )}
+      </Modal>
+
       <div className="flex justify-center rounded-lg pb-10">
-        {/* Resto del componente */}
-        {shouldShowNotification && (
-          <Notification message={message} isError={isError} />
-        )}{" "}
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="px-10 py-8 rounded-lg grid grid-cols-12 gap-6 w-[600px] bg-white">
             {/**Nombre */}
@@ -330,46 +365,28 @@ const EditarCharla = (props) => {
             </div>
 
             {/**Footer */}
-            <div className="py-4 col-span-12 text-primary_gray_5">
+
+            <div className="m-0 col-span-12 text-primary_gray_5">
               <hr />
             </div>
             <div className="flex items-center justify-center col-span-12 gap-4">
-              <button
-                type="button"
+              <Button
+                type="gray"
                 onClick={() => navigate(-1)}
-                className="flex gap-1 items-center justify-center px-3 py-2 rounded-lg border border-primary_gray_3 text-primary_gray_3 hover:bg-primary_gray_3 hover:text-white transition-all duration-200"
-              >
-                <MdClose size={20} />
-                <span className="text-sm font-medium">Cancelar</span>
-              </button>
-
-              <button
-                type="submit"
-                className={`${
-                  isUpdating
-                    ? "bg-primary_color_1_bg_light cursor-not-allowed active:bg-primary_color_1_bg_light"
-                    : "bg-primary_color_1 cursor-pointer"
-                } border border-primary_color_1 flex gap-2 items-center px-3 py-2 text-base font-medium rounded-lg  text-primary_color_1_text_light hover:bg-primary_color_1_bg_light active:bg-primary_color_1 transition duration-200`}
-                disabled={isUpdating}
-              >
-                {isUpdating ? (
-                  <Oval
-                    height={24}
-                    width={24}
-                    color="#cef4ff"
-                    wrapperStyle={{}}
-                    wrapperClass=""
-                    visible={true}
-                    ariaLabel="oval-loading"
-                    secondaryColor="#cef4ff"
-                    strokeWidth={6}
-                    strokeWidthSecondary={2}
-                  />
-                ) : (
-                  <MdSave size={20} />
-                )}
-                <span className="text-sm font-medium">Guardar</span>
-              </button>
+                icon={"left"}
+                buttonType={"button"}
+                value={"Atrás"}
+                size={"medium"}
+              />
+              <Button
+                type="success"
+                icon={"saveEdit"}
+                buttonType={"submit"}
+                value={"Guardar"}
+                size={"medium"}
+                isLoading={isUpdating}
+                isPrimary={true}
+              />
             </div>
           </div>
         </form>

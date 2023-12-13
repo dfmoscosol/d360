@@ -6,7 +6,7 @@ import { MdPerson } from "react-icons/md";
 const PillInscritos = ({ index, title, subTitle, children }) => {
   return (
     <div
-      className="flex w-full border-l-4 border-slate-200 px-4 py-2  hover:shadow-xl transition-all duration-200 justify-between items-center"
+      className="flex w-full border-l-4 border-primary_color_1 px-4 py-2  hover:shadow-xl transition-all duration-200 justify-between items-center"
       key={index}
     >
       <div className="flex gap-3 items-center">

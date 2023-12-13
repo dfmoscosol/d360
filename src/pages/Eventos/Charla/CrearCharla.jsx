@@ -59,10 +59,11 @@ const CrearCharla = () => {
       data.fechas = validDatesList;
       data.presencial = isModalidadPresencial;
       data.allow_inscripcion = false;
-      data.allow_asistencia = true;
       data.horas = Number(data.horas);
       data.cupo = Number(data.cupo);
-      data.tipo = "Charla";
+      data.tipo = "charla";
+      data.allow_asistencia_entrada = false;
+      data.allow_asistencia_salida = false;
       //console.log(data);
       console.log("Se enviará el formulario");
       addEvento(data);

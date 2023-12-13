@@ -1,6 +1,7 @@
 import React from "react";
 
 import { ToggleSwitch } from "@components";
+import { Oval } from "react-loader-spinner";
 
 // Header subcomponent
 export const Header = ({ color, title, icon, subTitle, hasIcon, children }) => (
@@ -61,21 +62,41 @@ export const TitlePanel = ({ value }) => (
 );
 
 // Title Paner subcomponent
-export const Activator = ({ isActivatorActive, value, handleTogle }) => (
+export const Activator = ({
+  isActivatorActive,
+  value,
+  handleTogle,
+  isLoading,
+}) => (
   <div
     className={`flex items-center justify-between ${
       isActivatorActive
         ? "bg-green-100 text-green-600"
         : "bg-primary_gray_1 text-primary_gray_4"
-    }  px-4 py-2 rounded-lg`}
+    }  px-4 py-2 rounded-lg ${isLoading ? "animate-pulse" : "animate-none"}`} 
   >
     <span className="font-medium text-sm ">{value}</span>
-    <div>
-      <ToggleSwitch
-        onToggle={(isActive) => handleTogle(isActive)}
-        initialState={isActivatorActive}
+    {isLoading ? (
+      <Oval
+        height={24}
+        width={24}
+        color={"#15803d"}
+        wrapperStyle={{}}
+        wrapperClass=""
+        visible={true}
+        ariaLabel="oval-loading"
+        secondaryColor="#94a3b8"
+        strokeWidth={8}
+        strokeWidthSecondary={10}
       />
-    </div>
+    ) : (
+      <div>
+        <ToggleSwitch
+          onToggle={(isActive) => handleTogle(isActive)}
+          initialState={isActivatorActive}
+        />
+      </div>
+    )}
   </div>
 );
 
@@ -99,7 +120,6 @@ export const TogglePanel = ({ toggles }) => (
   </div>
 );
 
-
 export const SectionContainer = ({ extra, children }) => (
   <div
     className={`flex flex-col rounded-lg p-4 border border-primary_gray_5 mt-4 ${extra}`}
@@ -109,9 +129,7 @@ export const SectionContainer = ({ extra, children }) => (
 );
 
 const EventoView = ({ extra, children }) => (
-  <div
-    className={`flex flex-col w-full bg-white rounded-lg  md:p-6 ${extra}`}
-  >
+  <div className={`flex flex-col w-full bg-white rounded-lg  md:p-6 ${extra}`}>
     {children}
   </div>
 );

@@ -7,11 +7,12 @@ export const eventoApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
   }),
-  tagTypes: ["getAll", "getCapacitacion"],
+  tagTypes: ["getAll", "getCapacitacion", "getDocetesParaInscripcion"],
   endpoints: (builder) => ({
     getCapacitacion: builder.query({
       query: (params) => `/capacitacion/${params.value}`,
       providesTags: ["getCapacitacion"],
+      //invalidatesTags: ["getDocetesParaInscripcion"],
     }),
     addEvento: builder.mutation({
       query: (params) => ({
@@ -40,6 +41,43 @@ export const eventoApi = createApi({
       }),
       invalidatesTags: ["getAll"],
     }),
+
+    getAllDocentes: builder.query({
+      query: (params) => `/docentes_disponibles/${params.value}`,
+      /*providesTags: (result) =>
+        result
+          ? [
+              ...result.respuesta.map(({ id }) => ({ type: "Docente", id })),
+              "Docente",
+            ]
+          : ["Docente"],*/
+
+      //providesTags: ["Docente"],
+    }),
+
+    inscribirDocente: builder.mutation({
+      query: (body) => ({
+        url: `/agregar_inscripciones`,
+        method: "POST",
+        body: body,
+      }),
+      //providesTags: ["getDocetesParaInscripcion"],
+      //invalidatesTags: ["getCapacitacion", "Docente"],
+    }),
+    actualizarInscripcion: builder.mutation({
+      query: (params) => ({
+        url: `/actualizar_inscripcion/${params.id}`,
+        method: "PUT",
+        body: params.body,
+      }),
+    }),
+    eliminarInscripcion: builder.mutation({
+      query: (params) => ({
+        url: `/eliminar_inscripcion/${params.id}`,
+        method: "DELETE",
+        //body: params.body,
+      }),
+    }),
   }),
 });
 
@@ -49,4 +87,8 @@ export const {
   useGetCapacitacionQuery,
   useEditCapacitacionMutation,
   useDeleteEventoMutation,
+  useInscribirDocenteMutation,
+  useGetAllDocentesQuery,
+  useActualizarInscripcionMutation,
+  useEliminarInscripcionMutation,
 } = eventoApi;

@@ -18,7 +18,8 @@ const PageWrapper = (props) => {
         className={`h-full overflow-auto flex flex-col px-4 sm:px-8 lg:px-10 transition-all duration-200 pb-12`}
       >
         <Navbar />
-        <Notification />
+        {/** 
+        <Notification />*/}
         <div className={`h-full ${extra} `}>{children}</div>
       </div>
     </div>

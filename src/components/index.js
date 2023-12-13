@@ -12,3 +12,4 @@ export { default as ContainerPage } from "./Container/ContainerPage";
 export { default as Button } from "./Button/Button";
 export { default as DataTable } from "./DataTable/DataTable";
 export { default as ToggleSwitch } from "./ToggleSwitch/ToggleSwitch";
+export { default as HorizontalPill } from "./HorizontalPill/HorizontalPill";

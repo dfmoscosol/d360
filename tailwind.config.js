@@ -13,6 +13,8 @@ export default {
         primary_gray_4: "#636366",
         primary_gray_5: "#E1E1E1",
 
+        side_gray: "#f2f2f7",
+
         primary_color_1_text_light: "#cef4ff",
         primary_color_1_bg_light: "#22536E",
 

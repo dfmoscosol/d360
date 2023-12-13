@@ -7,11 +7,25 @@ export const docenteApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
   }),
-  //tagTypes: ["getAll", "getCapacitacion"],
+  tagTypes: ["Docente"],
   endpoints: (builder) => ({
     getAllDocentes: builder.query({
       query: (params) => `/docentes_disponibles/${params.value}`,
-      //providesTags: ["getCapacitacion"],
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.respuesta.map(({ id }) => ({ type: "Docente", id })),
+              "Docente",
+            ]
+          : ["Docente"],
+    }),
+    inscribirDocente: builder.mutation({
+      query: (body) => ({
+        url: `/agregar_inscripciones`,
+        method: "POST",
+        body: body,
+      }),
+      invalidatesTags: ["Docente"],
     }),
     /*
     addEvento: builder.mutation({
@@ -48,7 +62,9 @@ export const docenteApi = createApi({
 export const {
   //useAddEventoMutation,
   useGetAllDocentesQuery,
+  useInscribirDocenteMutation,
   //useGetCapacitacionQuery,
   //useEditCapacitacionMutation,
   //useDeleteEventoMutation,
 } = docenteApi;
+  

@@ -10,20 +10,23 @@ import {
   MdDateRange,
   MdKeyboardArrowUp,
   MdKeyboardArrowDown,
+  MdDelete,
 } from "react-icons/md";
 
-const InfoPill = ({ type, value, size, icon }) => {
+import { GrWorkshop } from "react-icons/gr";
+
+const InfoPill = ({ type, value, size, icon, isRadial }) => {
   let colors = "";
   let sizeIcon = "";
   let sizeText = "";
   let iconPill = "";
 
   if (type === "success") {
-    colors = "bg-green-200 text-green-700";
+    colors = "bg-green-100 text-green-600";
   } else if (type === "warning") {
-    colors = "bg-yellow-200 text-yellow-700";
+    colors = "bg-yellow-100 text-yellow-600";
   } else if (type === "error") {
-    colors = "bg-red-200 text-red-700";
+    colors = "bg-red-100 text-red-600";
   } else if (type === "date") {
     colors = "bg-primary_gray_1 text-primary_gray_4";
   }
@@ -41,7 +44,7 @@ const InfoPill = ({ type, value, size, icon }) => {
   } else if (icon === "inscripciones") {
     iconPill = <MdEditNote size={sizeIcon} />;
   } else if (icon === "close") {
-    iconPill = <MdDoDisturbOn size={sizeIcon} />;
+    iconPill = <MdClose size={sizeIcon} />;
   } else if (icon === "asistencia") {
     iconPill = <MdEmojiPeople size={sizeIcon} />;
   } else if (icon === "date") {
@@ -50,14 +53,20 @@ const InfoPill = ({ type, value, size, icon }) => {
     iconPill = <MdKeyboardArrowUp size={sizeIcon} />;
   } else if (icon === "salida") {
     iconPill = <MdKeyboardArrowDown size={sizeIcon} />;
+  } else if (icon === "delete") {
+    iconPill = <MdDelete size={sizeIcon} />;
+  } else if (icon === "charla") {
+    iconPill = <GrWorkshop size={sizeIcon} />;
   }
 
   return (
     <div
-      className={`flex items-center gap-1 py-1 px-2 rounded-xl ${colors} ${sizeText} font-medium`}
+      className={`flex items-center gap-1 ${colors} ${sizeText} font-medium p-2 ${
+        isRadial ? " rounded-full" : "rounded-xl"
+      } `}
     >
       {iconPill}
-      <span>{value}</span>
+      {!isRadial && <span>{value}</span>}
     </div>
   );
 };

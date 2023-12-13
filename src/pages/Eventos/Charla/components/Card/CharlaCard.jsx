@@ -2,7 +2,7 @@ import React from "react";
 
 import { Link } from "react-router-dom";
 
-import { GrWorkshop } from "react-icons/gr";
+import { InfoPill, HorizontalPill } from "@components";
 
 const CharlaCard = (props) => {
   const {
@@ -40,24 +40,15 @@ const CharlaCard = (props) => {
               Charla
             </span>
           </div>
-          <div className="p-2 bg-primary_gray_1 text-primary_gray_4  rounded-lg flex items-center ">
-            <GrWorkshop size={23} />
-          </div>
+          <InfoPill
+            icon={"charla"}
+            size={"medium"}
+            type={"date"}
+            isRadial={true}
+          />
         </div>
-        <div className="flex flex-col border-l-4 pl-2 border-blue-100">
-          <span className="text-primary_gray_2 font-normal text-xs">Tutor</span>
-          <span className="text-sm text-primary_gray_4 font-medium">
-            {nombre_tutor}
-          </span>
-        </div>
-        <div className="flex flex-col border-l-4 pl-2 border-blue-100">
-          <span className="text-primary_gray_2 font-normal text-xs">
-            Modalidad
-          </span>
-          <span className="text-sm text-primary_gray_4 font-medium">
-            {modalidad}
-          </span>
-        </div>
+        <HorizontalPill title={"Tutor"} subTitle={nombre_tutor} />
+        <HorizontalPill title={"Modalidad"} subTitle={modalidad} />
       </Link>
     </div>
   );

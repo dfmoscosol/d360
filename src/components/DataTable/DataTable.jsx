@@ -10,13 +10,15 @@ const DataTable = ({
   searchColumn,
   columnMappings,
   columnOrder,
+  selectedRows,
+  toggleRowSelection,
 }) => {
   const {
     data,
     setSearchTerm,
     handleSort,
-    toggleRowSelection,
-    selectedRows,
+    //toggleRowSelection,
+    //selectedRows,
     page,
     setPage,
     totalPages,
@@ -77,11 +79,14 @@ const DataTable = ({
                 <input
                   type="checkbox"
                   checked={selectedRows.includes(item[idColumn])}
-                  onChange={() => toggleRowSelection(item[idColumn])}
+                  onChange={() => toggleRowSelection(item.id)}
                 />
               </td>
               {columns.map(({ key }) => (
-                <td key={key} className="text-sm font-light text-primary_gray_4 px-2">
+                <td
+                  key={key}
+                  className="text-sm font-normal text-primary_gray_4 px-2"
+                >
                   {item[key]}
                 </td>
               ))}

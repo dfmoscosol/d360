@@ -11,12 +11,11 @@ const PillPorInscribir = ({ index, title, subTitle, children }) => {
         <div className="flex items-center p-2 bg-primary_gray_1 rounded-lg text-primary_gray_4">
           <MdPerson size={25} />
         </div>
-
         <div className="flex flex-col">
           <span className="text-base font-medium text-primary_color_1">
             {title}
           </span>
-          <span className="text-sm font-light text-primary_gray_2">
+          <span className="text-sm font-normal text-primary_gray_2">
             {subTitle}
           </span>
         </div>
