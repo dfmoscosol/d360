@@ -15,18 +15,21 @@ import EventoView, {
 
 import InscripcionesTab from "../InscripcionesTab/InscripcionesTab";
 
-const EnrollSection = ({ idCapacitacion, handleRefetch }) => {
+const EnrollSection = ({ idCapacitacion, handleRefetch, idTaller }) => {
   return (
     <EventoView>
       <Header
         color="bg-primary_gray_1 text-primary_gray_4"
-        //icon={<MdPersonAddAlt1 size={25} />}
         title="Inscribir"
         subTitle="Inscripción manual de docentes"
         hasIcon={false}
       />
       <SectionContainer>
-        <InscripcionesTab id={idCapacitacion} handleRefetch={handleRefetch} />
+        <InscripcionesTab
+          id={idCapacitacion}
+          handleRefetch={handleRefetch}
+          idTaller={idTaller}
+        />
       </SectionContainer>
     </EventoView>
   );

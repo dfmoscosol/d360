@@ -13,8 +13,14 @@ import { Loader, FetchError } from "@components";
 const EditarEvento = () => {
   const { idEvento } = useParams();
 
-  const { data, error, isLoading, isFetching, isError } =
-    useGetCapacitacionQuery({ value: idEvento });
+  const {
+    data,
+    refetch: refetchVerEvento,
+    error,
+    isLoading,
+    isFetching,
+    isError,
+  } = useGetCapacitacionQuery({ value: idEvento });
 
   if (isLoading || isFetching) return <Loader />;
 
@@ -22,6 +28,11 @@ const EditarEvento = () => {
 
   const capacitacion = data.respuesta.capacitacion;
   const tipo_evento = capacitacion.tipo;
+
+  const handleRefetch = () => {
+    //console.log("refetching handleRefetch");
+    refetchVerEvento();
+  };
 
   if (tipo_evento === "jornada") {
     return (
@@ -37,6 +48,7 @@ const EditarEvento = () => {
         allow_asistencia={capacitacion.allow_asistencia}
         allow_inscripcion={capacitacion.allow_inscripcion}
         id_capacitacion={capacitacion.id_capacitacion}
+        handleRefetch={handleRefetch}
       />
     );
   } else if (tipo_evento === "charla") {
@@ -50,6 +62,7 @@ const EditarEvento = () => {
         nombre={capacitacion.nombre}
         nombre_tutor={capacitacion.nombre_tutor}
         isPresencial={capacitacion.presencial}
+        handleRefetch={handleRefetch}
       />
     );
   } else if (tipo_evento === "observacion") {
@@ -62,6 +75,7 @@ const EditarEvento = () => {
         id_capacitacion={capacitacion.id_capacitacion}
         nombre={capacitacion.nombre}
         isPresencial={capacitacion.presencial}
+        handleRefetch={handleRefetch}
       />
     );
   } else if (tipo_evento === "taller") {
@@ -75,6 +89,7 @@ const EditarEvento = () => {
         nombre={capacitacion.nombre}
         nombre_tutor={capacitacion.nombre_tutor}
         isPresencial={capacitacion.presencial}
+        handleRefetch={handleRefetch}
       />
     );
   } else {

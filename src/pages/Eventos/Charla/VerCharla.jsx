@@ -1,44 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-
-import EventoView, {
-  Header,
-  Title,
-  Info,
-  Data,
-  Footer,
-  TitlePanel,
-  Activator,
-  SubTitle,
-  TogglePanel,
-  SectionContainer,
-} from "../ui/components/EventoView/EventoView";
+import React from "react";
+import EventoView from "../ui/components/EventoView/EventoView";
 
 import InformationSection from "../ui/components/Sections/InformationSection";
 import AprobationSection from "../ui/components/Sections/AprobationSection";
 import InscribedSection from "../ui/components/Sections/InscribedSection";
 import EnrollSection from "../ui/components/Sections/EnrollSection";
 
-import {
-  useEditCapacitacionMutation,
-  useDeleteEventoMutation,
-  useActualizarInscripcionMutation,
-} from "@redux/services/evento/eventoApi";
-import { triggerNotification } from "@redux/features/notification/notificationSlice";
-
-import { Modal, InfoPill, ContainerPage, Button } from "@components";
+import { ContainerPage } from "@components";
 import Tabs from "../ui/components/Tabs/Tabs";
-import PillPorInscribir from "../ui/components/PillPorInscribir/PillPorInscribir";
-import PillInscritos from "../ui/components/PillInscritos/PillInscritos";
-import InscripcionesTab from "../ui/components/InscripcionesTab/InscripcionesTab";
 
-import { Link } from "react-router-dom";
 import { GrWorkshop } from "react-icons/gr";
-import { MdCheckCircle } from "react-icons/md";
 import {
-  MdInfo,
   MdPersonAddAlt1,
-  MdPersonSearch,
   MdOutlineChecklistRtl,
   MdCheckBox,
 } from "react-icons/md";
@@ -82,6 +55,7 @@ const VerCharla = (props) => {
             {
               title: "Información",
               icon: <GrWorkshop size={20} />,
+              index: 0,
               content: (
                 <InformationSection
                   headerIcon={<GrWorkshop size={25} />}
@@ -132,6 +106,7 @@ const VerCharla = (props) => {
             {
               title: `Aprobar (${docentesPendientes.length})`,
               icon: <MdOutlineChecklistRtl size={20} />,
+              index: 1,
               content: (
                 <AprobationSection
                   docentesPendientes={docentesPendientes}
@@ -142,6 +117,7 @@ const VerCharla = (props) => {
             {
               title: `Inscritos (${docentesInscritos.length})`,
               icon: <MdCheckBox size={20} />,
+              index: 2,
               content: (
                 <InscribedSection
                   docentesInscritos={docentesInscritos}
@@ -152,6 +128,7 @@ const VerCharla = (props) => {
             {
               title: "Inscribir",
               icon: <MdPersonAddAlt1 size={20} />,
+              index: 3,
               content: (
                 <EnrollSection
                   idCapacitacion={id_capacitacion}

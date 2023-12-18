@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
@@ -7,8 +7,10 @@ import { Oval } from "react-loader-spinner";
 import { Notification } from "@components";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import { Link, useNavigate } from "react-router-dom";
-
 import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
+import { useDispatch } from "react-redux";
+import { triggerNotification } from "@redux/features/notification/notificationSlice";
+import { Modal, Button } from "@components";
 
 const EditarTaller = (props) => {
   const {
@@ -20,29 +22,34 @@ const EditarTaller = (props) => {
     nombre,
     nombre_tutor,
     isPresencial,
+    handleRefetch,
   } = props;
 
   /**
-   * PARA LAS SOLICITUDES POST
+   * REDUX
    */
+
+  const dispatch = useDispatch();
+
   const [
     editCapacitacion,
     { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
   ] = useEditCapacitacionMutation();
 
   /**
-   * MANUAL VALIDATIONS
-   */
-  const [isValidDate, setValidDate] = useState(true);
-
-  /**
    * PARA EL FORMULARIO
    */
+
+  const [isValidDate, setValidDate] = useState(true);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  // PARA GUARDAR LA DATA DEL FORMULARIO
+  const [formData, setFormData] = useState(null);
 
   const onSubmit = (data) => {
     console.log(data);
@@ -75,13 +82,11 @@ const EditarTaller = (props) => {
       data.horas = Number(data.horas);
       data.cupo = Number(data.cupo);
       console.log(data);
-      console.log("Se enviará el formulario");
-      /*
-      editCapacitacion({
+      setFormData({
         id: id_capacitacion,
         body: data,
-      });*/
-      console.log("Enviado");
+      });
+      setModalOpen(true);
     } else {
       console.log("No se puede enviar el formulario");
     }
@@ -90,6 +95,7 @@ const EditarTaller = (props) => {
   /**
    * PARA EL DATE PICKER
    */
+
   const fechasDateFormat = [];
   fechas.forEach((fecha, index) => {
     const parts = fecha.split("-");
@@ -98,7 +104,6 @@ const EditarTaller = (props) => {
     //console.log(formattedDate);
     fechasDateFormat.push(new DateObject(new Date(formattedDate)));
   });
-
   const [dates, setDates] = useState(fechasDateFormat);
   const today = new Date();
   const weekDays = ["D", "L", "M", "M", "J", "V", "S"];
@@ -141,10 +146,9 @@ const EditarTaller = (props) => {
   }
 
   /**
-   * Para el ComboBox
+   * COMBOBOX
    */
 
-  // Definir los elementos a seleccionar
   const listModalidades = ["Virtual", "Presencial"];
   let selectedModalidadProp;
   if (isPresencial) {
@@ -160,33 +164,78 @@ const EditarTaller = (props) => {
 
   const handleSelect = (value) => {
     setSelectedModalidad(value);
-    /*if (value === "") {
-      setValidModalidad(false);
-      console.log("no válido");
-    } else {
-      setValidModalidad(true);
-      console.log("válido");
-    }*/
   };
 
   /**
-   * Para la notificación
+   * PARA ENVIAR EL FORMULARIO
    */
-
-  const shouldShowNotification = isSuccess || isError;
-  const message = isError ? error?.data.error : response?.respuesta;
+  const handleConfirmEditCapacitacion = () => {
+    console.log("Se enviará el formulario xxxx");
+    console.log(formData);
+    editCapacitacion(formData);
+  };
 
   /**
-   * NAVIGATION
+   * PARA LA NOTIFICACION
    */
   const navigate = useNavigate();
+  useEffect(() => {
+    if (isSuccess) {
+      console.log(response);
+      triggerNotification(dispatch, {
+        message: response.respuesta,
+        type: "success",
+      });
+      handleRefetch();
+      navigate(-1);
+    } else if (isError && error) {
+      console.log(error);
+      triggerNotification(dispatch, {
+        message: error.message || "Error al aprobar la inscripción",
+        type: "error",
+      });
+    }
+  }, [isSuccess, isError, error, dispatch]);
+
+  /**
+   * PARA EL MODAL
+   */
+  const [isModalOpen, setModalOpen] = useState(false);
 
   return (
     <>
-      <div className="flex justify-center rounded-lg pb-10">
-        {shouldShowNotification && (
-          <Notification message={message} isError={isError} />
+      <Modal
+        isOpen={isModalOpen}
+        message="¿Desea guardar los cambios?"
+        onClose={() => setModalOpen(false)}
+        type={"success"}
+        title={"Editar evento"}
+        showCancel={!isSuccess}
+      >
+        {isSuccess ? (
+          <Link to="/eventos">
+            <Button
+              value="Actualización exitosa"
+              type="success"
+              size="medium"
+              icon="check"
+              isPrimary={true}
+            />
+          </Link>
+        ) : (
+          <Button
+            value="Guardar"
+            type="success"
+            size="medium"
+            icon="check"
+            isPrimary={true}
+            onClick={handleConfirmEditCapacitacion}
+            isLoading={isUpdating}
+          />
         )}
+      </Modal>
+
+      <div className="flex justify-center rounded-lg pb-10">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="px-10 py-8 rounded-lg grid grid-cols-12 gap-6 w-[600px] bg-white">
             {/**Nombre */}
@@ -237,7 +286,7 @@ const EditarTaller = (props) => {
               <div className="w-full flex flex-col">
                 <DatePicker
                   multiple
-                  plugins={[<DatePanel />]}
+                  //plugins={[<DatePanel />]}
                   weekStartDayIndex={1}
                   showOtherDays={true}
                   minDate={today}
@@ -335,46 +384,29 @@ const EditarTaller = (props) => {
             </div>
 
             {/**Footer */}
-            <div className="py-4 col-span-12 text-primary_gray_5">
+            <div className="col-span-12 text-primary_gray_5">
               <hr />
             </div>
-            <div className="flex items-center justify-center col-span-12 gap-4">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="flex gap-1 items-center justify-center px-3 py-2 rounded-lg border border-primary_gray_3 text-primary_gray_3 hover:bg-primary_gray_3 hover:text-white transition-all duration-200"
-              >
-                <MdClose size={20} />
-                <span className="text-sm font-medium">Cancelar</span>
-              </button>
 
-              <button
-                type="submit"
-                className={`${
-                  isUpdating
-                    ? "bg-primary_color_1_bg_light cursor-not-allowed active:bg-primary_color_1_bg_light"
-                    : "bg-primary_color_1 cursor-pointer"
-                } border border-primary_color_1 flex gap-2 items-center px-3 py-2 text-base font-medium rounded-lg  text-primary_color_1_text_light hover:bg-primary_color_1_bg_light active:bg-primary_color_1 transition duration-200`}
-                disabled={isUpdating}
-              >
-                {isUpdating ? (
-                  <Oval
-                    height={24}
-                    width={24}
-                    color="#cef4ff"
-                    wrapperStyle={{}}
-                    wrapperClass=""
-                    visible={true}
-                    ariaLabel="oval-loading"
-                    secondaryColor="#cef4ff"
-                    strokeWidth={6}
-                    strokeWidthSecondary={2}
-                  />
-                ) : (
-                  <MdSave size={20} />
-                )}
-                <span className="text-sm font-medium">Guardar</span>
-              </button>
+            {/**Buttons */}
+            <div className="flex items-center justify-center col-span-12 gap-4">
+              <Button
+                type="gray"
+                onClick={() => navigate(-1)}
+                icon={"left"}
+                buttonType={"button"}
+                value={"Atrás"}
+                size={"medium"}
+              />
+              <Button
+                type="success"
+                icon={"saveEdit"}
+                buttonType={"submit"}
+                value={"Guardar"}
+                size={"medium"}
+                isLoading={isUpdating}
+                isPrimary={true}
+              />
             </div>
           </div>
         </form>

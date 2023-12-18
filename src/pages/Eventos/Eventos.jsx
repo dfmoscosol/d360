@@ -23,7 +23,7 @@ const Eventos = () => {
 
   const capacitaciones = data.respuesta.capacitaciones;
 
-  console.log(capacitaciones);
+  //console.log(capacitaciones);
 
   return (
     <div className="pb-12">

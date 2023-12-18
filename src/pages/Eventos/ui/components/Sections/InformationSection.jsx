@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { Modal, InfoPill, ContainerPage, Button } from "@components";
+import { Modal, InfoPill, Button } from "@components";
 
 import EventoView, {
   Header,
@@ -16,6 +16,7 @@ import EventoView, {
   SubTitle,
   TogglePanel,
   SectionContainer,
+  TalleresPanel,
 } from "../EventoView/EventoView";
 
 import {
@@ -47,6 +48,8 @@ const InformationSection = (props) => {
     toggleAllowInscripcion,
 
     handleRefetch,
+    hasTalleres,
+    talleresList,
   } = props;
 
   /**
@@ -88,15 +91,15 @@ const InformationSection = (props) => {
   // MENSAJES DE NOTIFICACION
   useEffect(() => {
     if (isSuccessDelete) {
-      console.log(responseDelete);
+      //console.log(responseDelete);
       triggerNotification(dispatch, {
-        message: "Capacitación eliminada con éxito",
+        message: responseDelete.respuesta,
         type: "success",
       });
       navigate("/eventos");
     } else if (isErrorDelete && errorDelete) {
       triggerNotification(dispatch, {
-        message: errorDelete.message || "Error al eliminar la capacitación",
+        message: errorDelete.data.error || "Error al eliminar la capacitación",
         type: "error",
       });
     }
@@ -119,7 +122,7 @@ const InformationSection = (props) => {
   // MENSAJES DE NOTIFICACION
   useEffect(() => {
     if (isSuccessEdit) {
-      console.log(responseEdit);
+      //console.log(responseEdit);
       triggerNotification(dispatch, {
         message: "Capacitación actualizada con éxito",
         type: "success",
@@ -157,7 +160,7 @@ const InformationSection = (props) => {
   };
 
   const handleInscripcionTogle = (isActive) => {
-    console.log("inscripcion toggle", isActive);
+    //console.log("inscripcion toggle", isActive);
     const dataBody = {
       id: idCapacitacion,
       body: { allow_inscripcion: isActive },
@@ -235,8 +238,8 @@ const InformationSection = (props) => {
       <Header
         color="bg-primary_gray_1 text-primary_gray_4"
         icon={headerIcon}
-        title="Charla"
-        subTitle="Capacitación"
+        title={headerTitle}
+        subTitle={headerSubTitle}
         hasIcon={false}
       >
         <div className="flex gap-2 items-center">
@@ -290,6 +293,12 @@ const InformationSection = (props) => {
           </Info>
         </div>
         <Data dataList={containerDataList} />
+        {hasTalleres && (
+          <>
+            <SubTitle value={"Talleres"} />
+            <TalleresPanel talleresList={talleresList} />
+          </>
+        )}
         <SubTitle value={"Estados"} />
         <TogglePanel toggles={toggles} />
       </SectionContainer>

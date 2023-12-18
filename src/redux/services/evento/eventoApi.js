@@ -28,7 +28,7 @@ export const eventoApi = createApi({
         method: "PUT",
         body: params.body,
       }),
-      //invalidatesTags: ["getCapacitacion", "getAll"],
+      invalidatesTags: ["getAll"],
     }),
     getAllCapacitaciones: builder.query({
       query: () => `/capacitaciones`,

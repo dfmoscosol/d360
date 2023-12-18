@@ -1,29 +1,13 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-import { Modal, InfoPill, ContainerPage, Button } from "@components";
+import { Modal, Button } from "@components";
 import PillInscritos from "../PillInscritos/PillInscritos";
 
-import EventoView, {
-  Header,
-  Title,
-  Info,
-  Data,
-  Footer,
-  TitlePanel,
-  Activator,
-  SubTitle,
-  TogglePanel,
-  SectionContainer,
-} from "../EventoView/EventoView";
+import EventoView, { Header, SectionContainer } from "../EventoView/EventoView";
 
-import {
-  useEditCapacitacionMutation,
-  useDeleteEventoMutation,
-  useActualizarInscripcionMutation,
-} from "@redux/services/evento/eventoApi";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 
 import { useEliminarInscripcionMutation } from "@redux/services/evento/eventoApi";
@@ -58,27 +42,27 @@ const InscribedSection = (props) => {
   };
 
   const handleEliminarInscripcion = (id) => {
-    console.log("denegar inscripción");
-    console.log(id);
+    //console.log("denegar inscripción");
+    //console.log(id);
     const paramsConfirm = {
       id: idDocenteAprobacion,
     };
-    console.log(paramsConfirm);
+    //console.log(paramsConfirm);
     eliminarInscripcion(paramsConfirm);
   };
 
   useEffect(() => {
     if (isSuccessEliminar) {
-      console.log(responseEliminar);
+      //console.log(responseEliminar);
       triggerNotification(dispatch, {
-        message: "Inscripción denegada.",
+        message: responseEliminar.respuesta,
         type: "success",
       });
       handleRefetch();
     } else if (isErrorEliminar && errorEliminar) {
       console.log(errorEliminar);
       triggerNotification(dispatch, {
-        message: errorEliminar.message || "Error al aprobar la inscripción",
+        message: errorEliminar.data.error || "Error al aprobar la inscripción",
         type: "error",
       });
     }

@@ -15,6 +15,7 @@ import {
   MdOutlineKeyboardArrowRight,
   MdAdd,
   MdOutlineSaveAs,
+  MdOutlineSave,
 } from "react-icons/md";
 
 import { Oval } from "react-loader-spinner";
@@ -40,7 +41,7 @@ const Button = ({
 
   if (type === "success") {
     colors = `${
-      isPrimary ? "bg-green-100 border-green-100" : "bg-white border-green-600"
+      isPrimary ? "bg-green-100 border-green-200" : "bg-white border-green-600"
     } text-green-600 hover:bg-green-200 active:bg-green-300 border`;
     colorOval = "#15803d";
   } else if (type === "warning") {
@@ -48,7 +49,7 @@ const Button = ({
     colorOval = "#a16207";
   } else if (type === "error") {
     colors = `${
-      isPrimary ? "bg-red-100 border-red-100" : "bg-white border-red-600"
+      isPrimary ? "bg-red-100 border-red-200" : "bg-white border-red-600"
     } text-red-600 hover:bg-red-200 active:bg-red-300 border `;
     colorOval = "#b91c1c";
   } else if (type === "date") {
@@ -56,12 +57,12 @@ const Button = ({
     colorOval = "#3f3f46";
   } else if (type === "info") {
     colors = `${
-      isPrimary ? "bg-cyan-100 border-cyan-100" : "bg-white border-cyan-600"
+      isPrimary ? "bg-cyan-100 border-cyan-200" : "bg-white border-cyan-600"
     } text-cyan-600 hover:bg-cyan-200 active:bg-cyan-300 border`;
     colorOval = "#0e7490";
   } else if (type === "gray") {
     colors = `${
-      isPrimary ? "bg-gray-100 border-gray-100" : "bg-white border-gray-600"
+      isPrimary ? "bg-gray-100 border-gray-200" : "bg-white border-gray-600"
     } text-gray-600 hover:bg-gray-100 active:bg-gray-300 border`;
     colorOval = "#0e7490";
   }
@@ -100,6 +101,8 @@ const Button = ({
     iconPill = <MdAdd size={sizeIcon} />;
   } else if (icon === "saveEdit") {
     iconPill = <MdOutlineSaveAs size={sizeIcon} />;
+  } else if (icon === "save") {
+    iconPill = <MdOutlineSave size={sizeIcon} />;
   }
 
   return (

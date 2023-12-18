@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MdAdd,
   MdDelete,
@@ -11,7 +11,7 @@ import DatePicker, { DateObject } from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
 import { Oval } from "react-loader-spinner";
-import { Notification, Modal } from "@components";
+import { Notification, Modal, Button } from "@components";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
@@ -20,7 +20,13 @@ import {
   useDeleteTallerMutation,
 } from "@redux/services/taller/tallerApi";
 
+import { useDispatch } from "react-redux";
+import { triggerNotification } from "@redux/features/notification/notificationSlice";
+
 const EditarJornadaInnovacion = (props) => {
+  /**
+   * PROPS
+   */
   const {
     nombre,
     nombre_tutor,
@@ -33,26 +39,14 @@ const EditarJornadaInnovacion = (props) => {
     allow_asistencia,
     allow_inscripcion,
     id_capacitacion,
+    handleRefetch,
   } = props;
 
-  let allTalleresList = [];
-
-  talleres.forEach((taller, index) => {
-    allTalleresList.push({
-      id_taller: taller.id_taller,
-      id: index + 1,
-      value: taller.nombre,
-      isEmpty: false,
-      isEnabled: false,
-      enableEdit: false,
-      index: index,
-      originalValue: taller.nombre,
-    });
-  });
-
   /**
-   * PARA LAS SOLICITUDES POST
+   * REDUX
    */
+  const dispatch = useDispatch();
+
   const [
     editCapacitacion,
     { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
@@ -81,26 +75,26 @@ const EditarJornadaInnovacion = (props) => {
   ] = useDeleteTallerMutation();
 
   /**
-   * MANUAL VALIDATIONS
+   * PARA EL FORMULARIO
    */
   const [isValidDate, setValidDate] = useState(true);
 
-  /**
-   * PARA EL FORMULARIO
-   */
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
+  // PARA GUARDAR LA DATA DEL FORMULARIO
+  const [formData, setFormData] = useState(null);
+
   const onSubmit = (data) => {
-    console.log(data);
+    //console.log(data);
     let areValidDates;
     let validDatesList = [];
     let validInputsList = [];
 
-    console.log(dates);
+    //console.log(dates);
     if (dates.length == 0) {
       console.log("ERROR: No se ha elegido más de una fecha.");
       setValidDate(false);
@@ -144,14 +138,14 @@ const EditarJornadaInnovacion = (props) => {
       data.talleres = validInputsList;
       data.horas = Number(data.horas);
       data.cupo = Number(data.cupo);
-      data.tipo = "Jornada";
-      console.log(data);
+      //data.tipo = "Jornada";
+      //console.log(data);
       console.log("Se enviará el formulario");
-      editCapacitacion({
+      setFormData({
         id: id_capacitacion,
         body: data,
       });
-      console.log("editado");
+      setModalOpen(true);
     } else {
       console.log("No se puede enviar el formulario");
     }
@@ -160,6 +154,22 @@ const EditarJornadaInnovacion = (props) => {
   /**
    * PARA LOS INPUTS DINÁMICOS
    */
+
+  let allTalleresList = [];
+
+  talleres.forEach((taller, index) => {
+    allTalleresList.push({
+      id_taller: taller.id_taller,
+      id: index + 1,
+      value: taller.nombre,
+      isEmpty: false,
+      isEnabled: false,
+      enableEdit: false,
+      index: index,
+      originalValue: taller.nombre,
+    });
+  });
+
   const [inputs, setInputs] = useState(allTalleresList);
   const handleInputChange = (id, newValue) => {
     setInputs(
@@ -173,19 +183,124 @@ const EditarJornadaInnovacion = (props) => {
   };
 
   /**
+   * Para manejar el edit
+   */
+  const handleEnableEdit = (index) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.index === index) {
+          return { ...input, enableEdit: true };
+        }
+        return input;
+      })
+    );
+  };
+
+  /**
+   * Para el boton de cancelar
+   */
+  const handleCancelEdit = (index) => {
+    console.log("cancelando");
+    console.log(index);
+    setInputs(
+      inputs.map((input) => {
+        if (input.index === index) {
+          return { ...input, enableEdit: false, value: input.originalValue };
+        }
+        return input;
+      })
+    );
+  };
+
+  /**
+   * PARA EDITAR EL TALLER
+   */
+  const handleSaveEdit = (index) => {
+    //console.log("guardando");
+    //console.log(index);
+    setInputs(
+      inputs.map((input) => {
+        if (input.index === index) {
+          const dataBody = {
+            id: input.id_taller,
+            body: { nombre: input.value },
+          };
+          //console.log(dataBody);
+          editTaller(dataBody);
+          //console.log("editado");
+          return { ...input, enableEdit: false };
+        }
+        return input;
+      })
+    );
+  };
+
+  useEffect(() => {
+    if (isSuccessTaller) {
+      console.log(responseTaller);
+      triggerNotification(dispatch, {
+        message: responseTaller.respuesta,
+        type: "success",
+      });
+      handleRefetch();
+      //navigate(-1);
+    } else if (isErrorTaller && errorTaller) {
+      console.log(errorTaller);
+      triggerNotification(dispatch, {
+        message: error.data.error || "Error al editar el taller.",
+        type: "error",
+      });
+    }
+  }, [isSuccessTaller, isErrorTaller, errorTaller, dispatch]);
+
+  /**
+   * Para borrar el taller
+   */
+  const [isModalDeleteOpen, setModalDeleteOpen] = useState(false);
+  const [idTallerToDelete, setIdTallerToDelete] = useState(null);
+
+  const handleDeleteTaller = (id) => {
+    setIdTallerToDelete(id);
+    setModalDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    const dataBody = {
+      id: idTallerToDelete,
+    };
+    console.log(dataBody);
+    setModalOpen(false);
+    deleteTaller(dataBody);
+  };
+
+  useEffect(() => {
+    if (isSuccessDeleteTaller) {
+      console.log(responseDeleteTaller);
+      triggerNotification(dispatch, {
+        message: responseDeleteTaller.respuesta,
+        type: "success",
+      });
+      handleRefetch();
+      //navigate(-1);
+    } else if (isErrorDeleteTaller && errorDeleteTaller) {
+      console.log(errorDeleteTaller);
+      triggerNotification(dispatch, {
+        message: errorDeleteTaller.data.error || "Error al borrar el taller.",
+        type: "error",
+      });
+    }
+  }, [isSuccessDeleteTaller, isErrorDeleteTaller, errorDeleteTaller, dispatch]);
+
+  /**
    * PARA EL DATE PICKER
    */
   const fechasDateFormat = [];
   fechas.forEach((fecha, index) => {
     const parts = fecha.split("-");
-    // Cambia el orden de los elementos para adaptarse al formato MM-DD-YYYY
     const formattedDate = `${parts[1]}-${parts[0]}-${parts[2]}`;
-    //console.log(formattedDate);
     fechasDateFormat.push(new DateObject(new Date(formattedDate)));
   });
-
   const [dates, setDates] = useState(fechasDateFormat);
-
   const weekDays = ["D", "L", "M", "M", "J", "V", "S"];
   const months = [
     "Enero",
@@ -226,10 +341,9 @@ const EditarJornadaInnovacion = (props) => {
   }
 
   /**
-   * Para el ComboBox
+   * COMBOBOX
    */
 
-  // Definir los elementos a seleccionar
   const listModalidades = ["Virtual", "Presencial"];
   let selectedModalidadProp;
   if (isPresencial) {
@@ -237,129 +351,111 @@ const EditarJornadaInnovacion = (props) => {
   } else {
     selectedModalidadProp = "Virtual";
   }
-
-  // Estado para almacenar el valor seleccionado
   const [selectedModalidad, setSelectedModalidad] = useState(
     selectedModalidadProp
   );
-
   const handleSelect = (value) => {
     setSelectedModalidad(value);
-    /*if (value === "") {
-      setValidModalidad(false);
-      console.log("no válido");
-    } else {
-      setValidModalidad(true);
-      console.log("válido");
-    }*/
   };
 
   /**
-   * Para manejar el edit
+   * PARA ENVIAR EL FORMULARIO
    */
-  const handleEnableEdit = (index) => {
-    setInputs(
-      inputs.map((input) => {
-        if (input.index === index) {
-          return { ...input, enableEdit: true };
-        }
-        return input;
-      })
-    );
+  const handleConfirmEditCapacitacion = () => {
+    //console.log("Se enviará el formulario xxxx");
+    //console.log(formData);
+    editCapacitacion(formData);
   };
 
   /**
-   * Para el boton de cancelar
-   */
-  const handleCancelEdit = (index) => {
-    console.log("cancelando");
-    console.log(index);
-    setInputs(
-      inputs.map((input) => {
-        if (input.index === index) {
-          return { ...input, enableEdit: false, value: input.originalValue };
-        }
-        return input;
-      })
-    );
-  };
-
-  /**
-   * Para el boton guardar
-   */
-  const handleSaveEdit = (index) => {
-    console.log("guardando");
-    console.log(index);
-    setInputs(
-      inputs.map((input) => {
-        if (input.index === index) {
-          const dataBody = {
-            id: input.id_taller,
-            body: { nombre: input.value },
-          };
-          console.log(dataBody);
-          editTaller(dataBody);
-          console.log("editado");
-          return { ...input, enableEdit: false };
-        }
-        return input;
-      })
-    );
-  };
-
-  /**
-   * Para la notificación
-   */
-
-  //const shouldShowNotification = response && (response.estado || isError);
-  //const message = isError ? response?.error : response?.respuesta;
-
-  /**
-   * Para borrar el taller
-   */
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [idTallerToDelete, setIdTallerToDelete] = useState(null);
-
-  const handleConfirmDelete = () => {
-    const dataBody = {
-      id: idTallerToDelete,
-    };
-    console.log(dataBody);
-    setModalOpen(false);
-    deleteTaller(dataBody);
-  };
-
-  const handleDeleteTaller = (id) => {
-    setIdTallerToDelete(id);
-    setModalOpen(true);
-  };
-
-  /**
-   * NAVIGATION
+   * PARA LA NOTIFICACION
    */
   const navigate = useNavigate();
+  useEffect(() => {
+    if (isSuccess) {
+      //console.log(response);
+      triggerNotification(dispatch, {
+        message: response.respuesta,
+        type: "success",
+      });
+      handleRefetch();
+      navigate(-1);
+    } else if (isError && error) {
+      console.log(error);
+      triggerNotification(dispatch, {
+        message: error.data.error || "Error al editar la capacitación.",
+        type: "error",
+      });
+    }
+  }, [isSuccess, isError, error, dispatch]);
+
+  /**
+   * PARA EL MODAL
+   */
+  const [isModalOpen, setModalOpen] = useState(false);
 
   return (
     <>
+      <Modal
+        isOpen={isModalOpen}
+        message="¿Desea guardar los cambios?"
+        onClose={() => setModalOpen(false)}
+        type={"success"}
+        title={"Editar evento"}
+        showCancel={!isSuccess}
+      >
+        {isSuccess ? (
+          <Link to="/eventos">
+            <Button
+              value="Actualización exitosa"
+              type="success"
+              size="medium"
+              icon="check"
+              isPrimary={true}
+            />
+          </Link>
+        ) : (
+          <Button
+            value="Guardar"
+            type="success"
+            size="medium"
+            icon="check"
+            isPrimary={true}
+            onClick={handleConfirmEditCapacitacion}
+            isLoading={isUpdating}
+          />
+        )}
+      </Modal>
       <div className="flex justify-center rounded-lg pb-10">
-        {/* Resto del componente 
-        {shouldShowNotification && (
-          <Notification message={message} isError={isError} />
-        )}*/}
-
         <Modal
-          isOpen={isModalOpen}
+          isOpen={isModalDeleteOpen}
           message="¿Desea eliminar este taller?"
-          onClose={() => setModalOpen(false)}
+          onClose={() => setModalDeleteOpen(false)}
           type={"error"}
           title={"Eliminar Taller"}
+          showCancel={!isSuccessDeleteTaller}
         >
-          <button
-            className="font-medium px-4 py-1 rounded-lg bg-red-600 text-white hover:bg-red-500 active:bg-red-600 hover:text-white transition-all duration-200"
-            onClick={handleConfirmDelete}
-          >
-            Eliminar Taller
-          </button>
+          {isSuccessDeleteTaller ? (
+            <Link to="/eventos">
+              <Button
+                value="Eliminación exitosa"
+                type="success"
+                size="medium"
+                icon="check"
+                isPrimary={true}
+              />
+            </Link>
+          ) : (
+            <Button
+              value="Eliminar"
+              type="error"
+              size="medium"
+              icon="delete"
+              isPrimary={true}
+              onClick={handleConfirmDelete}
+              isLoading={isUpdatingDeleteTaller}
+            />
+          )}
         </Modal>
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -535,45 +631,47 @@ const EditarJornadaInnovacion = (props) => {
 
                       {!input.enableEdit ? (
                         <div className="flex mt-2 gap-2">
-                          <button
-                            type="button"
+                          <Button
+                            type="info"
                             onClick={() => handleEnableEdit(index)}
-                            className="flex gap-1 items-center justify-center p-2 rounded-lg border border-primary_color_1 text-primary_color_1 hover:bg-primary_color_1 hover:text-white transition-all duration-200"
-                          >
-                            <MdOutlineEdit size={20} />
-                            <span className="text-sm font-medium">Editar</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteTaller(input.id)}
-                            className="flex gap-1 items-center justify-center p-2 rounded-lg border border-red-600 text-red-600 hover:bg-red-500 hover:text-white transition-all duration-200"
-                          >
-                            <MdDelete size={20} />
-                            <span className="text-sm font-medium">
-                              Eliminar
-                            </span>
-                          </button>
+                            icon={"edit"}
+                            buttonType={"button"}
+                            value={"Editar"}
+                            size={"medium"}
+                            isPrimary={false}
+                          />
+                          <Button
+                            type="error"
+                            onClick={() => handleDeleteTaller(input.id_taller)}
+                            icon={"delete"}
+                            buttonType={"button"}
+                            value={"Eliminar"}
+                            size={"medium"}
+                            isPrimary={false}
+                          />
                         </div>
                       ) : (
                         <div className="flex mt-2 gap-2">
-                          <button
-                            type="button"
+                          <Button
+                            value="Cancelar"
+                            type="gray"
+                            size="medium"
+                            icon="close"
+                            isPrimary={false}
+                            buttonType={"button"}
                             onClick={() => handleCancelEdit(index)}
-                            className="flex gap-1 items-center justify-center p-2 rounded-lg border border-primary_gray_3 text-primary_gray_3 hover:bg-primary_gray_3 hover:text-white transition-all duration-200"
-                          >
-                            <MdClose size={20} />
-                            <span className="text-sm font-medium">
-                              Cancelar
-                            </span>
-                          </button>
-                          <button
-                            type="button"
+                          />
+
+                          <Button
+                            value="Guardar"
+                            type="success"
+                            size="medium"
+                            icon="check"
+                            isPrimary={true}
+                            buttonType={"button"}
                             onClick={() => handleSaveEdit(index)}
-                            className="flex gap-1 items-center justify-center p-2 rounded-lg border border-green-600 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-200"
-                          >
-                            <MdSave size={20} />
-                            <span className="text-sm font-medium">Guardar</span>
-                          </button>
+                            isLoading={isUpdatingTaller}
+                          />
                         </div>
                       )}
                     </div>
@@ -583,46 +681,29 @@ const EditarJornadaInnovacion = (props) => {
             </div>
 
             {/**Footer */}
-            <div className="py-4 col-span-12 text-primary_gray_5">
+            <div className="col-span-12 text-primary_gray_5">
               <hr />
             </div>
-            <div className="flex items-center justify-center col-span-12 gap-4">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="flex gap-1 items-center justify-center px-3 py-2 rounded-lg border border-primary_gray_3 text-primary_gray_3 hover:bg-primary_gray_3 hover:text-white transition-all duration-200"
-              >
-                <MdClose size={20} />
-                <span className="text-sm font-medium">Cancelar</span>
-              </button>
 
-              <button
-                type="submit"
-                className={`${
-                  isUpdating
-                    ? "bg-primary_color_1_bg_light cursor-not-allowed active:bg-primary_color_1_bg_light"
-                    : "bg-primary_color_1 cursor-pointer"
-                } border border-primary_color_1 flex gap-2 items-center px-3 py-2 text-base font-medium rounded-lg  text-primary_color_1_text_light hover:bg-primary_color_1_bg_light active:bg-primary_color_1 transition duration-200`}
-                disabled={isUpdating}
-              >
-                {isUpdating ? (
-                  <Oval
-                    height={24}
-                    width={24}
-                    color="#cef4ff"
-                    wrapperStyle={{}}
-                    wrapperClass=""
-                    visible={true}
-                    ariaLabel="oval-loading"
-                    secondaryColor="#cef4ff"
-                    strokeWidth={6}
-                    strokeWidthSecondary={2}
-                  />
-                ) : (
-                  <MdSave size={20} />
-                )}
-                <span className="text-sm font-medium">Guardar</span>
-              </button>
+            {/**Buttons */}
+            <div className="flex items-center justify-center col-span-12 gap-4">
+              <Button
+                type="gray"
+                onClick={() => navigate(-1)}
+                icon={"left"}
+                buttonType={"button"}
+                value={"Atrás"}
+                size={"medium"}
+              />
+              <Button
+                type="success"
+                icon={"saveEdit"}
+                buttonType={"submit"}
+                value={"Guardar"}
+                size={"medium"}
+                isLoading={isUpdating}
+                isPrimary={true}
+              />
             </div>
           </div>
         </form>

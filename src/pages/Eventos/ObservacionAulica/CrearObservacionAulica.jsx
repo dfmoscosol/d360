@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
@@ -6,26 +6,28 @@ import ComboBox from "../ui/components/ComboBox/ComboBox";
 import { MdSave } from "react-icons/md";
 import { Oval } from "react-loader-spinner";
 import { Notification } from "@components";
-
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useAddEventoMutation } from "@redux/services/evento/eventoApi";
+import { triggerNotification } from "@redux/features/notification/notificationSlice";
+import { Button } from "@components";
 
 const CrearObservacionAulica = () => {
   /**
-   * PARA LAS SOLICITUDES POST
+   * REDUX
    */
-  const [
-    addEvento, // This is the mutation trigger
-    { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
-  ] = useAddEventoMutation();
+  const dispatch = useDispatch();
 
-  /**
-   * MANUAL VALIDATIONS
-   */
-  const [isValidDate, setValidDate] = useState(true);
+  const [
+    addEvento,
+    { data: response, isLoading: isUpdating, isSuccess, isError, error },
+  ] = useAddEventoMutation();
 
   /**
    * PARA EL FORMULARIO
    */
+  const [isValidDate, setValidDate] = useState(true);
+
   const {
     register,
     handleSubmit,
@@ -61,10 +63,11 @@ const CrearObservacionAulica = () => {
       data.fechas = validDatesList;
       data.presencial = isModalidadPresencial;
       data.allow_inscripcion = false;
-      data.allow_asistencia = true;
+      data.allow_asistencia_entrada = false;
+      data.allow_asistencia_salida = false;
       data.horas = Number(data.horas);
       data.cupo = Number(data.cupo);
-      data.tipo = "Observación Aulica";
+      data.tipo = "observacion";
       data.nombre_tutor = ".";
       console.log(data);
       console.log("Se enviará el formulario");
@@ -120,14 +123,11 @@ const CrearObservacionAulica = () => {
   }
 
   /**
-   * Para el ComboBox
+   * COMBOBOX
    */
 
-  // Definir los elementos a seleccionar
   const listModalidades = ["Virtual", "Presencial"];
-  // Estado para almacenar el valor seleccionado
   const [selectedModalidad, setSelectedModalidad] = useState("");
-
   const handleSelect = (value) => {
     setSelectedModalidad(value);
     /*if (value === "") {
@@ -140,18 +140,29 @@ const CrearObservacionAulica = () => {
   };
 
   /**
-   * Para la notificación
+   * PARA LA NOTIFICACION
    */
-
-  const shouldShowNotification = isSuccess || isError;
-  const message = isError ? error?.data.error : response?.respuesta;
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isSuccess) {
+      console.log(response);
+      triggerNotification(dispatch, {
+        message: response.respuesta,
+        type: "success",
+      });
+      navigate("/eventos");
+    } else if (isError && error) {
+      console.log(error);
+      triggerNotification(dispatch, {
+        message: error.message || "Error al aprobar la inscripción",
+        type: "error",
+      });
+    }
+  }, [isSuccess, isError, error, dispatch]);
 
   return (
     <>
       <div className="flex justify-center rounded-lg pb-10">
-        {shouldShowNotification && (
-          <Notification message={message} isError={isError} />
-        )}
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="px-10 py-8 rounded-lg grid grid-cols-12 gap-6 w-[600px] bg-white">
             {/**Nombre */}
@@ -191,7 +202,7 @@ const CrearObservacionAulica = () => {
               <div className="w-full flex flex-col">
                 <DatePicker
                   range
-                  plugins={[<DatePanel />]}
+                  //plugins={[<DatePanel />]}
                   weekStartDayIndex={1}
                   showOtherDays={true}
                   minDate={today}
@@ -267,37 +278,29 @@ const CrearObservacionAulica = () => {
             </div>
 
             {/**Footer */}
-            <div className="py-4 col-span-12 text-primary_gray_5">
+            <div className="col-span-12 text-primary_gray_5">
               <hr />
             </div>
-            <div className="flex items-center justify-center col-span-12">
-              <button
-                type="submit"
-                className={`${
-                  isUpdating
-                    ? "bg-primary_color_1_bg_light cursor-not-allowed active:bg-primary_color_1_bg_light"
-                    : "bg-primary_color_1 cursor-pointer"
-                } flex gap-2 items-center px-3 py-2 text-base font-medium rounded-lg  text-primary_color_1_text_light hover:bg-primary_color_1_bg_light active:bg-primary_color_1 transition duration-200`}
-                disabled={isUpdating}
-              >
-                {isUpdating ? (
-                  <Oval
-                    height={24}
-                    width={24}
-                    color="#cef4ff"
-                    wrapperStyle={{}}
-                    wrapperClass=""
-                    visible={true}
-                    ariaLabel="oval-loading"
-                    secondaryColor="#cef4ff"
-                    strokeWidth={6}
-                    strokeWidthSecondary={2}
-                  />
-                ) : (
-                  <MdSave size={24} />
-                )}
-                <span>GUARDAR</span>
-              </button>
+
+            {/**Buttons */}
+            <div className="flex items-center justify-center col-span-12 gap-4">
+              <Button
+                type="gray"
+                onClick={() => navigate(-1)}
+                icon={"left"}
+                buttonType={"button"}
+                value={"Atrás"}
+                size={"medium"}
+              />
+              <Button
+                type="success"
+                icon={"save"}
+                buttonType={"submit"}
+                value={"Guardar"}
+                size={"medium"}
+                isLoading={isUpdating}
+                isPrimary={true}
+              />
             </div>
           </div>
         </form>

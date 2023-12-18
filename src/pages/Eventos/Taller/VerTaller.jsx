@@ -1,286 +1,144 @@
-import React, { useState } from "react";
+import React from "react";
 
+import EventoView from "../ui/components/EventoView/EventoView";
+import InformationSection from "../ui/components/Sections/InformationSection";
+import AprobationSection from "../ui/components/Sections/AprobationSection";
+import InscribedSection from "../ui/components/Sections/InscribedSection";
+import EnrollSection from "../ui/components/Sections/EnrollSection";
+import { ContainerPage } from "@components";
+import Tabs from "../ui/components/Tabs/Tabs";
+import { GrWorkshop } from "react-icons/gr";
 import {
-  useEditCapacitacionMutation,
-  useDeleteEventoMutation,
-} from "@redux/services/evento/eventoApi";
-import { Notification, Modal, InfoPill } from "@components";
-import { Link } from "react-router-dom";
-
-import { FaChalkboardTeacher } from "react-icons/fa";
-
-import {
-  MdLockPerson,
-  MdOutlineLockOpen,
-  MdDoNotTouch,
-  MdOutlineEmojiPeople,
-  MdDelete,
-  MdOutlineEdit,
-  MdAdd,
+  MdPersonAddAlt1,
+  MdOutlineChecklistRtl,
+  MdCheckBox,
 } from "react-icons/md";
 
 const VerTaller = (props) => {
   /**
-   * Para actualizar y borrar la capacitacion
+   * PROPS
    */
-  const [
-    editCapacitacion,
-    { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
-  ] = useEditCapacitacionMutation();
-
-  const [
-    deleteCapacitacion,
-    {
-      data: responseDelete,
-      isLoading: isUpdatingDelete,
-      isSuccess: isSuccessDelete,
-      isError: isErrorDelete,
-      error: errorDelete,
-    },
-  ] = useDeleteEventoMutation();
-
   const {
-    allow_asistencia,
+    allow_asistencia_entrada,
+    allow_asistencia_salida,
     allow_inscripcion,
     cupo,
     direccion,
+    docentesInscritos,
+    docentesPendientes,
     fechas,
     horas,
     id_capacitacion,
     nombre,
     nombre_tutor,
     isPresencial,
+    handleRefetch,
   } = props;
 
+  /**
+   * MODALIDAD
+   */
   let modalidad = "";
-
   if (isPresencial) {
     modalidad = "Presencial";
   } else {
     modalidad = "Virtual";
   }
 
-  const shouldShowNotification = isSuccess || isError;
-  const message = isError ? error?.data.error : response?.respuesta;
-
-  const handleCloseInscripcion = () => {
-    console.log(id_capacitacion);
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_inscripcion: false },
-    };
-    console.log(dataBody);
-    editCapacitacion(dataBody);
-  };
-
-  const handleOpenInscripcion = () => {
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_inscripcion: true },
-    };
-    editCapacitacion(dataBody);
-  };
-
-  const handleCloseAsistencia = () => {
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_asistencia: false },
-    };
-    editCapacitacion(dataBody);
-  };
-
-  const handleOpenAsistencia = () => {
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_asistencia: true },
-    };
-    editCapacitacion(dataBody);
-  };
-
-  /**
-   * Para el modal
-   */
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const handleConfirmDelete = () => {
-    const dataBody = {
-      id: id_capacitacion,
-    };
-    console.log("confirm");
-    setModalOpen(false);
-    deleteCapacitacion(dataBody);
-  };
-
   return (
-    <div className="flex justify-center pb-12">
-      <Modal
-        isOpen={isModalOpen}
-        message="¿Desea eliminar este evento?"
-        onClose={() => setModalOpen(false)}
-        type={"error"}
-        title={"Eliminar Evento"}
-      >
-        <button
-          className="font-medium px-4 py-1 rounded-lg bg-red-600 text-white hover:bg-red-500 active:bg-red-600 hover:text-white transition-all duration-200"
-          onClick={handleConfirmDelete}
-        >
-          Eliminar Evento
-        </button>
-      </Modal>
-
-      {shouldShowNotification && (
-        <Notification message={message} isError={isError} />
-      )}
-      <div className="px-10 py-8 flex flex-col items-start w-[600px] bg-white rounded-lg">
-        <div className="w-full flex items-center justify-between">
-          <div className="flex gap-2 items-center">
-            {/***/}
-            <div className="bg-rose-100 text-rose-600 p-2 rounded-lg">
-              <FaChalkboardTeacher size={25} />
-            </div>
-            <span className="font-medium text-base text-primary_gray_2">
-              Taller
-            </span>
-          </div>
-          <Link to={"/eventos/nuevoEvento/taller"}>
-            <div className="bg-rose-100 text-rose-600 rounded-full flex items-center p-1 hover:shadow-lg transition-all duration-200">
-              <MdAdd size={25} />
-            </div>
-          </Link>
-        </div>
-        <div className="w-full pt-4">
-          <hr className="border-primary_gray_5" />
-        </div>
-        <span className="font-medium text-3xl text-primary_color_1 py-8">
-          {nombre}
-        </span>
-
-        <div className="flex gap-2">
-          {allow_inscripcion ? (
-            <InfoPill
-              value="Inscripciones"
-              size="medium"
-              type="success"
-              icon="inscripciones"
-            />
-          ) : (
-            <InfoPill
-              value="Inscripciones"
-              size="medium"
-              type="warning"
-              icon="close"
-            />
-          )}
-          {allow_asistencia ? (
-            <InfoPill
-              value="Asistencia"
-              size="medium"
-              type="success"
-              icon="asistencia"
-            />
-          ) : (
-            <InfoPill
-              value="Asistencia"
-              size="medium"
-              type="warning"
-              icon="close"
-            />
-          )}
-        </div>
-        <div className="flex gap-2 mt-2">
-          {fechas.map((fecha, index) => (
-            <InfoPill value={fecha} size="medium" type="date" icon="date" />
-          ))}
-        </div>
-        <div className="grid grid-cols-4 w-full mt-6 gap-2">
-          <span className="col-span-1 text-base font-light text-primary_gray_2">
-            Tutor
-          </span>
-          <span className="col-span-3 text-base font-medium text-primary_color_1">
-            {nombre_tutor}
-          </span>
-          <span className="col-span-1 text-base font-light text-primary_gray_2">
-            Dirección
-          </span>
-          <span className="col-span-3 text-base font-medium text-primary_color_1">
-            {direccion}
-          </span>
-          <span className="col-span-1 text-base font-light text-primary_gray_2">
-            Cupo
-          </span>
-          <span className="col-span-3 text-base font-medium text-primary_color_1">
-            {cupo}
-          </span>
-          <span className="col-span-1 text-base font-light text-primary_gray_2">
-            Horas
-          </span>
-          <span className="col-span-3 text-base font-medium text-primary_color_1">
-            {horas}
-          </span>
-          <span className="col-span-1 text-base font-light text-primary_gray_2">
-            Modalidad
-          </span>
-          <span className="col-span-3 text-base font-medium text-primary_color_1">
-            {modalidad}
-          </span>
-        </div>
-
-        <div className="w-full pt-8 pb-4 ">
-          <hr className="border-primary_gray_5" />
-        </div>
-        <div className="flex gap-2 w-full justify-between">
-          {allow_inscripcion ? (
-            <button
-              onClick={handleCloseInscripcion}
-              className="w-full flex gap-1 items-center justify-center p-2 rounded-lg border border-yellow-600 text-yellow-600 hover:bg-yellow-500 hover:text-white transition-all duration-200"
-            >
-              <MdDoNotTouch size={20} />
-              <span className="text-sm font-medium">Inscripciones</span>
-            </button>
-          ) : (
-            <button
-              onClick={handleOpenInscripcion}
-              className="w-full flex gap-1 items-center justify-center p-2 rounded-lg border border-green-600 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-200"
-            >
-              <MdOutlineEmojiPeople size={20} />
-              <span className="text-sm font-medium">Inscripciones</span>
-            </button>
-          )}
-
-          {allow_asistencia ? (
-            <button
-              onClick={handleCloseAsistencia}
-              className="w-full flex gap-1 items-center justify-center p-2 rounded-lg border border-yellow-600 text-yellow-600 hover:bg-yellow-500 hover:text-white transition-all duration-200"
-            >
-              <MdLockPerson size={20} />
-              <span className="text-sm font-medium">Asistencia</span>
-            </button>
-          ) : (
-            <button
-              onClick={handleOpenAsistencia}
-              className="w-full flex gap-1 items-center justify-center p-2 rounded-lg border border-green-600 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-200"
-            >
-              <MdOutlineLockOpen size={20} />
-              <span className="text-sm font-medium">Asistencia</span>
-            </button>
-          )}
-
-          <Link to={`/eventos/editarEvento/${id_capacitacion}`}>
-            <button className="w-full flex gap-1 items-center justify-center p-2 rounded-lg border border-primary_color_1 text-primary_color_1 hover:bg-primary_color_1 hover:text-white transition-all duration-200">
-              <MdOutlineEdit size={20} />
-              <span className="text-sm font-medium">Editar</span>
-            </button>
-          </Link>
-          <button
-            onClick={() => setModalOpen(true)}
-            className="w-full flex gap-1 items-center justify-center p-2 rounded-lg border border-red-600 text-red-600 hover:bg-red-500 hover:text-white transition-all duration-200"
-          >
-            <MdDelete size={20} />
-            <span className="text-sm font-medium">Borrar</span>
-          </button>
-        </div>
-      </div>
-    </div>
+    <ContainerPage>
+      <EventoView extra={"p-4 md:p-6"}>
+        <Tabs
+          tabList={[
+            {
+              title: "Información",
+              icon: <GrWorkshop size={20} />,
+              index: 0,
+              content: (
+                <InformationSection
+                  headerIcon={<GrWorkshop size={25} />}
+                  headerTitle="Taller"
+                  headerSubTitle="Capacitación"
+                  headerLinkToNew="/eventos/nuevoEvento/taller"
+                  headerLinkToEdit={`/eventos/editarEvento/${id_capacitacion}`}
+                  idCapacitacion={id_capacitacion}
+                  containerNombre={nombre}
+                  containerFechas={fechas}
+                  containerDataList={[
+                    {
+                      key: "Tutor",
+                      value: nombre_tutor,
+                    },
+                    {
+                      key: "Dirección",
+                      value: direccion,
+                    },
+                    {
+                      key: "Cupo",
+                      value: cupo,
+                    },
+                    {
+                      key: "Horas",
+                      value: horas,
+                    },
+                    {
+                      key: "Modalidad",
+                      value: modalidad,
+                    },
+                    {
+                      key: "Inscritos",
+                      value: docentesInscritos.length,
+                    },
+                    {
+                      key: "Por Aprobar",
+                      value: docentesPendientes.length,
+                    },
+                  ]}
+                  toggleAllowEntrada={allow_asistencia_entrada}
+                  toggleAllowSalida={allow_asistencia_salida}
+                  toggleAllowInscripcion={allow_inscripcion}
+                  handleRefetch={handleRefetch}
+                />
+              ),
+            },
+            {
+              title: `Aprobar (${docentesPendientes.length})`,
+              icon: <MdOutlineChecklistRtl size={20} />,
+              index: 1,
+              content: (
+                <AprobationSection
+                  docentesPendientes={docentesPendientes}
+                  handleRefetch={handleRefetch}
+                />
+              ),
+            },
+            {
+              title: `Inscritos (${docentesInscritos.length})`,
+              icon: <MdCheckBox size={20} />,
+              index: 2,
+              content: (
+                <InscribedSection
+                  docentesInscritos={docentesInscritos}
+                  handleRefetch={handleRefetch}
+                />
+              ),
+            },
+            {
+              title: "Inscribir",
+              icon: <MdPersonAddAlt1 size={20} />,
+              index: 3,
+              content: (
+                <EnrollSection
+                  idCapacitacion={id_capacitacion}
+                  handleRefetch={handleRefetch}
+                />
+              ),
+            },
+          ]}
+          activeIndex={0}
+        />
+      </EventoView>
+    </ContainerPage>
   );
 };
 

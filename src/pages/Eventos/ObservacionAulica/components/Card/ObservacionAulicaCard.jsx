@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Link } from "react-router-dom";
-import { InfoPill } from "@components";
+import { InfoPill, HorizontalPill } from "@components";
 
 import { SiGoogleclassroom } from "react-icons/si";
 
@@ -47,21 +47,22 @@ const ObservacionAulicaCard = (props) => {
             />
           )}
         </div>
-        <div className="flex flex-col border-l-4 pl-2 border-teal-100">
-          <span className="text-primary_gray_2 font-normal text-xs">
-            Fechas
-          </span>
-          <span className="flex text-sm text-primary_gray_4 font-medium gap-2">
-            {fechas.map((fecha, index) => (
-              <span
-                key={index}
-                className="bg-primary_gray_1 px-3 py-1 rounded-lg"
-              >
-                {fecha}
-              </span>
-            ))}
-          </span>
-        </div>
+
+        <HorizontalPill
+          title={"Fechas"}
+          subTitle={
+            <span className="flex text-sm text-primary_gray_4 font-medium gap-2">
+              {fechas.map((fecha, index) => (
+                <span
+                  key={index}
+                  className="bg-primary_gray_1 px-3 py-1 rounded-lg"
+                >
+                  {fecha}
+                </span>
+              ))}
+            </span>
+          }
+        />
       </Link>
     </div>
   );

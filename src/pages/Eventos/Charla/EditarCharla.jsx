@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import { MdAdd, MdDelete, MdClose } from "react-icons/md";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
-import { MdSave } from "react-icons/md";
-import { Oval } from "react-loader-spinner";
-import { Notification } from "@components";
 import { useNavigate } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
-
+import { useDispatch } from "react-redux";
+import { triggerNotification } from "@redux/features/notification/notificationSlice";
 import { Modal, Button } from "@components";
 
 const EditarCharla = (props) => {
+  /**
+   * PROPS
+   */
   const {
     cupo,
     direccion,
@@ -23,29 +23,34 @@ const EditarCharla = (props) => {
     nombre,
     nombre_tutor,
     isPresencial,
+    handleRefetch,
   } = props;
 
   /**
-   * PARA LAS SOLICITUDES POST
+   * REDUX
    */
+
+  const dispatch = useDispatch();
+
   const [
     editCapacitacion,
     { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
   ] = useEditCapacitacionMutation();
 
   /**
-   * MANUAL VALIDATIONS
-   */
-  const [isValidDate, setValidDate] = useState(true);
-
-  /**
    * PARA EL FORMULARIO
    */
+
+  const [isValidDate, setValidDate] = useState(true);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  // PARA GUARDAR LA DATA DEL FORMULARIO
+  const [formData, setFormData] = useState(null);
 
   const onSubmit = (data) => {
     console.log(data);
@@ -77,13 +82,11 @@ const EditarCharla = (props) => {
       data.horas = Number(data.horas);
       data.cupo = Number(data.cupo);
       console.log(data);
-      console.log("Se enviará el formulario");
-      /*editCapacitacion({
+      setFormData({
         id: id_capacitacion,
         body: data,
-      });*/
+      });
       setModalOpen(true);
-      //console.log("Enviado");
     } else {
       console.log("No se puede enviar el formulario");
     }
@@ -94,7 +97,6 @@ const EditarCharla = (props) => {
    */
   const parts = fechas[0].split("-");
   const formattedDate = `${parts[1]}-${parts[0]}-${parts[2]}`;
-
   const [dates, setDates] = useState(new DateObject(new Date(formattedDate)));
   const today = new Date();
   const weekDays = ["D", "L", "M", "M", "J", "V", "S"];
@@ -137,10 +139,9 @@ const EditarCharla = (props) => {
   }
 
   /**
-   * Para el ComboBox
+   * COMBOBOX
    */
 
-  // Definir los elementos a seleccionar
   const listModalidades = ["Virtual", "Presencial"];
   let selectedModalidadProp;
   if (isPresencial) {
@@ -156,47 +157,58 @@ const EditarCharla = (props) => {
 
   const handleSelect = (value) => {
     setSelectedModalidad(value);
-    /*if (value === "") {
-      setValidModalidad(false);
-      console.log("no válido");
-    } else {
-      setValidModalidad(true);
-      console.log("válido");
-    }*/
   };
 
   /**
-   * Para la notificación
+   * PARA ENVIAR EL FORMULARIO
    */
-
-  const shouldShowNotification = isSuccess || isError;
-  const message = isError ? error?.data.error : response?.respuesta;
+  const handleConfirmEditCapacitacion = () => {
+    console.log("Se enviará el formulario xxxx");
+    console.log(formData);
+    editCapacitacion(formData);
+  };
 
   /**
-   * NAVIGATION
+   * PARA LA NOTIFICACION
    */
   const navigate = useNavigate();
+  useEffect(() => {
+    if (isSuccess) {
+      console.log(response);
+      triggerNotification(dispatch, {
+        message: response.respuesta,
+        type: "success",
+      });
+      handleRefetch();
+      navigate(-1);
+    } else if (isError && error) {
+      console.log(error);
+      triggerNotification(dispatch, {
+        message: error.message || "Error al aprobar la inscripción",
+        type: "error",
+      });
+    }
+  }, [isSuccess, isError, error, dispatch]);
 
   /**
-   * PARA EL MODAL DELETE
+   * PARA EL MODAL
    */
   const [isModalOpen, setModalOpen] = useState(false);
 
   return (
     <>
       <Modal
-        //isOpen={true}
         isOpen={isModalOpen}
         message="¿Desea guardar los cambios?"
         onClose={() => setModalOpen(false)}
         type={"success"}
         title={"Editar evento"}
-        //showCancel={!isSuccessDelete}
+        showCancel={!isSuccess}
       >
-        {false ? (
+        {isSuccess ? (
           <Link to="/eventos">
             <Button
-              value="Eliminación exitosa"
+              value="Actualización exitosa"
               type="success"
               size="medium"
               icon="check"
@@ -205,13 +217,13 @@ const EditarCharla = (props) => {
           </Link>
         ) : (
           <Button
-            value="Eliminar"
-            type="error"
+            value="Guardar"
+            type="success"
             size="medium"
-            icon="delete"
+            icon="check"
             isPrimary={true}
-            //onClick={handleConfirmDeleteCapacitacion}
-            //isLoading={isUpdatingDelete}
+            onClick={handleConfirmEditCapacitacion}
+            isLoading={isUpdating}
           />
         )}
       </Modal>
@@ -365,10 +377,11 @@ const EditarCharla = (props) => {
             </div>
 
             {/**Footer */}
-
-            <div className="m-0 col-span-12 text-primary_gray_5">
+            <div className="col-span-12 text-primary_gray_5">
               <hr />
             </div>
+
+            {/**Buttons */}
             <div className="flex items-center justify-center col-span-12 gap-4">
               <Button
                 type="gray"

@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import { useInscribirDocenteMutation } from "../../../../../redux/services/evento/eventoApi";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 
-const InscripcionesTab = ({ id, handleRefetch }) => {
+const InscripcionesTab = ({ id, handleRefetch, idTaller }) => {
   /**
    * DATA FETCHING
    */
@@ -37,33 +37,20 @@ const InscripcionesTab = ({ id, handleRefetch }) => {
       error: errorAdd,
     },
   ] = useInscribirDocenteMutation();
-  console.log("responseAdd", responseAdd);
-  console.log("isUpdatingAdd", isUpdatingAdd);
-  console.log("isSuccessAdd", isSuccessAdd);
-  console.log("isErrorAdd", isErrorAdd);
-  console.log("errorAdd", errorAdd);
 
   // MENSAJES DE NOTIFICACION
   useEffect(() => {
     if (isSuccessAdd) {
-      console.log(responseAdd);
-      //console.log(paramUpdated);
-      /*if (paramUpdated.key === "allow_inscripcion") {
-        setIsInscripcionTogleActive(paramUpdated.value);
-      } else if (paramUpdated.key === "allow_asistencia_entrada") {
-        setIsAsistenciaEntradaTogleActive(paramUpdated.value);
-      } else if (paramUpdated.key === "allow_asistencia_salida") {
-        setIsAsistenciaSalidaTogleActive(paramUpdated.value);
-      }*/
+      //console.log(responseAdd);
       triggerNotification(dispatch, {
-        message: "Docentes inscritos con éxito",
+        message: responseAdd.respuesta,
         type: "success",
       });
       refetchGetAllDocentes();
       handleRefetch();
     } else if (isErrorAdd && errorAdd) {
       triggerNotification(dispatch, {
-        message: errorAdd.message || "Error al actualizar la capacitación",
+        message: errorAdd.data.error || "Error al actualizar la capacitación",
         type: "error",
       });
     }
@@ -121,13 +108,21 @@ const InscripcionesTab = ({ id, handleRefetch }) => {
 
   const handleInscribirDocentes = () => {
     /**/
-    console.log("xxxx");
-    console.log("inscribir docentes");
-    const dataBody = {
-      id_capacitacion: id,
-      ids_docentes: selectedRows,
-    };
-    console.log("dataBody", dataBody);
+    let dataBody;
+
+    if (idTaller !== undefined) {
+      dataBody = {
+        id_capacitacion: id,
+        ids_docentes: selectedRows,
+        id_taller: idTaller,
+      };
+    } else {
+      dataBody = {
+        id_capacitacion: id,
+        ids_docentes: selectedRows,
+      };
+    }
+    //console.log("dataBody", dataBody);
     agregarInscripciones(dataBody);
   };
 
@@ -139,13 +134,6 @@ const InscripcionesTab = ({ id, handleRefetch }) => {
     deleteCapacitacion(dataBody);
     //setModalOpen(false);
   };
-
-  /*
-  data: responseAdd,
-  isLoading: isUpdatingAdd,
-  isSuccess: isSuccessAdd,
-  isError: isErrorAdd,
-  error: errorAdd,*/
 
   const handleInscripcionCompleta = () => {
     console.log("handleInscripcionCcompleta");
