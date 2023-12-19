@@ -1,9 +1,9 @@
 import React from "react";
 
-const ContainerPage = ({ children }) => {
+const ContainerPage = ({ extra, children }) => {
   return (
-    <div className="flex justify-center w-full rounded-lg">
-      <div className="w-full">{children}</div>
+    <div className={`flex flex-col items-center w-full rounded-lg ${extra}`}>
+      {children}
     </div>
   );
 };

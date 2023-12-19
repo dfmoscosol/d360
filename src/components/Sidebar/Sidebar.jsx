@@ -53,11 +53,18 @@ const Sidebar = () => {
                 <div className="flex flex-col" key={index}>
                   <span
                     className={`text-sm font-normal text-primary_gray_2 overflow-hidden ${
-                      isOpen ? "w-full ml-2" : "w-0"
+                      isOpen ? "w-full ml-1" : "w-0"
                     }  transition-all ease-in-out duration-500`}
                   >
                     {route.title}
                   </span>
+                  <div className="">
+                    <hr
+                      className={` ${
+                        !isOpen ? "border-primary_gray_5" : "border-white"
+                      }`}
+                    />
+                  </div>
                   {route.routes.map((item, index) => (
                     <div className="relative mt-1" key={index}>
                       <NavLink to={`/${item.path}`} key={index}>

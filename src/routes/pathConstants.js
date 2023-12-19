@@ -7,6 +7,7 @@ export const PathConstants = {
 
   PENTAGONO: "pentagono",
   KEYWORDS: "pentagono/keywords",
+  CERTIFICADOS: "pentagono/certificados",
 };
 
 export const PathNames = {
@@ -34,4 +35,5 @@ export const PathNamesTranslations = {
   
   pentagono: "Pentágono",
   keywords: "Palabras Clave",
+  certificados: "Certificados",
 };

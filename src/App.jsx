@@ -19,6 +19,7 @@ import {
   CrearObservacionAulica,
   NuevoEvento,
   Keywords,
+  Certificados,
 } from "@pages";
 
 import { PathConstants } from "@routes/pathConstants";
@@ -75,6 +76,11 @@ function App() {
         {
           path: "pentagono/keywords",
           element: <Keywords />,
+        },
+
+        {
+          path: "pentagono/certificados",
+          element: <Certificados />,
         },
 
         {

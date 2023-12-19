@@ -13,6 +13,8 @@ import {
   MdDelete,
 } from "react-icons/md";
 
+import { AiFillLike, AiFillDislike } from "react-icons/ai";
+
 import { GrWorkshop } from "react-icons/gr";
 
 const InfoPill = ({ type, value, size, icon, isRadial }) => {
@@ -57,6 +59,10 @@ const InfoPill = ({ type, value, size, icon, isRadial }) => {
     iconPill = <MdDelete size={sizeIcon} />;
   } else if (icon === "charla") {
     iconPill = <GrWorkshop size={sizeIcon} />;
+  } else if (icon === "like") {
+    iconPill = <AiFillLike size={sizeIcon} />;
+  } else if (icon === "dislike") {
+    iconPill = <AiFillDislike size={sizeIcon} />;
   }
 
   return (

@@ -6,6 +6,7 @@ import {
   MdDashboard,
   MdOutlineEvent,
   MdOutlineTextSnippet,
+  MdFormatListBulleted,
 } from "react-icons/md";
 
 const Home = React.lazy(() => import("@pages"));
@@ -35,8 +36,14 @@ const routes = [
     routes: [
       {
         path: PathConstants.KEYWORDS,
-        element: <Eventos />,
+        //element: <Eventos />,
         name: "Keywords",
+        icon: <MdFormatListBulleted size={20} />,
+      },
+      {
+        path: PathConstants.CERTIFICADOS,
+        //element: <Eventos />,
+        name: "Certificados",
         icon: <MdOutlineTextSnippet size={20} />,
       },
     ],

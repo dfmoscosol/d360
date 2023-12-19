@@ -7,7 +7,7 @@ export const keywordApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
   }),
-  //tagTypes: ["getAll", "getCapacitacion"],
+  tagTypes: ["getAll", "getCapacitacion"],
   endpoints: (builder) => ({
     /*getCapacitacion: builder.query({
       query: (params) => `/capacitacion/${params.value}`,
@@ -20,19 +20,27 @@ export const keywordApi = createApi({
         body: params,
       }),
       invalidatesTags: ["getAll"],
-    }),
-    editTaller: builder.mutation({
+    }),*/
+    updateKeyword: builder.mutation({
       query: (params) => ({
-        url: `/actualizar_taller/${params.id}`,
+        url: `/actualizar_termino/${params.competencia}/${params.id}`,
         method: "PUT",
         body: params.body,
       }),
       //invalidatesTags: ["getCapacitacion", "getAll"],
-    }),*/
+    }),
+    deleteKeyword: builder.mutation({
+      query: (params) => ({
+        url: `/eliminar_termino/${params.competencia}/${params.id}`,
+        method: "DELETE",
+      }),
+      //invalidatesTags: ["getCapacitacion", "getAll"],
+    }),
     getAllKeywords: builder.query({
       query: (params) => `/terminos/${params.value}`,
-      //providesTags: ["getAll"],
+      providesTags: ["getAll"],
     }),
+
     /*getCapacitacion: builder.query({
       query: (params) => `/capacitacion/${params.value}`,
       providesTags: ["getCapacitacion"],
@@ -48,9 +56,7 @@ export const keywordApi = createApi({
 });
 
 export const {
-  //useAddEventoMutation,
   useGetAllKeywordsQuery,
-  //useGetCapacitacionQuery,
-  //useEditTallerMutation,
-  //useDeleteTallerMutation,
+  useUpdateKeywordMutation,
+  useDeleteKeywordMutation,
 } = keywordApi;

@@ -146,13 +146,11 @@ const VerJornadaInnovacion = (props) => {
   //console.log(talleresInfo);
 
   return (
-    <>
-      <ContainerPage>
-        <EventoView extra={"p-4 md:p-6"}>
-          <Tabs tabList={talleresInfo} activeIndex={0} />
-        </EventoView>
-      </ContainerPage>
-    </>
+    <ContainerPage>
+      <EventoView extra={"p-4 md:p-6"}>
+        <Tabs tabList={talleresInfo} activeIndex={0} />
+      </EventoView>
+    </ContainerPage>
   );
 };
 

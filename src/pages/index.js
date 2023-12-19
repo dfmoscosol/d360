@@ -12,3 +12,4 @@ export { default as CrearTaller } from "./Eventos/Taller/CrearTaller";
 export { default as CrearObservacionAulica } from "./Eventos/ObservacionAulica/CrearObservacionAulica";
 export { default as NuevoEvento } from "./Eventos/NuevoEvento";
 export { default as Keywords } from "./Keywords/Keywords";
+export { default as Certificados } from "./Certificados/Certificados";

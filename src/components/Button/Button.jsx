@@ -16,6 +16,7 @@ import {
   MdAdd,
   MdOutlineSaveAs,
   MdOutlineSave,
+  MdDangerous,
 } from "react-icons/md";
 
 import { Oval } from "react-loader-spinner";
@@ -103,6 +104,8 @@ const Button = ({
     iconPill = <MdOutlineSaveAs size={sizeIcon} />;
   } else if (icon === "save") {
     iconPill = <MdOutlineSave size={sizeIcon} />;
+  } else if (icon === "danger") {
+    iconPill = <MdDangerous size={sizeIcon} />;
   }
 
   return (

@@ -4,14 +4,14 @@ import { useForm } from "react-hook-form";
 import DatePicker from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
-import { MdSave } from "react-icons/md";
-import { Oval } from "react-loader-spinner";
-import { Notification } from "@components";
 import { useAddEventoMutation } from "@redux/services/evento/eventoApi";
 import { Button } from "@components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
+
+import { ContainerPage } from "@components";
+import ContainerForm from "../ui/components/ContainerForm/ContainerForm";
 
 const CrearJornadaInnovacion = () => {
   /**
@@ -226,236 +226,234 @@ const CrearJornadaInnovacion = () => {
   }, [isSuccess, isError, error, dispatch]);
 
   return (
-    <>
-      <div className="flex justify-center rounded-lg pb-10">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="px-10 py-8 rounded-lg grid grid-cols-12 gap-6 w-[600px] bg-white">
-            {/**Nombre */}
-            <div className="col-span-12 flex flex-col">
-              <span className="text-base font-medium text-primary_color_1">
-                Nombre
+    <ContainerPage>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <ContainerForm>
+          {/**Nombre */}
+          <div className="col-span-12 flex flex-col">
+            <span className="text-base font-medium text-primary_color_1">
+              Nombre
+            </span>
+            <input
+              //value="Jornada de Innovación Test"
+              type="text"
+              className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+              placeholder="Jornada 1"
+              {...register("nombre", { required: true })}
+            />
+            {errors.nombre && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese un nombre válido.
               </span>
+            )}
+          </div>
+
+          {/**Tutor */}
+          <div className="col-span-6 md:col-span-5 flex flex-col">
+            <span className="text-base font-medium text-primary_color_1 ">
+              Tutor
+            </span>
+            <div className="w-full">
               <input
-                //value="Jornada de Innovación Test"
                 type="text"
-                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
-                placeholder="Jornada 1"
-                {...register("nombre", { required: true })}
+                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                placeholder="Ing. Juan Perez"
+                {...register("nombre_tutor", { required: true })}
               />
-              {errors.nombre && (
+            </div>
+            {errors.nombre_tutor && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese un valor válido.
+              </span>
+            )}
+          </div>
+
+          {/**Fecha */}
+          <div className="col-span-6 md:col-span-5 flex flex-col">
+            <span className="text-base font-medium text-primary_color_1">
+              Fecha
+            </span>
+            <div className="w-full flex flex-col">
+              <DatePicker
+                multiple
+                plugins={[<DatePanel />]}
+                weekStartDayIndex={1}
+                showOtherDays={true}
+                minDate={today}
+                weekDays={weekDays}
+                months={months}
+                onChange={handleDateChange}
+                style={{
+                  width: "100%",
+                }}
+                format="DD-MM-YYYY"
+                render={<CustomInput />}
+              />
+              {!isValidDate && (
                 <span className="text-red-600 text-sm font-light px-1">
-                  Ingrese un nombre válido.
+                  Ingrese una fecha válida.
                 </span>
               )}
             </div>
+          </div>
 
-            {/**Tutor */}
-            <div className="col-span-5 flex flex-col">
-              <span className="text-base font-medium text-primary_color_1 ">
-                Tutor
-              </span>
-              <div className="w-full">
-                <input
-                  type="text"
-                  className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
-                  placeholder="Ing. Juan Perez"
-                  {...register("nombre_tutor", { required: true })}
-                />
-              </div>
-              {errors.nombre_tutor && (
-                <span className="text-red-600 text-sm font-light px-1">
-                  Ingrese un valor válido.
-                </span>
-              )}
+          {/**Horas */}
+          <div className="col-span-6 md:col-span-5 flex flex-col">
+            <span className="text-base font-medium text-primary_color_1 ">
+              Horas
+            </span>
+            <div className="w-full">
+              <input
+                type="number"
+                //value={10}
+                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                {...register("horas", { required: true })}
+              />
             </div>
-
-            {/**Fecha */}
-            <div className="col-span-5 flex flex-col">
-              <span className="text-base font-medium text-primary_color_1">
-                Fecha
+            {errors.horas && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese un valor válido
               </span>
-              <div className="w-full flex flex-col">
-                <DatePicker
-                  multiple
-                  plugins={[<DatePanel />]}
-                  weekStartDayIndex={1}
-                  showOtherDays={true}
-                  minDate={today}
-                  weekDays={weekDays}
-                  months={months}
-                  onChange={handleDateChange}
-                  style={{
-                    width: "100%",
-                  }}
-                  format="DD-MM-YYYY"
-                  render={<CustomInput />}
-                />
-                {!isValidDate && (
-                  <span className="text-red-600 text-sm font-light px-1">
-                    Ingrese una fecha válida.
-                  </span>
-                )}
-              </div>
+            )}
+          </div>
+
+          {/**Modalidad */}
+          <div className="col-span-6 md:col-span-5 flex flex-col">
+            <span className="text-base font-medium text-primary_color_1 ">
+              Modalidad
+            </span>
+            <div className="w-full">
+              <ComboBox items={listModalidades} onSelect={handleSelect} />
             </div>
-
-            {/**Horas */}
-            <div className="col-span-2 flex flex-col">
-              <span className="text-base font-medium text-primary_color_1 ">
-                Horas
-              </span>
-              <div className="w-full">
-                <input
-                  type="number"
-                  //value={10}
-                  className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
-                  {...register("horas", { required: true })}
-                />
-              </div>
-              {errors.horas && (
-                <span className="text-red-600 text-sm font-light px-1">
-                  Ingrese un valor válido
-                </span>
-              )}
-            </div>
-
-            {/**Modalidad */}
-            <div className="col-span-5 flex flex-col">
-              <span className="text-base font-medium text-primary_color_1 ">
-                Modalidad
-              </span>
-              <div className="w-full">
-                <ComboBox items={listModalidades} onSelect={handleSelect} />
-              </div>
-              {/*!isValidModalidad && (
+            {/*!isValidModalidad && (
                 <span className="text-red-600 text-sm font-light px-1">
                   Seleccione una opción
                 </span>
               )*/}
-            </div>
+          </div>
 
-            {/**Dirección */}
-            <div className="col-span-5 flex flex-col">
-              <span className="text-base font-medium text-primary_color_1 ">
-                Dirección
-              </span>
-              <div className="w-full">
-                <input
-                  type="text"
-                  className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
-                  {...register("direccion", { required: false })}
-                />
-              </div>
-            </div>
-
-            {/**Cupos */}
-            <div className="col-span-2 flex flex-col">
-              <span className="text-base font-medium text-primary_color_1 ">
-                Cupos
-              </span>
-              <div className="w-full h-full ">
-                <input
-                  //value={5}
-                  type="number"
-                  className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
-                  {...register("cupo", { required: true })}
-                />
-              </div>
-              {errors.cupo && (
-                <span className="text-red-600 text-sm font-light px-1">
-                  Ingrese un valor válido
-                </span>
-              )}
-            </div>
-
-            {/**Talleres */}
-            <div className="flex flex-col col-span-12">
-              <span className="text-base font-medium text-primary_color_1">
-                Talleres
-              </span>
-              <div className="flex flex-col gap-3">
-                {inputs.map((input) => (
-                  <div key={input.id} className="flex gap-4">
-                    <div className="flex flex-col w-full bg-white rounded-lg p-3 gap-1 border-[1px]">
-                      <span className="text-sm font-medium text-primary_color_1">
-                        Nombre del Taller
-                      </span>
-                      <input
-                        type="text"
-                        value={input.value}
-                        onChange={(e) =>
-                          handleInputChange(input.id, e.target.value)
-                        }
-                        className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
-                        placeholder={`Taller ${input.id}`}
-                        //{...register(`taller_${input.id}`, { required: true })}
-                      />
-                      {input.isEmpty && (
-                        <span className="text-red-600 text-sm font-light px-1">
-                          Ingrese un nombre válido
-                        </span>
-                      )}
-                    </div>
-                    {input.hasAddButton && (
-                      <div className="flex items-center justify-center">
-                        <Button
-                          type="success"
-                          onClick={handleAddInput}
-                          icon={"add"}
-                          buttonType={"button"}
-                          value={"Atrás"}
-                          size={"small"}
-                          isRadial={true}
-                          isPrimary={true}
-                        />
-                      </div>
-                    )}
-                    {input.hasRemoveButton && (
-                      <div className="flex items-center justify-center">
-                        <Button
-                          type="error"
-                          onClick={handleRemoveInput}
-                          icon={"delete"}
-                          buttonType={"button"}
-                          size={"small"}
-                          isRadial={true}
-                          isPrimary={false}
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/**Footer */}
-            <div className="col-span-12 text-primary_gray_5">
-              <hr />
-            </div>
-
-            {/**Buttons */}
-            <div className="flex items-center justify-center col-span-12 gap-4">
-              <Button
-                type="gray"
-                onClick={() => navigate(-1)}
-                icon={"left"}
-                buttonType={"button"}
-                value={"Atrás"}
-                size={"medium"}
-              />
-              <Button
-                type="success"
-                icon={"save"}
-                buttonType={"submit"}
-                value={"Guardar"}
-                size={"medium"}
-                isLoading={isUpdating}
-                isPrimary={true}
+          {/**Dirección */}
+          <div className="col-span-6 md:col-span-5 flex flex-col">
+            <span className="text-base font-medium text-primary_color_1 ">
+              Dirección
+            </span>
+            <div className="w-full">
+              <input
+                type="text"
+                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                {...register("direccion", { required: false })}
               />
             </div>
           </div>
-        </form>
-      </div>
-    </>
+
+          {/**Cupos */}
+          <div className="col-span-6 md:col-span-5 flex flex-col">
+            <span className="text-base font-medium text-primary_color_1 ">
+              Cupos
+            </span>
+            <div className="w-full h-full ">
+              <input
+                //value={5}
+                type="number"
+                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                {...register("cupo", { required: true })}
+              />
+            </div>
+            {errors.cupo && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese un valor válido
+              </span>
+            )}
+          </div>
+
+          {/**Talleres */}
+          <div className="flex flex-col col-span-12">
+            <span className="text-base font-medium text-primary_color_1">
+              Talleres
+            </span>
+            <div className="flex flex-col gap-3">
+              {inputs.map((input) => (
+                <div key={input.id} className="flex gap-4">
+                  <div className="flex flex-col w-full bg-white rounded-lg p-3 gap-1 border-[1px]">
+                    <span className="text-sm font-medium text-primary_color_1">
+                      Nombre del Taller
+                    </span>
+                    <input
+                      type="text"
+                      value={input.value}
+                      onChange={(e) =>
+                        handleInputChange(input.id, e.target.value)
+                      }
+                      className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                      placeholder={`Taller ${input.id}`}
+                      //{...register(`taller_${input.id}`, { required: true })}
+                    />
+                    {input.isEmpty && (
+                      <span className="text-red-600 text-sm font-light px-1">
+                        Ingrese un nombre válido
+                      </span>
+                    )}
+                  </div>
+                  {input.hasAddButton && (
+                    <div className="flex items-center justify-center">
+                      <Button
+                        type="success"
+                        onClick={handleAddInput}
+                        icon={"add"}
+                        buttonType={"button"}
+                        value={"Atrás"}
+                        size={"small"}
+                        isRadial={true}
+                        isPrimary={true}
+                      />
+                    </div>
+                  )}
+                  {input.hasRemoveButton && (
+                    <div className="flex items-center justify-center">
+                      <Button
+                        type="error"
+                        onClick={handleRemoveInput}
+                        icon={"delete"}
+                        buttonType={"button"}
+                        size={"small"}
+                        isRadial={true}
+                        isPrimary={false}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/**Footer */}
+          <div className="col-span-12 text-primary_gray_5">
+            <hr />
+          </div>
+
+          {/**Buttons */}
+          <div className="flex items-center justify-center col-span-12 gap-4">
+            <Button
+              type="gray"
+              onClick={() => navigate(-1)}
+              icon={"left"}
+              buttonType={"button"}
+              value={"Atrás"}
+              size={"medium"}
+            />
+            <Button
+              type="success"
+              icon={"save"}
+              buttonType={"submit"}
+              value={"Guardar"}
+              size={"medium"}
+              isLoading={isUpdating}
+              isPrimary={true}
+            />
+          </div>
+        </ContainerForm>
+      </form>
+    </ContainerPage>
   );
 };
 

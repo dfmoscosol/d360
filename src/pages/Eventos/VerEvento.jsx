@@ -28,10 +28,7 @@ const VerEvento = () => {
   const capacitacion = data.respuesta.capacitacion;
   const tipo_evento = capacitacion.tipo;
 
-  //console.log(capacitacion);
-
   const handleRefetch = () => {
-    //console.log("refetching handleRefetch");
     refetchVerEvento();
   };
 

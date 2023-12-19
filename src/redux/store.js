@@ -9,6 +9,7 @@ import { tallerApi } from "./services/taller/tallerApi";
 import { keywordApi } from "./services/keyword/keywordApi";
 import { docenteApi } from "./services/docente/docenteApi";
 import { inscripcionApi } from "./services/inscripcion/inscripcionApi";
+import { certificadoApi } from "./services/certificado/certificadoApi";
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     [keywordApi.reducerPath]: keywordApi.reducer,
     [docenteApi.reducerPath]: docenteApi.reducer,
     [inscripcionApi.reducerPath]: inscripcionApi.reducer,
+    [certificadoApi.reducerPath]: certificadoApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([
@@ -27,6 +29,7 @@ export const store = configureStore({
       keywordApi.middleware,
       docenteApi.middleware,
       inscripcionApi.middleware,
+      certificadoApi.middleware,
     ]),
 });
 

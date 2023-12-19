@@ -37,7 +37,7 @@ const NuevoEvento = () => {
 
   return (
     <>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {dropdownItems.map((item, index) => (
           <Link
             to={item.to}

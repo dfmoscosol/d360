@@ -2,22 +2,19 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const BASE_URL = "https://d360api.ucuenca.edu.ec";
 
-export const docenteApi = createApi({
-  reducerPath: "docenteApi",
+export const certificadoApi = createApi({
+  reducerPath: "certificadoApi",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
   }),
-  tagTypes: ["Docente"],
+  //tagTypes: ["Docente"],
   endpoints: (builder) => ({
-    getAllDocentes: builder.query({
+    getAllCertificados: builder.query({
+      query: () => `/certificados`,
+      //providesTags: ["getAll"],
+    }),
+    /*getAllDocentes: builder.query({
       query: (params) => `/docentes_disponibles/${params.value}`,
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.respuesta.map(({ id }) => ({ type: "Docente", id })),
-              "Docente",
-            ]
-          : ["Docente"],
     }),
     inscribirDocente: builder.mutation({
       query: (body) => ({
@@ -27,7 +24,7 @@ export const docenteApi = createApi({
       }),
       invalidatesTags: ["Docente"],
     }),
-    /*
+    
     addEvento: builder.mutation({
       query: (params) => ({
         url: `/crear_capacitacion`,
@@ -44,10 +41,7 @@ export const docenteApi = createApi({
       }),
       //invalidatesTags: ["getCapacitacion", "getAll"],
     }),
-    getAllCapacitaciones: builder.query({
-      query: () => `/capacitaciones`,
-      providesTags: ["getAll"],
-    }),
+
     deleteEvento: builder.mutation({
       query: (params) => ({
         url: `/eliminar_capacitacion/${params.id}`,
@@ -60,10 +54,11 @@ export const docenteApi = createApi({
 });
 
 export const {
+  useGetAllCertificadosQuery,
   //useAddEventoMutation,
-  useGetAllDocentesQuery,
-  useInscribirDocenteMutation,
+  //useGetAllDocentesQuery,
+  //useInscribirDocenteMutation,
   //useGetCapacitacionQuery,
   //useEditCapacitacionMutation,
   //useDeleteEventoMutation,
-} = docenteApi;
+} = certificadoApi;

@@ -1,13 +1,8 @@
 import React from "react";
 
 import Card from "./ui/components/Card/Card";
-import { Dropdown, Loader, FetchError } from "@components";
+import { Loader, FetchError } from "@components";
 import { Link } from "react-router-dom";
-
-import { GrWorkshop } from "react-icons/gr";
-import { SiGoogleclassroom } from "react-icons/si";
-import { GiTeamIdea } from "react-icons/gi";
-import { FaChalkboardTeacher } from "react-icons/fa";
 
 import { MdAdd } from "react-icons/md";
 
