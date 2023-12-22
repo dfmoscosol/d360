@@ -6,6 +6,17 @@ export const eventoApi = createApi({
   reducerPath: "eventoApi",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().authState.token;
+      console.log("token eventoApi", token);
+      if (token) {
+        console.log("token eventoApi", token);
+        headers.set("Authorization", `Bearer ${token}`);
+      } else {
+        console.log("no token eventoApi");
+      }
+      return headers;
+    },
   }),
   tagTypes: ["getAll", "getCapacitacion", "getDocetesParaInscripcion"],
   endpoints: (builder) => ({
@@ -44,15 +55,6 @@ export const eventoApi = createApi({
 
     getAllDocentes: builder.query({
       query: (params) => `/docentes_disponibles/${params.value}`,
-      /*providesTags: (result) =>
-        result
-          ? [
-              ...result.respuesta.map(({ id }) => ({ type: "Docente", id })),
-              "Docente",
-            ]
-          : ["Docente"],*/
-
-      //providesTags: ["Docente"],
     }),
 
     inscribirDocente: builder.mutation({

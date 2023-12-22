@@ -6,6 +6,13 @@ export const tallerApi = createApi({
   reducerPath: "tallerApi",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().authState.token;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
   //tagTypes: ["getAll", "getCapacitacion"],
   endpoints: (builder) => ({

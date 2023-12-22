@@ -17,6 +17,9 @@ import {
   MdOutlineSaveAs,
   MdOutlineSave,
   MdDangerous,
+  MdOutlineCheckBox,
+  MdLogin,
+  MdLogout,
 } from "react-icons/md";
 
 import { Oval } from "react-loader-spinner";
@@ -51,7 +54,7 @@ const Button = ({
   } else if (type === "error") {
     colors = `${
       isPrimary ? "bg-red-100 border-red-200" : "bg-white border-red-600"
-    } text-red-600 hover:bg-red-200 active:bg-red-300 border `;
+    } text-red-600 hover:bg-red-200 active:bg-red-300 border`;
     colorOval = "#b91c1c";
   } else if (type === "date") {
     colors = `bg-primary_gray_1 text-primary_gray_4`;
@@ -65,6 +68,20 @@ const Button = ({
     colors = `${
       isPrimary ? "bg-gray-100 border-gray-200" : "bg-white border-gray-600"
     } text-gray-600 hover:bg-gray-100 active:bg-gray-300 border`;
+    colorOval = "#0e7490";
+  } else if (type === "ucuenca") {
+    colors = `${
+      isPrimary
+        ? "bg-primary_color_1 border-primary_color_1"
+        : "bg-white primary_color_1"
+    } text-primary_color_1_text_light hover:bg-primary_color_1_bg_light active:bg-primary_color_1 border`;
+    colorOval = "#0e7490";
+  } else if (type === "ucuencaRed") {
+    colors = `${
+      isPrimary
+        ? "bg-primary_color_2 border-primary_color_2"
+        : "bg-white border-primary_color_2"
+    } text-primary_color_2 hover:bg-[#fff1f0] active:bg-[#ffe0de] border`;
     colorOval = "#0e7490";
   }
 
@@ -106,6 +123,12 @@ const Button = ({
     iconPill = <MdOutlineSave size={sizeIcon} />;
   } else if (icon === "danger") {
     iconPill = <MdDangerous size={sizeIcon} />;
+  } else if (icon === "approve") {
+    iconPill = <MdOutlineCheckBox size={sizeIcon} />;
+  } else if (icon === "login") {
+    iconPill = <MdLogin size={sizeIcon} />;
+  } else if (icon === "logout") {
+    iconPill = <MdLogout size={sizeIcon} />;
   }
 
   return (

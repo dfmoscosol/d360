@@ -5,6 +5,8 @@ import { MdMenu, MdMenuOpen, MdLogout } from "react-icons/md";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setOpen } from "@redux/features/sidebar/sidebarSlice";
+import { logout } from "@redux/features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 import LOGO from "@assets/logo.svg";
 
@@ -12,7 +14,16 @@ import routes from "@routes/routes";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const isOpen = useSelector((state) => state.sidebarState.isOpen);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    // Eliminar el token de Local Storage
+    localStorage.removeItem("token");
+    // Redirigir al usuario a la página de login
+    navigate("/login");
+  };
 
   return (
     <div
@@ -113,18 +124,22 @@ const Sidebar = () => {
               <div className="py-5">
                 <hr />
               </div>
-              <div className="rounded-lg p-2 bg-primary_gray_1 text-red-600 flex py-2 px-4 items-center justify-center">
-                <span>
+
+              <button
+                onClick={handleLogout}
+                className="text-primary_color_2 hover:bg-primary_color_2_text_light_hover active:bg-primary_color_2_text_light_active border bg-white border-primary_color_2 rounded-lg p-2 flex items-center justify-center w-full hover:shadow-lg transition-all duration-300"
+              >
+                <span className="">
                   <MdLogout size={20} />
                 </span>
                 <div
-                  className={`overflow-hidden text-base font-normal whitespace-nowrap ${
-                    isOpen ? "w-full ml-2" : "w-0"
+                  className={`overflow-hidden font-medium whitespace-nowrap text-sm ${
+                    isOpen ? "w-auto ml-2" : "w-0"
                   } transition-all ease-in-out duration-500`}
                 >
                   Cerrar Sesión
                 </div>
-              </div>
+              </button>
             </div>
           </div>
         </div>

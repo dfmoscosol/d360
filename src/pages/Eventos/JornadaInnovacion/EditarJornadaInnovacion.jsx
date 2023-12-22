@@ -8,7 +8,6 @@ import {
 } from "react-icons/md";
 import { useForm } from "react-hook-form";
 import DatePicker, { DateObject } from "react-multi-date-picker";
-import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
 import { Oval } from "react-loader-spinner";
 import { Notification, Modal, Button } from "@components";

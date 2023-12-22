@@ -11,13 +11,16 @@ import {
   MdKeyboardArrowUp,
   MdKeyboardArrowDown,
   MdDelete,
+  MdOutlinePersonOutline,
+  MdOutlineVerified,
+  MdInfo,
 } from "react-icons/md";
 
 import { AiFillLike, AiFillDislike } from "react-icons/ai";
 
 import { GrWorkshop } from "react-icons/gr";
 
-const InfoPill = ({ type, value, size, icon, isRadial }) => {
+const InfoPill = ({ type, value, size, icon, isRadial, isSquare }) => {
   let colors = "";
   let sizeIcon = "";
   let sizeText = "";
@@ -31,6 +34,8 @@ const InfoPill = ({ type, value, size, icon, isRadial }) => {
     colors = "bg-red-100 text-red-600";
   } else if (type === "date") {
     colors = "bg-primary_gray_1 text-primary_gray_4";
+  } else if (type === "info") {
+    colors = "bg-cyan-100 text-cyan-600";
   }
 
   if (size === "small") {
@@ -39,6 +44,9 @@ const InfoPill = ({ type, value, size, icon, isRadial }) => {
   } else if (size === "medium") {
     sizeIcon = 23;
     sizeText = "text-sm";
+  } else if (size === "large") {
+    sizeIcon = 30;
+    sizeText = "text-md";
   }
 
   if (icon === "check") {
@@ -63,16 +71,22 @@ const InfoPill = ({ type, value, size, icon, isRadial }) => {
     iconPill = <AiFillLike size={sizeIcon} />;
   } else if (icon === "dislike") {
     iconPill = <AiFillDislike size={sizeIcon} />;
+  } else if (icon === "person") {
+    iconPill = <MdOutlinePersonOutline size={sizeIcon} />;
+  } else if (icon === "verified") {
+    iconPill = <MdOutlineVerified size={sizeIcon} />;
+  } else if (icon === "info") {
+    iconPill = <MdInfo size={sizeIcon} />;
   }
 
   return (
     <div
       className={`flex items-center gap-1 ${colors} ${sizeText} font-medium p-2 ${
-        isRadial ? " rounded-full" : "rounded-xl"
-      } `}
+        isRadial ? "rounded-full" : isSquare ? "rounded-lg" : "rounded-xl"
+      }`}
     >
       {iconPill}
-      {!isRadial && <span>{value}</span>}
+      {!(isRadial || isSquare) && <span>{value}</span>}
     </div>
   );
 };

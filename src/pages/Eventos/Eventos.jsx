@@ -18,8 +18,6 @@ const Eventos = () => {
 
   const capacitaciones = data.respuesta.capacitaciones;
 
-  //console.log(capacitaciones);
-
   return (
     <div className="pb-12">
       <div className="py-2 flex items-center justify-end">
@@ -28,8 +26,8 @@ const Eventos = () => {
         </span>
       </div>
       <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link to={"/eventos/nuevoEvento"}>
-          <div className="col-span-1 p-4 gap-4 h-full flex flex-col items-center justify-center border-2 border-dashed rounded-lg border-primary_gray_5 hover:shadow-lg transition-all duration-200">
+        <Link to={"/eventos/nuevoEvento"} className="w-full col-span-1">
+          <div className=" p-4 gap-4 h-full flex flex-col items-center justify-center border-2 border-dashed rounded-lg border-primary_gray_5 hover:shadow-lg transition-all duration-200">
             <div className="bg-primary_gray_5 rounded-full p-1 text-primary_gray_4">
               <MdAdd size={50} />
             </div>

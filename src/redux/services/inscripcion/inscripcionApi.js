@@ -6,6 +6,13 @@ export const inscripcionApi = createApi({
   reducerPath: "inscripcionApi",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().authState.token;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
   endpoints: (builder) => ({
     agregarInscripciones: builder.mutation({

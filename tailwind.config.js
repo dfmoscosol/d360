@@ -18,6 +18,10 @@ export default {
         primary_color_1_text_light: "#cef4ff",
         primary_color_1_bg_light: "#22536E",
 
+        primary_color_2_text_light: "#ffcccb",
+        primary_color_2_text_light_hover: "#fff1f0",
+        primary_color_2_text_light_active: "#ffe0de",
+
         secondary_color_1: "#f5f5f7",
         secondary_color_2: "#6e6e73",
         secondary_color_3: "#a4a6aa",

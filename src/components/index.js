@@ -13,3 +13,4 @@ export { default as Button } from "./Button/Button";
 export { default as DataTable } from "./DataTable/DataTable";
 export { default as ToggleSwitch } from "./ToggleSwitch/ToggleSwitch";
 export { default as HorizontalPill } from "./HorizontalPill/HorizontalPill";
+export { default as PrivateRoute } from "./PrivateRoute/PrivateRoute";

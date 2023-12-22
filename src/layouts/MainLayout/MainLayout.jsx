@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Outlet } from "react-router-dom";
-
 import { Sidebar, PageWrapper, Notification } from "@components";
 
 const MainLayout = () => {

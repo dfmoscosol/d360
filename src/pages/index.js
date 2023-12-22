@@ -13,3 +13,4 @@ export { default as CrearObservacionAulica } from "./Eventos/ObservacionAulica/C
 export { default as NuevoEvento } from "./Eventos/NuevoEvento";
 export { default as Keywords } from "./Keywords/Keywords";
 export { default as Certificados } from "./Certificados/Certificados";
+export { default as Login } from "./Login/Login";

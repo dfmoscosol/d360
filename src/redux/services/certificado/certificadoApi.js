@@ -6,6 +6,16 @@ export const certificadoApi = createApi({
   reducerPath: "certificadoApi",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().authState.token;
+      if (token) {
+        console.log("token certificadoApi", token)
+        headers.set("Authorization", `Bearer ${token}`);
+      } else {
+        console.log("no token certificadoApi");
+      }
+      return headers;
+    },
   }),
   //tagTypes: ["Docente"],
   endpoints: (builder) => ({
@@ -13,6 +23,21 @@ export const certificadoApi = createApi({
       query: () => `/certificados`,
       //providesTags: ["getAll"],
     }),
+    editCertificado: builder.mutation({
+      query: (params) => ({
+        url: `/actualizar_certificado/${params.id}`,
+        method: "PUT",
+        body: params.body,
+      }),
+      //invalidatesTags: ["getCapacitacion", "getAll"],
+    }),
+    /*descargarCertificado: builder.mutation({
+      query: (params) => ({
+        url: `/descargar_certificado/${params.idCertificado}`,
+        method: "GET",
+        responseHandler: (response) => response.blob(), // Maneja la respuesta como un blob
+      }),
+    }),*/
     /*getAllDocentes: builder.query({
       query: (params) => `/docentes_disponibles/${params.value}`,
     }),
@@ -55,6 +80,7 @@ export const certificadoApi = createApi({
 
 export const {
   useGetAllCertificadosQuery,
+  useEditCertificadoMutation,
   //useAddEventoMutation,
   //useGetAllDocentesQuery,
   //useInscribirDocenteMutation,

@@ -22,7 +22,6 @@ import EventoView, {
 import {
   useEditCapacitacionMutation,
   useDeleteEventoMutation,
-  useActualizarInscripcionMutation,
 } from "@redux/services/evento/eventoApi";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 
