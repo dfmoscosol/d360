@@ -72,9 +72,9 @@ const Button = ({
   } else if (type === "ucuenca") {
     colors = `${
       isPrimary
-        ? "bg-primary_color_1 border-primary_color_1"
-        : "bg-white primary_color_1"
-    } text-primary_color_1_text_light hover:bg-primary_color_1_bg_light active:bg-primary_color_1 border`;
+        ? "bg-primary_color_1 border-primary_color_1 text-white"
+        : "bg-white border-primary_color_1 text-primary_color_1"
+    }  hover:bg-primary_color_1_bg_light hover:text-white active:bg-primary_color_1 border`;
     colorOval = "#0e7490";
   } else if (type === "ucuencaRed") {
     colors = `${

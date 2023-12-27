@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  MdAdd,
-  MdDelete,
-  MdOutlineEdit,
-  MdSave,
-  MdClose,
-} from "react-icons/md";
 import { useForm } from "react-hook-form";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
-import { Oval } from "react-loader-spinner";
-import { Notification, Modal, Button } from "@components";
 import { Link, useNavigate } from "react-router-dom";
+import { ContainerPage } from "@components";
+import ContainerForm from "../ui/components/ContainerForm/ContainerForm";
 
 import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
 import {
@@ -394,7 +387,7 @@ const EditarJornadaInnovacion = (props) => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   return (
-    <>
+    <ContainerPage>
       <Modal
         isOpen={isModalOpen}
         message="¿Desea guardar los cambios?"
@@ -458,7 +451,7 @@ const EditarJornadaInnovacion = (props) => {
         </Modal>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="px-10 py-8 rounded-lg grid grid-cols-12 gap-6 w-[600px]  bg-white">
+          <ContainerForm>
             {/**Nombre */}
             <div className="col-span-12 flex flex-col">
               <span className="text-base font-medium text-primary_color_1">
@@ -631,7 +624,7 @@ const EditarJornadaInnovacion = (props) => {
                       {!input.enableEdit ? (
                         <div className="flex mt-2 gap-2">
                           <Button
-                            type="info"
+                            type="ucuenca"
                             onClick={() => handleEnableEdit(index)}
                             icon={"edit"}
                             buttonType={"button"}
@@ -695,7 +688,7 @@ const EditarJornadaInnovacion = (props) => {
                 size={"medium"}
               />
               <Button
-                type="success"
+                type="ucuenca"
                 icon={"saveEdit"}
                 buttonType={"submit"}
                 value={"Guardar"}
@@ -704,10 +697,10 @@ const EditarJornadaInnovacion = (props) => {
                 isPrimary={true}
               />
             </div>
-          </div>
+          </ContainerForm>
         </form>
       </div>
-    </>
+    </ContainerPage>
   );
 };
 

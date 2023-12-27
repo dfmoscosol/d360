@@ -203,7 +203,7 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller }) => {
                 />
                 <Button
                   value="Inscribir"
-                  type="success"
+                  type="ucuenca"
                   size="small"
                   icon="check"
                   isPrimary={true}

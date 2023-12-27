@@ -1,22 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 
-import { AiFillLike } from "react-icons/ai";
-import { AiFillDislike } from "react-icons/ai";
-
-import { Notification, Modal, Button, InfoPill } from "@components";
-import { showNotification } from "@redux/features/notification/notificationSlice";
-
-import {
-  MdClose,
-  MdDelete,
-  MdOutlineEdit,
-  MdSave,
-  MdCheckCircle,
-} from "react-icons/md";
-
+import { Modal, Button, InfoPill } from "@components";
 import { useDispatch } from "react-redux";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
-
 import { useUpdateKeywordMutation } from "@redux/services/keyword/keywordApi";
 import { useDeleteKeywordMutation } from "@redux/services/keyword/keywordApi";
 
@@ -313,6 +299,7 @@ const KeywordCard = ({ oldKeywords, competencia, handleRefetch }) => {
                       size={"small"}
                       icon={"like"}
                       isRadial={true}
+                      //isSquare={false}
                     />
                   ) : (
                     <InfoPill
@@ -320,6 +307,7 @@ const KeywordCard = ({ oldKeywords, competencia, handleRefetch }) => {
                       size={"small"}
                       icon={"dislike"}
                       isRadial={true}
+                      isSquare={false}
                     />
                   )}
 
@@ -330,7 +318,7 @@ const KeywordCard = ({ oldKeywords, competencia, handleRefetch }) => {
                       handleInputChange(keyword.id, e.target.value)
                     }
                     ref={keyword.ref} // Asignar la referencia aquí
-                    className={`font-medium text-sm text-primary_gray_3 p-1 ${
+                    className={`font-medium text-sm p-1  w-40 md:w-full ${
                       keyword.isEnableEdit
                         ? "bg-primary_gray_1  rounded-lg"
                         : "bg-white"
@@ -342,7 +330,7 @@ const KeywordCard = ({ oldKeywords, competencia, handleRefetch }) => {
                 {!keyword.isEnableEdit ? (
                   <div className="flex gap-2">
                     <Button
-                      type="info"
+                      type="ucuenca"
                       onClick={() => handleEnableEdit(keyword.id)}
                       icon={"edit"}
                       buttonType={"button"}

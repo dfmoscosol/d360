@@ -58,7 +58,7 @@ function App() {
         {
           element: <PrivateRoute />,
           children: [
-            {
+            /**/ {
               path: "/",
               element: <Navigate to={PathConstants.EVENTOS} />,
             },

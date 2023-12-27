@@ -1,70 +1,66 @@
 import React from "react";
 
 import { Link } from "react-router-dom";
-import { Pill, InfoPill } from "@components";
-
-import { MdDateRange } from "react-icons/md";
-import { GiTeamIdea } from "react-icons/gi";
-import { GrWorkshop } from "react-icons/gr";
+import { InfoPill } from "@components";
+import StatePill from "../../../ui/components/StatePill/StatePill";
 
 const JornadaInnovacionCard = (props) => {
   const {
+    allow_asistencia_entrada,
+    allow_asistencia_salida,
+    allow_inscripcion,
+    fechas,
     id_capacitacion,
     nombre,
-    allow_inscripcion,
-    horas,
-    length_talleres,
-    fechas,
   } = props;
 
   return (
-    <div className="h-full bg-white rounded-lg p-4 flex flex-col justify-between gap-4 items-start hover:shadow-lg transition-all duration-200">
+    <div className="bg-white p-4 flex flex-col gap-4 rounded-lg hover:shadow-lg transition-all duration-300 h-full">
       <Link
         to={`verEvento/${id_capacitacion}`}
         className="flex flex-col gap-4 w-full justify-between h-full"
       >
-        <div className="flex items-start justify-between">
-          <div className="flex flex-col items-start">
-            <span className="text-lg font-medium text-primary_color_1">
+        <div className="flex gap-2 items-center">
+          <div className="flex flex-col">
+            <span className="text-base font-medium text-primary_color_1">
               {nombre}
             </span>
-            <span className="font-normal text-xs text-primary_gray_2">
-              Jornada de Innovación
-            </span>
-          </div>
-          <div className="p-2 bg-primary_gray_1 text-primary_gray_4 rounded-lg flex items-center ">
-            <GiTeamIdea size={23} />
+            <div className="flex gap-2">
+              {fechas.map((fecha, index) => (
+                <div key={index} className="bg-primary_gray_1 rounded-lg px-2">
+                  <span className="text-xs font-normal text-primary_gray_4">
+                    {fecha}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="flex flex-col items-start">
-          {allow_inscripcion ? (
-            <InfoPill
-              value="Inscripciones"
-              size="small"
-              type="success"
-              icon="inscripciones"
-            />
-          ) : (
-            <InfoPill
-              value="Inscripciones"
-              size="small"
-              type="warning"
-              icon="close"
-            />
-          )}
-        </div>
-        <div className="flex gap-2 w-full">
-          <Pill
-            icon={<MdDateRange size={20} />}
-            title={"Días"}
-            description={fechas.length}
-            type={1}
+        <div className="flex flex-wrap gap-2">
+          <StatePill
+            hasState={allow_inscripcion}
+            stateValue={"Inscripción"}
+            icon={"inscripcion"}
           />
-          <Pill
-            icon={<GrWorkshop size={20} />}
-            title={"Talleres"}
-            description={length_talleres}
-            type={1}
+          <StatePill
+            hasState={allow_asistencia_entrada}
+            stateValue={"Entrada"}
+            icon={"entrada"}
+          />
+          <StatePill
+            hasState={allow_asistencia_salida}
+            stateValue={"Salida"}
+            icon={"salida"}
+          />
+        </div>
+        <div className="flex">
+          <InfoPill
+            icon={"jornada"}
+            size="small"
+            type="date"
+            isRadial={false}
+            isSquare={false}
+            value={"Jornada de Innovación"}
           />
         </div>
       </Link>

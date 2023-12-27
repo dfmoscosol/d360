@@ -26,7 +26,7 @@ const CertificadoCard = ({
 
   const dispatch = useDispatch();
 
-  const descargarCertificadoAx = async () => {
+  const descargarCertificado = async () => {
     try {
       const response = await axios.get(
         `https://d360api.ucuenca.edu.ec/descargar_certificado/${idCertificado}`,
@@ -133,20 +133,19 @@ const CertificadoCard = ({
             </span>
           </div>
         </div>
-        <div className="mt-4 border border-primary_gray_5 p-4 rounded-lg flex gap-4 relative">
-          <div className="w-64 relative">
+        <div className="mt-4 border border-primary_gray_5 p-4 rounded-lg flex flex-col md:flex-row gap-4 relative">
+          <div className="w-full md:w-64 relative">
             <img src={urlImagen} alt="Imagen del curso" />
             <div className="absolute right-1 bottom-1 bg-white rounded-xl py-1 px-2 w-20">
               <img src={urlLogo} alt="Imagen del curso" />
             </div>
           </div>
-          <div className="flex flex-col items-start justify-between">
+          <div className="flex flex-col items-start justify-between gap-4">
             <Link to={urlCurso} target="_blank" rel="noopener noreferrer">
               <span className="text-lg font-medium text-primary_color_1">
                 {nombreCurso}
               </span>
             </Link>
-
             {isApproved && (
               <InfoPill
                 type={"info"}
@@ -157,14 +156,14 @@ const CertificadoCard = ({
               />
             )}
 
-            <div className="flex mt-2 gap-2">
+            <div className="flex  mt-2 gap-2 ">
               <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center">
                 <div className="p-2 bg-white rounded-lg text-primary_gray_3">
                   <MdDateRange size={20} />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col items-start">
                   <span className="text-primary_gray_3 text-xs">
-                    Fecha de Creación
+                    Creado el
                   </span>
                   <span className="text-primary_color_1 font-medium text-sm">
                     {fechaCreacion}
@@ -172,12 +171,12 @@ const CertificadoCard = ({
                 </div>
               </div>
 
-              <button onClick={descargarCertificadoAx}>
+              <button onClick={descargarCertificado}>
                 <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center">
                   <div className="p-2 bg-white rounded-lg text-primary_gray_3">
                     <MdFileDownload size={20} />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col items-start">
                     <span className="text-primary_gray_3 text-xs">
                       Certificado
                     </span>
@@ -192,7 +191,7 @@ const CertificadoCard = ({
             {!isApproved && (
               <div className="flex mt-2 gap-2">
                 <Button
-                  type={"success"}
+                  type={"ucuenca"}
                   value={"Aprobar"}
                   size={"small"}
                   icon={"approve"}

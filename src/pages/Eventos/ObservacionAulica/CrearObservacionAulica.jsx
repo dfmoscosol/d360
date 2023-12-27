@@ -187,12 +187,26 @@ const CrearObservacionAulica = () => {
           </div>
 
           {/**Modalidad */}
-          <div className="col-span-6 flex flex-col">
+          <div className="md:col-span-6 col-span-12 flex flex-col">
             <span className="text-base font-medium text-primary_color_1 ">
               Modalidad
             </span>
             <div className="w-full">
               <ComboBox items={listModalidades} onSelect={handleSelect} />
+            </div>
+          </div>
+
+          {/**Dirección */}
+          <div className="md:col-span-6 col-span-12 flex flex-col">
+            <span className="text-base font-medium text-primary_color_1 ">
+              Dirección
+            </span>
+            <div className="w-full">
+              <input
+                type="text"
+                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                {...register("direccion", { required: false })}
+              />
             </div>
           </div>
 
@@ -222,20 +236,6 @@ const CrearObservacionAulica = () => {
                   Ingrese una fecha válida.
                 </span>
               )}
-            </div>
-          </div>
-
-          {/**Dirección */}
-          <div className="col-span-6 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
-              Dirección
-            </span>
-            <div className="w-full">
-              <input
-                type="text"
-                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
-                {...register("direccion", { required: false })}
-              />
             </div>
           </div>
 
@@ -295,7 +295,7 @@ const CrearObservacionAulica = () => {
               size={"medium"}
             />
             <Button
-              type="success"
+              type="ucuenca"
               icon={"save"}
               buttonType={"submit"}
               value={"Guardar"}

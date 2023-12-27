@@ -245,18 +245,17 @@ const InformationSection = (props) => {
           <Link to={headerLinkToNew}>
             <Button
               value="Nuevo"
-              type="success"
+              type="ucuenca"
               size="medium"
               icon="add"
               extra="w-full"
-              isPrimary={false}
-              //isRadial={true}
+              isPrimary={true}
             />
           </Link>
           <Link className="" to={headerLinkToEdit}>
             <Button
               value="Editar"
-              type="info"
+              type="ucuenca"
               size="medium"
               icon="edit"
               extra="w-full"
@@ -266,12 +265,12 @@ const InformationSection = (props) => {
           </Link>
           <Button
             value="Eliminar"
-            type="error"
+            type="ucuenca"
             size="medium"
             icon="delete"
             onClick={() => setModalOpen(true)}
             extra="w-full"
-            isPrimary={true}
+            isPrimary={false}
             //isRadial={true}
           />
         </div>

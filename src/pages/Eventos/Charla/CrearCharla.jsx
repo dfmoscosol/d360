@@ -154,7 +154,7 @@ const CrearCharla = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <ContainerForm>
           {/**Nombre */}
-          <div className="col-span-12 flex flex-col">
+          <div className="md:col-span-8 col-span-12 flex flex-col">
             <span className="text-base font-medium text-primary_color_1">
               Nombre
             </span>
@@ -172,8 +172,23 @@ const CrearCharla = () => {
             )}
           </div>
 
+          {/**Modalidad */}
+          <div className="md:col-span-4 col-span-12 flex flex-col">
+            <span className="text-base font-medium text-primary_color_1 ">
+              Modalidad
+            </span>
+            <div className="w-full">
+              <ComboBox items={listModalidades} onSelect={handleSelect} />
+            </div>
+            {/*!isValidModalidad && (
+                <span className="text-red-600 text-sm font-light px-1">
+                  Seleccione una opción
+                </span>
+              )*/}
+          </div>
+
           {/**Tutor */}
-          <div className="col-span-5 flex flex-col">
+          <div className="md:col-span-6 col-span-12 flex flex-col">
             <span className="text-base font-medium text-primary_color_1 ">
               Tutor
             </span>
@@ -193,8 +208,22 @@ const CrearCharla = () => {
             )}
           </div>
 
+          {/**Dirección */}
+          <div className="md:col-span-6 col-span-12 flex flex-col">
+            <span className="text-base font-medium text-primary_color_1 ">
+              Dirección
+            </span>
+            <div className="w-full">
+              <input
+                type="text"
+                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                {...register("direccion", { required: false })}
+              />
+            </div>
+          </div>
+
           {/**Fecha */}
-          <div className="col-span-5 flex flex-col">
+          <div className="col-span-6 flex flex-col">
             <span className="text-base font-medium text-primary_color_1">
               Fecha
             </span>
@@ -223,7 +252,7 @@ const CrearCharla = () => {
           </div>
 
           {/**Horas */}
-          <div className="col-span-2 flex flex-col">
+          <div className="col-span-3 flex flex-col">
             <span className="text-base font-medium text-primary_color_1 ">
               Horas
             </span>
@@ -242,37 +271,8 @@ const CrearCharla = () => {
             )}
           </div>
 
-          {/**Modalidad */}
-          <div className="col-span-5 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
-              Modalidad
-            </span>
-            <div className="w-full">
-              <ComboBox items={listModalidades} onSelect={handleSelect} />
-            </div>
-            {/*!isValidModalidad && (
-                <span className="text-red-600 text-sm font-light px-1">
-                  Seleccione una opción
-                </span>
-              )*/}
-          </div>
-
-          {/**Dirección */}
-          <div className="col-span-5 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
-              Dirección
-            </span>
-            <div className="w-full">
-              <input
-                type="text"
-                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
-                {...register("direccion", { required: false })}
-              />
-            </div>
-          </div>
-
           {/**Cupos */}
-          <div className="col-span-2 flex flex-col">
+          <div className="col-span-3 flex flex-col">
             <span className="text-base font-medium text-primary_color_1 ">
               Cupos
             </span>
@@ -307,7 +307,7 @@ const CrearCharla = () => {
               size={"medium"}
             />
             <Button
-              type="success"
+              type="ucuenca"
               icon={"save"}
               buttonType={"submit"}
               value={"Guardar"}

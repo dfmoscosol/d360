@@ -29,7 +29,7 @@ const ComboBox = ({ items, onSelect, hasBeenSelected, selected }) => {
           onChange={(e) => setSelectedItem(e.target.value)}
           onClick={toggleComboBox}
           readOnly
-          placeholder="Selecciona una opción"
+          placeholder="Seleccionar..."
         />
         <MdExpandMore
           size={30}

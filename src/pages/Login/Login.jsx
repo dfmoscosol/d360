@@ -98,7 +98,7 @@ const Login = () => {
   }, [token, navigate]);*/
 
   return (
-    <div className="w-96 flex flex-col items-center border border-primary_gray_5 rounded-lg py-4 px-10">
+    <div className="w-full md:w-96 flex flex-col h-full items-center border border-primary_gray_5 rounded-lg py-4 px-10">
       <div>
         <img
           src={LOGO}

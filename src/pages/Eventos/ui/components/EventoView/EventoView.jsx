@@ -9,7 +9,7 @@ export const Header = ({ color, title, icon, subTitle, hasIcon, children }) => (
     <div className="flex gap-2 items-center">
       {hasIcon && <div className={`${color} p-2 rounded-lg`}>{icon}</div>}
       <div className="flex flex-col">
-        <span className="font-medium text-3xl text-primary_color_1">
+        <span className="font-medium text-xl text-primary_color_1">
           {title}
         </span>
         <span className="font-normal text-sm text-primary_gray_2">

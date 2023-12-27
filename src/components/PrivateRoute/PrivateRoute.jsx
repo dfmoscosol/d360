@@ -13,7 +13,7 @@ const PrivateRoute = () => {
       location.pathname
     )}&expired=true`;
     return null; // Este return es necesario para evitar que se renderice algo antes de la redirección
-  }
+  } /**/
 
   return (
     <main>

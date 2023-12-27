@@ -22,7 +22,8 @@ const Sidebar = () => {
     // Eliminar el token de Local Storage
     localStorage.removeItem("token");
     // Redirigir al usuario a la página de login
-    navigate("/login");
+    //navigate("/login");
+    window.location.href = "/login";
   };
 
   return (
@@ -120,14 +121,17 @@ const Sidebar = () => {
                 </div>
               ))}
             </div>
-            <div>
-              <div className="py-5">
-                <hr />
+            <div className="flex flex-col">
+              <div className="">
+                <hr
+                  className={` ${
+                    !isOpen ? "border-primary_gray_5" : "border-white"
+                  }`}
+                />
               </div>
-
               <button
                 onClick={handleLogout}
-                className="text-primary_color_2 hover:bg-primary_color_2_text_light_hover active:bg-primary_color_2_text_light_active border bg-white border-primary_color_2 rounded-lg p-2 flex items-center justify-center w-full hover:shadow-lg transition-all duration-300"
+                className="mt-3 text-primary_color_2 hover:bg-primary_color_2_text_light_hover active:bg-primary_color_2_text_light_active border bg-white border-primary_color_2 rounded-lg p-2 flex items-center justify-center w-full hover:shadow-lg transition-all duration-300"
               >
                 <span className="">
                   <MdLogout size={20} />

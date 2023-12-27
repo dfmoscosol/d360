@@ -5,29 +5,37 @@ import ObservacionAulicaCard from "../../../ObservacionAulica/components/Card/Ob
 import CharlaCard from "../../../Charla/components/Card/CharlaCard";
 import TallerCard from "../../../Taller/components/Card/TallerCard";
 
+import InfoPill from "@components/InfoPill/InfoPill";
+import Pill from "@components/Pill/Pill";
+
+import { MdDateRange, MdSupervisorAccount } from "react-icons/md";
+
 const Card = (props) => {
   const { type, data } = props;
+  let typeCard = "";
+
+  if (type === "charla") {
+    typeCard = "Charla";
+  }
 
   if (type === "jornada") {
     return (
       <JornadaInnovacionCard
+        allow_asistencia_entrada={data.allow_asistencia_entrada}
+        allow_asistencia_salida={data.allow_asistencia_salida}
+        allow_inscripcion={data.allow_inscripcion}
+        fechas={data.fechas}
         id_capacitacion={data.id_capacitacion}
         nombre={data.nombre}
-        fechas={data.fechas}
-        allow_inscripcion={data.allow_inscripcion}
-        horas={data.horas}
-        length_talleres={data.talleres.length}
       />
     );
   } else if (type === "observacion") {
     return (
       <ObservacionAulicaCard
         allow_inscripcion={data.allow_inscripcion}
+        fechas={data.fechas}
         id_capacitacion={data.id_capacitacion}
         nombre={data.nombre}
-        fechas={data.fechas}
-        horas={data.horas}
-        cupo={data.cupo}
       />
     );
   } else if (type === "charla") {
@@ -36,30 +44,20 @@ const Card = (props) => {
         allow_asistencia_entrada={data.allow_asistencia_entrada}
         allow_asistencia_salida={data.allow_asistencia_salida}
         allow_inscripcion={data.allow_inscripcion}
-        cupo={data.cupo}
-        direccion={data.direccion}
         fechas={data.fechas}
-        horas={data.horas}
         id_capacitacion={data.id_capacitacion}
         nombre={data.nombre}
-        nombre_tutor={data.nombre_tutor}
-        numero_inscritos={data.numero_inscritos}
-        isPresencial={data.presencial}
       />
     );
   } else if (type === "taller") {
     return (
       <TallerCard
-        allow_asistencia={data.allow_asistencia}
+        allow_asistencia_entrada={data.allow_asistencia_entrada}
+        allow_asistencia_salida={data.allow_asistencia_salida}
         allow_inscripcion={data.allow_inscripcion}
-        cupo={data.cupo}
-        direccion={data.direccion}
         fechas={data.fechas}
-        horas={data.horas}
         id_capacitacion={data.id_capacitacion}
         nombre={data.nombre}
-        nombre_tutor={data.nombre_tutor}
-        isPresencial={data.presencial}
       />
     );
   } else {

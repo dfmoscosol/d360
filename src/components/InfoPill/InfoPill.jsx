@@ -16,9 +16,11 @@ import {
   MdInfo,
 } from "react-icons/md";
 
+import { GiTeamIdea } from "react-icons/gi";
 import { AiFillLike, AiFillDislike } from "react-icons/ai";
-
 import { GrWorkshop } from "react-icons/gr";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import { SiGoogleclassroom } from "react-icons/si";
 
 const InfoPill = ({ type, value, size, icon, isRadial, isSquare }) => {
   let colors = "";
@@ -65,8 +67,6 @@ const InfoPill = ({ type, value, size, icon, isRadial, isSquare }) => {
     iconPill = <MdKeyboardArrowDown size={sizeIcon} />;
   } else if (icon === "delete") {
     iconPill = <MdDelete size={sizeIcon} />;
-  } else if (icon === "charla") {
-    iconPill = <GrWorkshop size={sizeIcon} />;
   } else if (icon === "like") {
     iconPill = <AiFillLike size={sizeIcon} />;
   } else if (icon === "dislike") {
@@ -77,11 +77,19 @@ const InfoPill = ({ type, value, size, icon, isRadial, isSquare }) => {
     iconPill = <MdOutlineVerified size={sizeIcon} />;
   } else if (icon === "info") {
     iconPill = <MdInfo size={sizeIcon} />;
+  } else if (icon === "charla") {
+    iconPill = <GrWorkshop size={sizeIcon} />;
+  } else if (icon === "jornada") {
+    iconPill = <GiTeamIdea size={sizeIcon} />;
+  } else if (icon === "taller") {
+    iconPill = <FaChalkboardTeacher size={sizeIcon} />;
+  } else if (icon === "observacion") {
+    iconPill = <SiGoogleclassroom size={sizeIcon} />;
   }
 
   return (
     <div
-      className={`flex items-center gap-1 ${colors} ${sizeText} font-medium p-2 ${
+      className={`flex items-center gap-2 ${colors} ${sizeText} font-medium py-2 px-3 ${
         isRadial ? "rounded-full" : isSquare ? "rounded-lg" : "rounded-xl"
       }`}
     >
