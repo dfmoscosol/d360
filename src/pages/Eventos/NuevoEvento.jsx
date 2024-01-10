@@ -12,26 +12,22 @@ const NuevoEvento = () => {
     {
       to: "jornadaInnovacion",
       label: "Jornada de Innovación",
-      icon: <GiTeamIdea size={25} />,
-      colors: "bg-amber-100 text-amber-600",
+      icon: <GiTeamIdea size={30} />,
     },
     {
       to: "charla",
       label: "Charla",
-      icon: <GrWorkshop size={25} />,
-      colors: "bg-blue-100 text-blue-600",
+      icon: <GrWorkshop size={30} />,
     },
     {
       to: "taller",
       label: "Taller",
-      icon: <FaChalkboardTeacher size={25} />,
-      colors: "bg-rose-100 text-rose-600",
+      icon: <FaChalkboardTeacher size={30} />,
     },
     {
       to: "observacionAulica",
       label: "Observación Áulica",
-      icon: <SiGoogleclassroom size={25} />,
-      colors: "bg-teal-100 text-teal-600",
+      icon: <SiGoogleclassroom size={30} />,
     },
   ];
 
@@ -39,14 +35,10 @@ const NuevoEvento = () => {
     <>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {dropdownItems.map((item, index) => (
-          <Link
-            to={item.to}
-            key={index}
-            className=" "
-          >
-            <div className="text-primary_gray_2 hover:bg-primary_gray_1 hover:text-black px-2 py-4 rounded-lg border-2 border-dashed border-primary_gray_5 col-span-1 flex flex-col items-center gap-3 hover:shadow-md transition-all duration-200">
-              <div className={`${item.colors} p-2 rounded-lg`}>{item.icon}</div>
-              <span className="text-base font-medium text-primary_gray_3">
+          <Link to={item.to} key={index} className=" ">
+            <div className="text-primary_gray_4 hover:bg-primary_gray_1 hover:text-black px-2 py-4 rounded-lg border border-primary_gray_5 col-span-1 flex flex-col items-center gap-3 hover:shadow-md transition-all duration-300">
+              <div className={`$ bg-gray-100 text-primary_text_1 p-2 rounded-lg`}>{item.icon}</div>
+              <span className="text-base font-medium text-primary_gray_4">
                 {item.label}
               </span>
             </div>

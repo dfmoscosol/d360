@@ -230,14 +230,14 @@ const CrearJornadaInnovacion = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <ContainerForm>
           {/**Nombre */}
-          <div className="md:col-span-8 col-span-12 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1">
+          <div className="md:col-span-8 col-span-12 flex flex-col gap-1">
+            <span className="text-base uppercase font-medium tracking-wide text-primary_text_1">
               Nombre
             </span>
             <input
               //value="Jornada de Innovación Test"
               type="text"
-              className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
               placeholder="Jornada 1"
               {...register("nombre", { required: true })}
             />
@@ -249,8 +249,8 @@ const CrearJornadaInnovacion = () => {
           </div>
 
           {/**Modalidad */}
-          <div className="md:col-span-4 col-span-12 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
+          <div className="md:col-span-4 col-span-12 flex flex-col gap-1">
+            <span className="text-base uppercase font-medium tracking-wide text-primary_text_1">
               Modalidad
             </span>
             <div className="w-full">
@@ -264,8 +264,8 @@ const CrearJornadaInnovacion = () => {
           </div>
 
           {/**Tutor */}
-          <div className="md:col-span-6 col-span-12 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <span className="text-base uppercase font-medium tracking-wide text-primary_text_1">
               Tutor
             </span>
             <div className="w-full">

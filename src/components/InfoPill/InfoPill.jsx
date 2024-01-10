@@ -89,7 +89,7 @@ const InfoPill = ({ type, value, size, icon, isRadial, isSquare }) => {
 
   return (
     <div
-      className={`flex items-center gap-2 ${colors} ${sizeText} font-medium py-2 px-3 ${
+      className={`flex items-center gap-2 ${colors} ${sizeText} font-medium py-2 px-2 tracking-tight ${
         isRadial ? "rounded-full" : isSquare ? "rounded-lg" : "rounded-xl"
       }`}
     >

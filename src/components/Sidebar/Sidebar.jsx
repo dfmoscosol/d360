@@ -6,7 +6,6 @@ import { MdMenu, MdMenuOpen, MdLogout } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { setOpen } from "@redux/features/sidebar/sidebarSlice";
 import { logout } from "@redux/features/auth/authSlice";
-import { useNavigate } from "react-router-dom";
 
 import LOGO from "@assets/logo.svg";
 
@@ -14,16 +13,10 @@ import routes from "@routes/routes";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const isOpen = useSelector((state) => state.sidebarState.isOpen);
 
   const handleLogout = () => {
     dispatch(logout());
-    // Eliminar el token de Local Storage
-    localStorage.removeItem("token");
-    // Redirigir al usuario a la página de login
-    //navigate("/login");
-    window.location.href = "/login";
   };
 
   return (
@@ -64,7 +57,7 @@ const Sidebar = () => {
               {routes.map((route, index) => (
                 <div className="flex flex-col" key={index}>
                   <span
-                    className={`text-sm font-normal text-primary_gray_2 overflow-hidden ${
+                    className={`text-sm font-semibold text-primary_gray_4 overflow-hidden ${
                       isOpen ? "w-full ml-1" : "w-0"
                     }  transition-all ease-in-out duration-500`}
                   >
@@ -82,7 +75,7 @@ const Sidebar = () => {
                       <NavLink to={`/${item.path}`} key={index}>
                         {({ isActive }) => (
                           <div
-                            className={`flex py-2 px-4 rounded-lg items-center justify-center  ${
+                            className={`flex py-2 px-4 rounded-lg items-center justify-center transition-all duration-300 group ${
                               isActive
                                 ? "bg-primary_gray_1"
                                 : "hover:bg-primary_gray_1"
@@ -92,19 +85,19 @@ const Sidebar = () => {
                               className={`${
                                 isActive
                                   ? "text-primary_color_1"
-                                  : "text-primary_gray_3"
-                              } `}
+                                  : "text-primary_gray_2 group-hover:text-primary_color_1"
+                              } transition-all ease-in-out duration-300 `}
                             >
                               {item.icon}
                             </span>
                             <div
-                              className={`overflow-hidden text-base font-normal ${
+                              className={`overflow-hidden text-base tracking-tight ${
                                 isOpen ? "w-full ml-2" : "w-0"
                               }  ${
                                 isActive
-                                  ? "text-primary_color_1 font-semibold"
-                                  : "text-primary_gray_4 font-medium"
-                              } transition-all ease-in-out duration-500`}
+                                  ? "text-primary_color_1"
+                                  : "text-primary_gray_2 group-hover:text-primary_color_1"
+                              } transition-all ease-in-out duration-300`}
                             >
                               {item.name}
                             </div>
@@ -131,13 +124,13 @@ const Sidebar = () => {
               </div>
               <button
                 onClick={handleLogout}
-                className="mt-3 text-primary_color_2 hover:bg-primary_color_2_text_light_hover active:bg-primary_color_2_text_light_active border bg-white border-primary_color_2 rounded-lg p-2 flex items-center justify-center w-full hover:shadow-lg transition-all duration-300"
+                className="mt-3 bg-primary_gray_1 text-primary_color_1 hover:bg-primary_color_2_text_light_hover active:bg-primary_color_2_text_light_active rounded-lg p-2 flex items-center justify-center w-full hover:shadow-lg transition-all duration-300"
               >
                 <span className="">
                   <MdLogout size={20} />
                 </span>
                 <div
-                  className={`overflow-hidden font-medium whitespace-nowrap text-sm ${
+                  className={`overflow-hidden text-base tracking-tight whitespace-nowrap  ${
                     isOpen ? "w-auto ml-2" : "w-0"
                   } transition-all ease-in-out duration-500`}
                 >

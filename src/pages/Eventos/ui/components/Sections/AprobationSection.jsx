@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Modal, InfoPill, ContainerPage, Button } from "@components";
+import { Modal, Button } from "@components";
 import { useActualizarInscripcionMutation } from "@redux/services/evento/eventoApi";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 import PillPorInscribir from "../PillPorInscribir/PillPorInscribir";

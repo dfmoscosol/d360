@@ -54,7 +54,7 @@ const Keywords = () => {
     <ContainerPage>
       <div className="w-full md:max-w-xl rounded-lg flex flex-col gap-8">
         <div className="w-full bg-white flex flex-col rounded-lg p-4 ">
-          <span className="font-medium text-base text-primary_color_1">
+          <span className="font-medium text-base text-primary_text_1">
             Competencia
           </span>
           <div className="w-full mt-2">
@@ -67,7 +67,7 @@ const Keywords = () => {
           </div>
         </div>
         <div className="w-full bg-white flex flex-col rounded-lg p-4">
-          <span className="font-medium text-base text-primary_color_1">
+          <span className="font-medium text-base text-primary_text_1">
             Términos Clave
           </span>
           <KeywordCard

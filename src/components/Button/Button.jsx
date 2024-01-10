@@ -74,7 +74,7 @@ const Button = ({
       isPrimary
         ? "bg-primary_color_1 border-primary_color_1 text-white"
         : "bg-white border-primary_color_1 text-primary_color_1"
-    }  hover:bg-primary_color_1_bg_light hover:text-white active:bg-primary_color_1 border`;
+    }  hover:bg-primary_color_1 hover:text-white active:bg-primary_color_1 border`;
     colorOval = "#0e7490";
   } else if (type === "ucuencaRed") {
     colors = `${
@@ -85,7 +85,10 @@ const Button = ({
     colorOval = "#0e7490";
   }
 
-  if (size === "small") {
+  if (size === "xsmall") {
+    sizeIcon = 15;
+    sizeText = "text-xs p-2";
+  } else if (size === "small") {
     sizeIcon = 19;
     sizeText = "text-xs p-2";
   } else if (size === "medium") {

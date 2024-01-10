@@ -46,18 +46,18 @@ const Tabs = ({ tabList, activeIndex }) => {
               <div key={indexTab}>
                 {tab.hasTitle ? (
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-medium text-primary_gray_3">
+                    <span className="text-sm font-medium text-primary_gray_4">
                       {tab.title}
                     </span>
-                    <div className="flex flex-col gap-0">
+                    <div className="flex flex-col gap-0 ">
                       {tab.data.map((data, index) => (
                         <button
                           key={data.index}
                           className={`${
                             data.index === activeTab
-                              ? "text-primary_color_1 font-medium bg-primary_gray_1 rounded-lg"
+                              ? "text-primary_color_1 font-medium bg-primary_gray_1 "
                               : "text-primary_gray_2 font-normal"
-                          } py-1 px-2 flex items-center gap-2 w-full text-sm`}
+                          } py-1 px-2 flex items-center gap-2 w-full text-sm hover:bg-primary_gray_1 rounded-lg transition-all duration-300`}
                           onClick={() => handleTabClick(data.index)}
                         >
                           {data.icon}
@@ -71,9 +71,9 @@ const Tabs = ({ tabList, activeIndex }) => {
                     key={tab.index}
                     className={`${
                       tab.index === activeTab
-                        ? "text-primary_color_1 font-medium bg-primary_gray_1 rounded-lg"
-                        : "text-primary_gray_2 font-normal"
-                    } p-2 flex items-center gap-2 w-full text-sm`}
+                        ? "text-primary_color_1 font-medium bg-primary_gray_1 "
+                        : "text-primary_gray_4 font-normal"
+                    } p-2 flex items-center gap-2 w-full text-sm hover:bg-primary_gray_1 rounded-lg transition-all duration-300`}
                     onClick={() => handleTabClick(tab.index)}
                   >
                     {tab.icon}

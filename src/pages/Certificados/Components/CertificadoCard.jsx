@@ -88,6 +88,22 @@ const CertificadoCard = ({
     }
   }, [isSuccessEdit, isErrorEdit, errorEdit, dispatch]);
 
+  /**
+   * PARA EL MODAL DE NO APROBAR
+   */
+  const [isModalNoApprovedOpenEdit, setModalNoApprovedOpenEdit] = useState(false);
+
+  const handleDenegarAprobar = () => {
+    /*editCertificado({
+      id: idCertificado,
+      body: {
+        isapproved: true,
+      },
+    });*/
+    setModalNoApprovedOpenEdit(false);
+  };
+
+
   return (
     <>
       <Modal
@@ -121,28 +137,59 @@ const CertificadoCard = ({
         )}
       </Modal>
 
-      <div className="bg-white rounded-lg p-4 flex flex-col hover:shadow-lg transition-all duration-200 ">
+      <Modal
+        isOpen={isModalNoApprovedOpenEdit}
+        message="¿Desea eliminar el Certificado?"
+        onClose={() => setModalNoApprovedOpenEdit(false)}
+        type={"error"}
+        title={"Eliminar Certificado"}
+        showCancel={!isSuccessEdit}
+      >
+        {isSuccessEdit ? (
+          <Link to="/eventos">
+            <Button
+              value="Actualización exitosa"
+              type="success"
+              size="medium"
+              icon="check"
+              isPrimary={true}
+            />
+          </Link>
+        ) : (
+          <Button
+            value="Eliminar"
+            type="error"
+            size="medium"
+            icon="delete"
+            isPrimary={true}
+            onClick={handleDenegarAprobar}
+            //isLoading={isUpdatingEdit}
+          />
+        )}
+      </Modal>
+
+      <div className="bg-white rounded-lg p-4 flex flex-col hover:shadow-lg transition-all duration-200">
         <div className="flex gap-2 items-center">
           <InfoPill type="date" icon="person" isSquare={true} size="large" />
           <div className="flex flex-col">
-            <span className="text-lg font-medium text-primary_color_1">
+            <span className="text-lg font-medium text-primary_text_1">
               {nombres}
             </span>
-            <span className="text-sm font-normal text-primary_gray_2">
+            <span className="text-sm font-normal text-primary_gray_3">
               {correo}
             </span>
           </div>
         </div>
         <div className="mt-4 border border-primary_gray_5 p-4 rounded-lg flex flex-col md:flex-row gap-4 relative">
-          <div className="w-full md:w-64 relative">
+          <div className="w-full md:w-64 relative flex items-center">
             <img src={urlImagen} alt="Imagen del curso" />
-            <div className="absolute right-1 bottom-1 bg-white rounded-xl py-1 px-2 w-20">
+            <div className="absolute left-1 bottom-0 bg-white border rounded-xl py-1 px-2 w-20">
               <img src={urlLogo} alt="Imagen del curso" />
             </div>
           </div>
-          <div className="flex flex-col items-start justify-between gap-4">
+          <div className="flex flex-col items-start justify-between gap-4 ">
             <Link to={urlCurso} target="_blank" rel="noopener noreferrer">
-              <span className="text-lg font-medium text-primary_color_1">
+              <span className="text-lg font-medium text-primary_text_1">
                 {nombreCurso}
               </span>
             </Link>
@@ -158,14 +205,14 @@ const CertificadoCard = ({
 
             <div className="flex  mt-2 gap-2 ">
               <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center">
-                <div className="p-2 bg-white rounded-lg text-primary_gray_3">
+                <div className="p-2 bg-white rounded-lg text-primary_gray_4">
                   <MdDateRange size={20} />
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="text-primary_gray_3 text-xs">
+                  <span className="text-primary_gray_2 text-xs">
                     Creado el
                   </span>
-                  <span className="text-primary_color_1 font-medium text-sm">
+                  <span className="text-primary_text_1 font-medium text-sm">
                     {fechaCreacion}
                   </span>
                 </div>
@@ -206,6 +253,9 @@ const CertificadoCard = ({
                   size={"small"}
                   icon={"close"}
                   isPrimary={false}
+                  onClick={() => {
+                    setModalNoApprovedOpenEdit(true);
+                  }}
                 />
               </div>
             )}

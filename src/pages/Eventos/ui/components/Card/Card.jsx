@@ -5,18 +5,8 @@ import ObservacionAulicaCard from "../../../ObservacionAulica/components/Card/Ob
 import CharlaCard from "../../../Charla/components/Card/CharlaCard";
 import TallerCard from "../../../Taller/components/Card/TallerCard";
 
-import InfoPill from "@components/InfoPill/InfoPill";
-import Pill from "@components/Pill/Pill";
-
-import { MdDateRange, MdSupervisorAccount } from "react-icons/md";
-
 const Card = (props) => {
   const { type, data } = props;
-  let typeCard = "";
-
-  if (type === "charla") {
-    typeCard = "Charla";
-  }
 
   if (type === "jornada") {
     return (

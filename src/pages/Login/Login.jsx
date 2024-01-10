@@ -6,7 +6,7 @@ import { Button, InfoPill } from "@components";
 import { useLoginMutation } from "@redux/services/login/loginApi";
 import { useDispatch } from "react-redux";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
-import { setToken } from "@redux/features/auth/authSlice";
+import { login } from "@redux/features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -33,7 +33,7 @@ const Login = () => {
    * PARA EL LOGIN
    */
   const [
-    login,
+    loginUser,
     { data: response, isLoading: isUpdating, isSuccess, isError, error },
   ] = useLoginMutation();
 
@@ -46,7 +46,7 @@ const Login = () => {
 
   // Enviar los datos al servidor
   const onSubmit = (data) => {
-    login(data);
+    loginUser(data);
   };
 
   useEffect(() => {
@@ -54,7 +54,10 @@ const Login = () => {
       // Almacenar el token en Local Storage
       localStorage.setItem("token", response.respuesta.access_token);
       // Guardar el token también en el estado de Redux
-      dispatch(setToken(response.respuesta.access_token));
+      dispatch(login(response.respuesta.access_token));
+
+      console.log("token guardado en local storage")
+
       // Redirige a la página principal
 
       /*if (expired) {
@@ -67,12 +70,9 @@ const Login = () => {
 
       // Redirige al usuario a la ruta 'from' si está disponible, de lo contrario a la página principal
       const redirectTo = from || "/";
-      console.log("redirigiendo a /pentagono/keywords");
-      //const redirectTo = "/pentagono/keywords";
-
       navigate(redirectTo, { replace: true });
     } else if (isError && error) {
-      //console.log(error);
+      console.log(error);
       triggerNotification(dispatch, {
         message: error.data.error || "Error al iniciar sesión.",
         type: "error",

@@ -4,14 +4,30 @@ export default {
   theme: {
     extend: {
       colors: {
+        // EL AZUL DE LA U
         primary_color_1: "#002856",
+
+        // EL ROJO DE LA U
         primary_color_2: "#A51008",
+
+        // EL AZUL OSCURO
+        primary_text_1: "#121923",
+
+        // EL GRIS DE LOS TEXTOS Y FONDO
+
+        primary_gray_1: "#f8f9fb",
+        primary_gray_2: "#999999",
+        primary_gray_3: "#777777",
+        primary_gray_4: "#6f6f6e",
+        primary_gray_5: "#E1E1E1", //claro
+
+        /*
 
         primary_gray_1: "#f8f9fb",
         primary_gray_2: "#8e8e93",
         primary_gray_3: "#6c6c70",
         primary_gray_4: "#636366",
-        primary_gray_5: "#E1E1E1",
+        
 
         side_gray: "#f2f2f7",
 
@@ -25,6 +41,9 @@ export default {
         secondary_color_1: "#f5f5f7",
         secondary_color_2: "#6e6e73",
         secondary_color_3: "#a4a6aa",
+
+
+        */
       },
     },
   },

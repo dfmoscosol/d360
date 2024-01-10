@@ -235,7 +235,6 @@ const EditarJornadaInnovacion = (props) => {
         type: "success",
       });
       handleRefetch();
-      //navigate(-1);
     } else if (isErrorTaller && errorTaller) {
       console.log(errorTaller);
       triggerNotification(dispatch, {

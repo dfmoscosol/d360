@@ -186,7 +186,7 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller }) => {
       <div className="mt-8 flex flex-col">
         <div className="border border-primary_gray_5 rounded-lg p-4 flex flex-col">
           <div className="flex justify-between items-center">
-            <span className="text-base font-medium text-primary_color_1">
+            <span className="text-base font-medium text-primary_text_1">
               Docentes a inscribir ({selectedRows.length})
             </span>
             {selectedRows.length > 0 && (

@@ -10,10 +10,7 @@ export const eventoApi = createApi({
       const token = getState().authState.token;
       console.log("token eventoApi", token);
       if (token) {
-        console.log("token eventoApi", token);
         headers.set("Authorization", `Bearer ${token}`);
-      } else {
-        console.log("no token eventoApi");
       }
       return headers;
     },

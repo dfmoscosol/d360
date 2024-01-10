@@ -35,11 +35,11 @@ const Modal = ({
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full flex flex-col">
         <div className="flex items-center gap-2">
           {icon}
-          <span className="text-primary_color_1 font-semibold text-lg">
+          <span className="text-primary_text_1 font-semibold text-lg tracking-tight">
             {title}
           </span>
         </div>
-        <span className="text-primary_gray_4 mt-4 text-base">{message}</span>
+        <span className="text-primary_gray_4 mt-4 text-base tracking-tight">{message}</span>
         <div className="mt-6 flex justify-end space-x-2">
           {children}
           {showCancel && (

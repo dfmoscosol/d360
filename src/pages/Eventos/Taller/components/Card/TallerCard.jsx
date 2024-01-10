@@ -1,8 +1,8 @@
 import React from "react";
 
 import { Link } from "react-router-dom";
-import { InfoPill } from "@components";
 import StatePill from "../../../ui/components/StatePill/StatePill";
+import { MdDateRange } from "react-icons/md";
 
 const TallerCard = (props) => {
   const {
@@ -20,23 +20,28 @@ const TallerCard = (props) => {
         to={`verEvento/${id_capacitacion}`}
         className="flex flex-col gap-4 w-full justify-between h-full"
       >
-        <div className="flex gap-2 items-center">
-          <div className="flex flex-col">
-            <span className="text-base font-medium text-primary_color_1">
-              {nombre}
-            </span>
-            <div className="flex gap-2">
-              {fechas.map((fecha, index) => (
-                <div key={index} className="bg-primary_gray_1 rounded-lg px-2">
-                  <span className="text-xs font-normal text-primary_gray_4">
-                    {fecha}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+        <div className="flex flex-col w-full">
+          <span className="text-lg font-medium text-primary_text_1 truncate tracking-tight">
+            {nombre}
+          </span>
+          <span className="text-xs font-light text-primary_gray_2">Taller</span>
         </div>
-        <div className="flex flex-wrap gap-2">
+
+        <div className="flex gap-2">
+          {fechas.map((fecha, index) => (
+            <div
+              key={index}
+              className="bg-primary_gray_1 rounded-lg p-2 flex gap-1 text-primary_gray_4 items-center"
+            >
+              <MdDateRange size={15} />
+              <span className="text-xs font-normal tracking-tight">
+                {fecha}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
           <StatePill
             hasState={allow_inscripcion}
             stateValue={"Inscripción"}
@@ -51,16 +56,6 @@ const TallerCard = (props) => {
             hasState={allow_asistencia_salida}
             stateValue={"Salida"}
             icon={"salida"}
-          />
-        </div>
-        <div className="flex">
-          <InfoPill
-            icon={"taller"}
-            size="small"
-            type="date"
-            isRadial={false}
-            isSquare={false}
-            value={"Taller"}
           />
         </div>
       </Link>

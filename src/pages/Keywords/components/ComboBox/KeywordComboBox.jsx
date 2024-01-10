@@ -21,10 +21,10 @@ const KeywordComboBox = ({ items, onSelect, hasBeenSelected, selected }) => {
 
   return (
     <div className="relative">
-      <div className="flex  items-center rounded-lg text-sm w-full relative">
+      <div className="flex items-center rounded-lg text-sm w-full relative">
         <input
           type="text"
-          className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+          className="font-normal cursor-pointer p-2 rounded-lg text-sm w-full bg-primary_gray_1 text-primary_gray_4 outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
           value={selectedItem}
           onChange={(e) => setSelectedItem(e.target.value)}
           onClick={toggleComboBox}
@@ -43,7 +43,7 @@ const KeywordComboBox = ({ items, onSelect, hasBeenSelected, selected }) => {
           {items.map((item, index) => (
             <div
               key={index}
-              className="p-2 text-sm hover:bg-primary_gray_1 rounded-lg cursor-pointer"
+              className="p-2 text-sm hover:bg-primary_gray_1 rounded-lg cursor-pointer text-primary_gray_4"
               onClick={() => handleSelectItem(item)}
             >
               {item}

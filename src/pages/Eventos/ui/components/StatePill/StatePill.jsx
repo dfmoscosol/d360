@@ -18,12 +18,28 @@ const StatePill = ({ hasState, stateValue, icon }) => {
 
   return (
     <div
-      className={` p-2 rounded-lg flex items-center gap-1 ${
-        hasState ? "text-green-600 bg-green-50" : "text-amber-600 bg-amber-50"
+      className={`p-2 rounded-lg flex items-center justify-center gap-2 border border-primary_gray_5 ${
+        hasState ? "text-green-600 b-green-100" : "text-amber-600 b-amber-200"
       } `}
     >
-      {iconPill}
-      <span className="text-xs font-medium ">{stateValue}</span>
+      {/** 
+      {iconPill}*/}
+
+      <span class="relative flex h-3 w-3">
+        <span
+          class={` absolute inline-flex h-full w-full rounded-full ${
+            hasState ? "bg-green-500 animate-ping" : "bg-amber-200"
+          } opacity-75`}
+        ></span>
+        <span
+          class={`relative inline-flex rounded-full h-3 w-3 ${
+            hasState ? "bg-green-400" : "bg-amber-200"
+          }`}
+        ></span>
+      </span>
+      <span className="text-xs font-medium tracking-tight text-primary_gray_4">
+        {stateValue}
+      </span>
     </div>
   );
 };

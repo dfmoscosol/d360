@@ -1,35 +1,49 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// initialize userToken from local storage
-const token = localStorage.getItem("token")
-  ? localStorage.getItem("token")
-  : null;
+let token = localStorage.getItem("token");
+let hasExpired;
+let isLogged;
+
+if (token) {
+  console.log("auth slice have token")
+  hasExpired = false;
+  isLogged = true;
+} else {
+  console.log("auth slice NOOO token")
+  token = null;
+  hasExpired = false;
+  isLogged = false;
+}
 
 const initialState = {
-  token,
-  hasExpired: false,
+  token:token,
+  hasExpired: hasExpired,
+  isLogged: isLogged,
 };
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setToken: (state, action) => {
+    login: (state, action) => {
       state.token = action.payload;
+      state.isLogged = true;
+      state.hasExpired = false;
     },
-    setLoading: (state, action) => {
-      state.isLoading = action.payload;
+    setHasExpired: (state, action) => {
+      state.hasExpired = action.payload;
     },
     logout: (state, action) => {
       state.token = null;
+      state.isLogged = false;
+      state.hasExpired = false;
       localStorage.removeItem("token");
-      state.hasExpired = action.payload;
     },
   },
 });
 
 // Exportar las acciones
-export const { setToken, logout, setLoading } = authSlice.actions;
+export const { login, logout, setHasExpired } = authSlice.actions;
 
 // Exportar el reducer
 export default authSlice.reducer;

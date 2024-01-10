@@ -218,7 +218,7 @@ const KeywordCard = ({ oldKeywords, competencia, handleRefetch }) => {
   }, [isSuccessDelete, isErrorDelete, errorDelete, dispatch]);
 
   return (
-    <div className="flex flex-col gap-2 mt-2">
+    <div className="flex flex-col gap-2 mt-2 cursor-pointer">
       <Modal
         isOpen={isModalOpen}
         message="¿Desea eliminar esta palabra clave?"
@@ -287,7 +287,7 @@ const KeywordCard = ({ oldKeywords, competencia, handleRefetch }) => {
       {inputs.map((keyword, index) => (
         <div
           key={index}
-          className="bg-white border border-primary_gray_5 rounded-lg py-2 px-4 flex justify-between items-center hover:shadow-lg transition duration-200"
+          className="bg-white border border-primary_gray_5 rounded-lg py-2 px-4 flex justify-between items-center hover:shadow-lg transition duration-200 group"
         >
           <div className="flex flex-col gap-2 w-full">
             {keyword.isapproved ? (
@@ -318,24 +318,24 @@ const KeywordCard = ({ oldKeywords, competencia, handleRefetch }) => {
                       handleInputChange(keyword.id, e.target.value)
                     }
                     ref={keyword.ref} // Asignar la referencia aquí
-                    className={`font-medium text-sm p-1  w-40 md:w-full ${
+                    className={`font-normal text-sm p-1 w-40 md:w-full tracking-tight ${
                       keyword.isEnableEdit
-                        ? "bg-primary_gray_1  rounded-lg"
-                        : "bg-white"
+                        ? "bg-primary_gray_1 rounded-lg"
+                        : "bg-white text-primary_gray_4 cursor-pointer"
                     }  `}
                     disabled={!keyword.isEnableEdit}
                   />
                 </div>
 
                 {!keyword.isEnableEdit ? (
-                  <div className="flex gap-2">
+                  <div className=" gap-2 group-hover:flex hidden">
                     <Button
                       type="ucuenca"
                       onClick={() => handleEnableEdit(keyword.id)}
                       icon={"edit"}
                       buttonType={"button"}
                       value={"Atrás"}
-                      size={"small"}
+                      size={"xsmall"}
                       isRadial={true}
                     />
                     <Button
@@ -346,7 +346,7 @@ const KeywordCard = ({ oldKeywords, competencia, handleRefetch }) => {
                       icon={"delete"}
                       buttonType={"button"}
                       value={""}
-                      size={"small"}
+                      size={"xsmall"}
                       isRadial={true}
                       isPrimary={true}
                     />

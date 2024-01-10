@@ -8,9 +8,6 @@ import { Navigate } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout/MainLayout";
 import LoginLayout from "./layouts/LoginLayout/LoginLayout";
 
-import { useDispatch } from "react-redux";
-import { setToken, setLoading } from "./redux/features/auth/authSlice";
-
 import { PrivateRoute } from "@components";
 
 import {
