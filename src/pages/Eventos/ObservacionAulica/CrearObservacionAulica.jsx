@@ -14,6 +14,7 @@ import { Button } from "@components";
 
 import { ContainerPage } from "@components";
 import ContainerForm from "../ui/components/ContainerForm/ContainerForm";
+import FormLabel from "../ui/components/FormLabel/FormLabel";
 
 const CrearObservacionAulica = () => {
   /**
@@ -117,7 +118,7 @@ const CrearObservacionAulica = () => {
           value={value}
           readOnly
           type="text"
-          className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+          className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
           placeholder=""
           onChange={onChange}
         />
@@ -168,14 +169,12 @@ const CrearObservacionAulica = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <ContainerForm>
           {/**Nombre */}
-          <div className="col-span-12 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1">
-              Nombre
-            </span>
+          <div className="col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Nombre"} />
             <input
               //value="Jornada de Innovación Test"
               type="text"
-              className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
               placeholder="Jornada 1"
               {...register("nombre", { required: true })}
             />
@@ -187,34 +186,28 @@ const CrearObservacionAulica = () => {
           </div>
 
           {/**Modalidad */}
-          <div className="md:col-span-6 col-span-12 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
-              Modalidad
-            </span>
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Modalidad"} />
             <div className="w-full">
               <ComboBox items={listModalidades} onSelect={handleSelect} />
             </div>
           </div>
 
           {/**Dirección */}
-          <div className="md:col-span-6 col-span-12 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
-              Dirección
-            </span>
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Dirección"} />
             <div className="w-full">
               <input
                 type="text"
-                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
                 {...register("direccion", { required: false })}
               />
             </div>
           </div>
 
           {/**Fecha */}
-          <div className="col-span-6 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1">
-              Fecha
-            </span>
+          <div className="col-span-6 flex flex-col gap-1">
+            <FormLabel value={"Fecha"} />
             <div className="w-full flex flex-col">
               <DatePicker
                 range
@@ -240,16 +233,16 @@ const CrearObservacionAulica = () => {
           </div>
 
           {/**Horas */}
-          <div className="col-span-3 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
-              Horas
-            </span>
+          <div className="col-span-3 flex flex-col gap-1">
+            <FormLabel value={"Horas"} />
             <div className="w-full">
               <input
                 type="number"
                 //value={10}
-                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
                 {...register("horas", { required: true })}
+                min={1}
+                step={1}
               />
             </div>
             {errors.horas && (
@@ -260,16 +253,16 @@ const CrearObservacionAulica = () => {
           </div>
 
           {/**Cupos */}
-          <div className="col-span-3 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
-              Cupos
-            </span>
+          <div className="col-span-3 flex flex-col gap-1">
+            <FormLabel value={"Cupos"} />
             <div className="w-full h-full ">
               <input
                 //value={5}
                 type="number"
-                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
                 {...register("cupo", { required: true })}
+                min={1}
+                step={1}
               />
             </div>
             {errors.cupo && (

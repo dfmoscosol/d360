@@ -21,7 +21,7 @@ const JornadaInnovacionCard = (props) => {
         className="flex flex-col gap-4 w-full justify-between h-full"
       >
         <div className="flex flex-col w-full">
-          <span className="text-lg font-medium text-primary_text_1 truncate tracking-tight">
+          <span className="text-lg font-medium text-primary_text_1 truncate tracking-tight leading-tight">
             {nombre}
           </span>
           <span className="text-xs font-light text-primary_gray_2">

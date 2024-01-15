@@ -4,9 +4,8 @@ import DatePicker, { DateObject } from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
 import { useNavigate } from "react-router-dom";
-
 import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
-
+import FormLabel from "../ui/components/FormLabel/FormLabel";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
@@ -139,7 +138,7 @@ const EditarObservacionAulica = (props) => {
           value={value}
           readOnly
           type="text"
-          className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+          className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
           placeholder=""
           onChange={onChange}
         />
@@ -238,14 +237,12 @@ const EditarObservacionAulica = (props) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <ContainerForm>
           {/**Nombre */}
-          <div className="col-span-12 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1">
-              Nombre
-            </span>
+          <div className="col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Nombre"} />
             <input
               defaultValue={nombre}
               type="text"
-              className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
               placeholder="Jornada 1"
               {...register("nombre", { required: true })}
             />
@@ -257,10 +254,8 @@ const EditarObservacionAulica = (props) => {
           </div>
 
           {/**Modalidad */}
-          <div className="col-span-6 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
-              Modalidad
-            </span>
+          <div className="col-span-6 flex flex-col gap-1">
+            <FormLabel value={"Modalidad"} />
             <div className="w-full">
               <ComboBox
                 items={listModalidades}
@@ -272,10 +267,8 @@ const EditarObservacionAulica = (props) => {
           </div>
 
           {/**Fecha */}
-          <div className="col-span-6 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1">
-              Fecha
-            </span>
+          <div className="col-span-6 flex flex-col gap-1">
+            <FormLabel value={"Fecha"} />
             <div className="w-full flex flex-col">
               <DatePicker
                 range
@@ -302,31 +295,29 @@ const EditarObservacionAulica = (props) => {
           </div>
 
           {/**Dirección */}
-          <div className="col-span-6 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
-              Dirección
-            </span>
+          <div className="col-span-6 flex flex-col gap-1">
+            <FormLabel value={"Dirección"} />
             <div className="w-full">
               <input
                 type="text"
                 defaultValue={direccion}
-                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
                 {...register("direccion", { required: false })}
               />
             </div>
           </div>
 
           {/**Horas */}
-          <div className="col-span-3 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
-              Horas
-            </span>
+          <div className="col-span-3 flex flex-col gap-1">
+            <FormLabel value={"Horas"} />
             <div className="w-full">
               <input
                 type="number"
                 defaultValue={horas}
-                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
                 {...register("horas", { required: true })}
+                min={1}
+                step={1}
               />
             </div>
             {errors.horas && (
@@ -337,16 +328,16 @@ const EditarObservacionAulica = (props) => {
           </div>
 
           {/**Cupos */}
-          <div className="col-span-3 flex flex-col">
-            <span className="text-base font-medium text-primary_color_1 ">
-              Cupos
-            </span>
+          <div className="col-span-3 flex flex-col gap-1">
+            <FormLabel value={"Cupos"} />
             <div className="w-full h-full ">
               <input
                 defaultValue={cupo}
                 type="number"
-                className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
                 {...register("cupo", { required: true })}
+                min={1}
+                step={1}
               />
             </div>
             {errors.cupo && (

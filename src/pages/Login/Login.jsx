@@ -10,6 +10,7 @@ import { login } from "@redux/features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import FormLabel from "../Eventos/ui/components/FormLabel/FormLabel";
 
 const Login = () => {
   /**
@@ -56,7 +57,7 @@ const Login = () => {
       // Guardar el token también en el estado de Redux
       dispatch(login(response.respuesta.access_token));
 
-      console.log("token guardado en local storage")
+      console.log("token guardado en local storage");
 
       // Redirige a la página principal
 
@@ -118,19 +119,17 @@ const Login = () => {
         </div>
       )}
 
-      <span className="my-5 text-xl font-semibold text-primary_gray_3">
+      <span className="my-5 text-xl font-semibold text-primary_gray_4">
         Iniciar Sesión
       </span>
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
         {/**Nombre */}
         <div className="bg-red-0 w-full flex flex-col">
-          <span className="text-base font-medium text-primary_color_1">
-            Nombre
-          </span>
+          <FormLabel value={"Nombre"} />
           <input
             //value="Jornada de Innovación Test"
             type="text"
-            className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+            className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
             placeholder="Jornada 1"
             {...register("correo", { required: true })}
           />
@@ -143,13 +142,11 @@ const Login = () => {
 
         {/**Contraseña */}
         <div className="bg-red-0 w-full flex flex-col mt-4">
-          <span className="text-base font-medium text-primary_color_1">
-            Contraseña
-          </span>
+          <FormLabel value={"Contraseña"} />
           <input
             //value="Jornada de Innovación Test"
             type="password"
-            className="font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-2 focus:ring-inset focus:ring-primary_color_1"
+            className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
             placeholder="Jornada 1"
             {...register("contrasena", { required: true })}
           />

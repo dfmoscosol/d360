@@ -37,7 +37,7 @@ const NuevoEvento = () => {
         {dropdownItems.map((item, index) => (
           <Link to={item.to} key={index} className=" ">
             <div className="text-primary_gray_4 hover:bg-primary_gray_1 hover:text-black px-2 py-4 rounded-lg border border-primary_gray_5 col-span-1 flex flex-col items-center gap-3 hover:shadow-md transition-all duration-300">
-              <div className={`$ bg-gray-100 text-primary_text_1 p-2 rounded-lg`}>{item.icon}</div>
+              <div className={`$ bg-gray-100 text-primary_gray_4 p-2 rounded-lg`}>{item.icon}</div>
               <span className="text-base font-medium text-primary_gray_4">
                 {item.label}
               </span>
