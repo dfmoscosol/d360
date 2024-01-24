@@ -10,8 +10,6 @@ import EventoView, {
   Title,
   Info,
   Data,
-  Footer,
-  TitlePanel,
   Activator,
   SubTitle,
   TogglePanel,

@@ -39,9 +39,9 @@ const Tabs = ({ tabList, activeIndex }) => {
 
   return (
     <div className="rounded-lg w-full">
-      <div className="grid grid-cols-12 gap-2">
-        <div className="col-span-12 md:col-span-2 py-6">
-          <div className="flex flex-col w-full gap-2">
+      <div className="grid grid-cols-12 md:gap-2 gap-8">
+        <div className="col-span-12 md:col-span-2">
+          <div className="flex flex-col w-full gap-2 md:h-full md:pr-6 md:border-r md:border-primary_gray_5">
             {tabList.map((tab, indexTab) => (
               <div key={indexTab}>
                 {tab.hasTitle ? (
@@ -84,7 +84,7 @@ const Tabs = ({ tabList, activeIndex }) => {
             ))}
           </div>
         </div>
-        <div className="col-span-12 md:col-span-10 w-full">
+        <div className="col-span-12 md:col-span-10 w-full ">
           <div className="rounded-xl transition-all duration-300">
             {/**{tabList[activeTab].content} */}
             {activeContent}

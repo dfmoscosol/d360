@@ -16,6 +16,7 @@ import {
   MdCheckBox,
 } from "react-icons/md";
 
+
 const VerCharla = (props) => {
   /**
    * PROPS

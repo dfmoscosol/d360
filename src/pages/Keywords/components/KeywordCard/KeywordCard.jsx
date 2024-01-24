@@ -318,11 +318,7 @@ const KeywordCard = ({ oldKeywords, competencia, handleRefetch }) => {
                       handleInputChange(keyword.id, e.target.value)
                     }
                     ref={keyword.ref} // Asignar la referencia aquí
-                    className={`font-normal text-sm p-1 w-40 md:w-full tracking-tight ${
-                      keyword.isEnableEdit
-                        ? "bg-primary_gray_1 rounded-lg"
-                        : "bg-white text-primary_gray_4 cursor-pointer"
-                    }  `}
+                    className={`bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5  `}
                     disabled={!keyword.isEnableEdit}
                   />
                 </div>
@@ -359,7 +355,7 @@ const KeywordCard = ({ oldKeywords, competencia, handleRefetch }) => {
                       icon={"save"}
                       buttonType={"button"}
                       value={""}
-                      size={"small"}
+                      size={"xsmall"}
                       isRadial={true}
                       isPrimary={true}
                     />
@@ -369,7 +365,7 @@ const KeywordCard = ({ oldKeywords, competencia, handleRefetch }) => {
                       icon={"close"}
                       buttonType={"button"}
                       value={""}
-                      size={"small"}
+                      size={"xsmall"}
                       isRadial={true}
                       isPrimary={false}
                     />
