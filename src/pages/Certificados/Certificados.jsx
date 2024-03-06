@@ -13,7 +13,6 @@ const Certificados = () => {
   if (isError) return <FetchError error={error} />;
 
   const certificados = data.respuesta.certificados;
-  console.log(certificados);
 
   const handleRefetch = () => {
     refetch();

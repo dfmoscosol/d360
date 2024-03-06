@@ -9,10 +9,7 @@ export const keywordApi = createApi({
     prepareHeaders: (headers, { getState }) => {
       const token = getState().authState.token;
       if (token) {
-        console.log("token keywordApi", token)
         headers.set("Authorization", `Bearer ${token}`);
-      } else {
-        console.log("no token certificadoApi");
       }
       return headers;
     },

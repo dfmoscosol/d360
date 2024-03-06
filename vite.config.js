@@ -30,6 +30,10 @@ export default defineConfig({
         find: "@redux",
         replacement: "/src/redux",
       },
+      {
+        find: "@helpers",
+        replacement: "/src/helpers",
+      },
     ],
   },
 });

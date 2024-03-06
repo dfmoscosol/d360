@@ -4,9 +4,6 @@ import { ContainerPage } from "@components";
 import CertificadoCard from "./Components/CertificadoCard";
 
 const VerCertificados = ({ certificados, handleRefetch }) => {
-  console.log("certificados");
-  console.log(certificados);
-
   return (
     <ContainerPage>
       <div className="w-full flex flex-col gap-4">

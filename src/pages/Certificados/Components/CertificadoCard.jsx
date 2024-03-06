@@ -7,6 +7,8 @@ import axios from "axios";
 import { useEditCertificadoMutation } from "@redux/services/certificado/certificadoApi";
 import { useDispatch } from "react-redux";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
+import descargarArchivo from "@helpers/descargarArchivoService";
+import { useSelector } from "react-redux";
 
 const CertificadoCard = ({
   nombreCurso,
@@ -25,25 +27,6 @@ const CertificadoCard = ({
    */
 
   const dispatch = useDispatch();
-
-  const descargarCertificado = async () => {
-    try {
-      const response = await axios.get(
-        `https://d360api.ucuenca.edu.ec/descargar_certificado/${idCertificado}`,
-        {
-          responseType: "blob", // Muy importante para archivos binarios como PDF
-        }
-      );
-
-      const url = window.URL.createObjectURL(
-        new Blob([response.data], { type: "application/pdf" })
-      );
-      window.open(url, "_blank").focus();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error al descargar el certificado", error);
-    }
-  };
 
   const [
     editCertificado,
@@ -91,7 +74,8 @@ const CertificadoCard = ({
   /**
    * PARA EL MODAL DE NO APROBAR
    */
-  const [isModalNoApprovedOpenEdit, setModalNoApprovedOpenEdit] = useState(false);
+  const [isModalNoApprovedOpenEdit, setModalNoApprovedOpenEdit] =
+    useState(false);
 
   const handleDenegarAprobar = () => {
     /*editCertificado({
@@ -103,6 +87,15 @@ const CertificadoCard = ({
     setModalNoApprovedOpenEdit(false);
   };
 
+  /**
+   * PARA DESCARGAR EL ARCHIVO
+   */
+
+  const token = useSelector((state) => state.authState.token);
+
+  const descargarCertificado = () => {
+    descargarArchivo(idCertificado, token, dispatch);
+  };
 
   return (
     <>
@@ -209,9 +202,7 @@ const CertificadoCard = ({
                   <MdDateRange size={20} />
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="text-primary_gray_2 text-xs">
-                    Creado el
-                  </span>
+                  <span className="text-primary_gray_2 text-xs">Creado el</span>
                   <span className="text-primary_text_1 font-medium text-sm">
                     {fechaCreacion}
                   </span>
@@ -227,7 +218,7 @@ const CertificadoCard = ({
                     <span className="text-primary_gray_3 text-xs">
                       Certificado
                     </span>
-                    <span className="text-primary_color_1 font-medium text-sm">
+                    <span className="text-primary_color_1 font-medium text-sm hover:underline">
                       Descargar
                     </span>
                   </div>

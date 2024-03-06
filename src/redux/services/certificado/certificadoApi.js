@@ -9,10 +9,7 @@ export const certificadoApi = createApi({
     prepareHeaders: (headers, { getState }) => {
       const token = getState().authState.token;
       if (token) {
-        console.log("token certificadoApi", token)
         headers.set("Authorization", `Bearer ${token}`);
-      } else {
-        console.log("no token certificadoApi");
       }
       return headers;
     },
@@ -37,8 +34,8 @@ export const certificadoApi = createApi({
         method: "GET",
         responseHandler: (response) => response.blob(), // Maneja la respuesta como un blob
       }),
-    }),*/
-    /*getAllDocentes: builder.query({
+    }),
+    getAllDocentes: builder.query({
       query: (params) => `/docentes_disponibles/${params.value}`,
     }),
     inscribirDocente: builder.mutation({

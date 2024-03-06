@@ -130,7 +130,6 @@ const Login = () => {
             //value="Jornada de Innovación Test"
             type="text"
             className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-            placeholder="Jornada 1"
             {...register("correo", { required: true })}
           />
           {errors.correo && (
@@ -147,7 +146,6 @@ const Login = () => {
             //value="Jornada de Innovación Test"
             type="password"
             className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-            placeholder="Jornada 1"
             {...register("contrasena", { required: true })}
           />
           {errors.contrasena && (

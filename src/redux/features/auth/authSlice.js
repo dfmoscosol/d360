@@ -5,18 +5,18 @@ let hasExpired;
 let isLogged;
 
 if (token) {
-  console.log("auth slice have token")
+  //console.log("auth slice have token")
   hasExpired = false;
   isLogged = true;
 } else {
-  console.log("auth slice NOOO token")
+  //console.log("auth slice NOOO token")
   token = null;
   hasExpired = false;
   isLogged = false;
 }
 
 const initialState = {
-  token:token,
+  token: token,
   hasExpired: hasExpired,
   isLogged: isLogged,
 };
