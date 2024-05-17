@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const BASE_URL = "https://d360api.ucuenca.edu.ec";
+const BASE_URL = "http://localhost:5000";
 
 export const tallerApi = createApi({
   reducerPath: "tallerApi",
@@ -20,18 +20,18 @@ export const tallerApi = createApi({
       query: (params) => `/capacitacion/${params.value}`,
       providesTags: ["getCapacitacion"],
     }),*/
-    /*addEvento: builder.mutation({
+    addTaller: builder.mutation({
       query: (params) => ({
-        url: `/crear_capacitacion`,
+        url: `/eventos/${params.id_evento}/talleres`,
         method: "POST",
-        body: params,
+        body: params.body,
       }),
       invalidatesTags: ["getAll"],
-    }),*/
+    }),
     editTaller: builder.mutation({
       query: (params) => ({
-        url: `/actualizar_taller/${params.id}`,
-        method: "PUT",
+        url: `/eventos/${params.id_evento}/talleres/${params.id}`,
+        method: "PATCH",
         body: params.body,
       }),
       //invalidatesTags: ["getCapacitacion", "getAll"],
@@ -42,7 +42,7 @@ export const tallerApi = createApi({
     }),*/
     deleteTaller: builder.mutation({
       query: (params) => ({
-        url: `/eliminar_taller/${params.id}`,
+        url: `/eventos/jornadas/talleres/${params.id}`,
         method: "DELETE",
       }),
       //invalidatesTags: ["getAll"],
@@ -55,5 +55,6 @@ export const {
   //useGetAllCapacitacionesQuery,
   //useGetCapacitacionQuery,
   useEditTallerMutation,
+  useAddTallerMutation,
   useDeleteTallerMutation,
 } = tallerApi;

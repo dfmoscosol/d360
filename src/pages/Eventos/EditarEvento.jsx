@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useParams } from "react-router-dom";
-import { useGetCapacitacionQuery } from "@redux/services/evento/eventoApi";
+import { useGetEventoQuery } from "@redux/services/evento/eventoApi";
 
 import EditarJornadaInnovacion from "./JornadaInnovacion/EditarJornadaInnovacion";
 import EditarCharla from "./Charla/EditarCharla";
@@ -20,38 +20,33 @@ const EditarEvento = () => {
     isLoading,
     isFetching,
     isError,
-  } = useGetCapacitacionQuery({ value: idEvento });
+  } = useGetEventoQuery({ value: idEvento });
 
   if (isLoading || isFetching) return <Loader />;
 
   if (isError) return <FetchError error={error} />;
 
-  const capacitacion = data.respuesta.capacitacion;
-  const tipo_evento = capacitacion.tipo;
+  const evento = data.respuesta.evento;
+  const tipo_evento = evento.tipo;
 
   const handleRefetch = () => {
     //console.log("refetching handleRefetch");
     refetchVerEvento();
   };
 
-  if (tipo_evento === "jornada") {
+  if (tipo_evento === 1) {
     return (
       <EditarJornadaInnovacion
-        nombre={capacitacion.nombre}
-        nombre_tutor={capacitacion.nombre_tutor}
-        fechas={capacitacion.fechas}
-        horas={capacitacion.horas}
-        isPresencial={capacitacion.presencial}
-        direccion={capacitacion.direccion}
-        cupo={capacitacion.cupo}
-        talleres={capacitacion.talleres}
-        allow_asistencia={capacitacion.allow_asistencia}
-        allow_inscripcion={capacitacion.allow_inscripcion}
-        id_capacitacion={capacitacion.id_capacitacion}
+        nombre={evento.nombre}
+        fechas={evento.fechas}
+        horas={evento.horas}
+        cupos={evento.cupos}
+        talleres={evento.talleres}
+        id={evento.id}
         handleRefetch={handleRefetch}
       />
     );
-  } else if (tipo_evento === "charla") {
+  } /* else if (tipo_evento === "charla") {
     return (
       <EditarCharla
         cupo={capacitacion.cupo}
@@ -92,7 +87,7 @@ const EditarEvento = () => {
         handleRefetch={handleRefetch}
       />
     );
-  } else {
+  }  */else {
     return <div className="bg-red-500">Revisando Evento {idEvento}</div>;
   }
 };

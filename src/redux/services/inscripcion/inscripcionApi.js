@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const BASE_URL = "https://d360api.ucuenca.edu.ec";
+const BASE_URL = "http://localhost:5000";
 
 export const inscripcionApi = createApi({
   reducerPath: "inscripcionApi",
@@ -15,6 +15,20 @@ export const inscripcionApi = createApi({
     },
   }),
   endpoints: (builder) => ({
+    descargarInscritos: builder.mutation({
+      query: (idEvento, idTaller) => {
+        // Construir la URL condicionalmente
+        const url = idTaller
+          ? `/eventos/${idEvento}/inscritos/${idTaller}`
+          : `/eventos/${idEvento}/inscritos`;
+
+        return {
+          url: url,
+          method: "GET",
+          responseHandler: (response) => response.blob(),
+        };
+      },
+    }),
     agregarInscripciones: builder.mutation({
       query: (body) => ({
         url: `/agregar_inscripciones`,
@@ -25,4 +39,7 @@ export const inscripcionApi = createApi({
   }),
 });
 
-export const { useAgregarInscripcionesMutation } = inscripcionApi;
+export const {
+  useDescargarInscritosMutation,
+  useAgregarInscripcionesMutation,
+} = inscripcionApi;

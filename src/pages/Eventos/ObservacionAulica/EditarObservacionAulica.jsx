@@ -4,7 +4,7 @@ import DatePicker, { DateObject } from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
 import { useNavigate } from "react-router-dom";
-import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
+import { useEditEventoMutation } from "@redux/services/evento/eventoApi";
 import FormLabel from "../ui/components/FormLabel/FormLabel";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -35,7 +35,7 @@ const EditarObservacionAulica = (props) => {
   const [
     editCapacitacion,
     { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
-  ] = useEditCapacitacionMutation();
+  ] = useEditEventoMutation();
 
   /**
    * PARA EL FORMULARIO

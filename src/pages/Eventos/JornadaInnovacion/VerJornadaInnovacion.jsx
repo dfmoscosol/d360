@@ -18,17 +18,12 @@ const VerJornadaInnovacion = (props) => {
    * PROPS
    */
   const {
-    allow_asistencia_entrada,
-    allow_asistencia_salida,
-    allow_inscripcion,
-    cupo,
-    direccion,
+    inscripcion,
+    cupos,
     fechas,
     horas,
-    id_capacitacion,
+    id,
     nombre,
-    nombre_tutor,
-    isPresencial,
     talleres,
     handleRefetch,
   } = props;
@@ -36,13 +31,7 @@ const VerJornadaInnovacion = (props) => {
   /**
    * MODALIDAD
    */
-  let modalidad = "";
 
-  if (isPresencial) {
-    modalidad = "Presencial";
-  } else {
-    modalidad = "Virtual";
-  }
 
   let talleresInfo = [];
 
@@ -55,41 +44,28 @@ const VerJornadaInnovacion = (props) => {
       <InformationSection
         headerIcon={<GiTeamIdea size={25} />}
         headerTitle="Jornada de Innovación"
-        headerSubTitle="Capacitación"
+        routeType="jornadas"
+        headerSubTitle="Evento"
         headerLinkToNew="/eventos/nuevoEvento/jornadaInnovacion"
-        headerLinkToEdit={`/eventos/editarEvento/${id_capacitacion}`}
-        idCapacitacion={id_capacitacion}
+        headerLinkToEdit={`/eventos/editarEvento/${id}`}
+        id={id}
         containerNombre={nombre}
         containerFechas={fechas}
         containerDataList={[
           {
-            key: "Dirección",
-            value: direccion,
-          },
-          {
             key: "Cupo",
-            value: cupo,
+            value: cupos,
           },
           {
             key: "Horas",
             value: horas,
           },
           {
-            key: "Modalidad",
-            value: modalidad,
-          },
-          {
-            key: "Tutor",
-            value: nombre_tutor,
-          },
-          {
             key: "Talleres",
             value: talleres.length,
           },
         ]}
-        toggleAllowEntrada={allow_asistencia_entrada}
-        toggleAllowSalida={allow_asistencia_salida}
-        toggleAllowInscripcion={allow_inscripcion}
+        toggleAllowInscripcion={inscripcion}
         handleRefetch={handleRefetch}
         hasTalleres={true}
         talleresList={talleres}
@@ -99,9 +75,10 @@ const VerJornadaInnovacion = (props) => {
 
   let contIndex = 0;
   talleres.forEach((taller, index) => {
+    console.log(taller)
     talleresInfo.push({
       hasTitle: true,
-      title: `Taller ${index + 1}`,
+      title: taller.nombre,
       data: [
         {
           index: contIndex + 1,
@@ -121,6 +98,8 @@ const VerJornadaInnovacion = (props) => {
           content: (
             <InscribedSection
               docentesInscritos={taller.docentes_inscritos}
+              idTaller={taller.id}
+              idEvento={id}
               handleRefetch={handleRefetch}
             />
           ),
@@ -131,8 +110,9 @@ const VerJornadaInnovacion = (props) => {
           icon: <MdPersonAddAlt1 size={20} />,
           content: (
             <EnrollSection
-              idCapacitacion={id_capacitacion}
-              idTaller={taller.id_taller}
+              idEvento={id}
+              idTaller={taller.id}
+              docentesInscritos={taller.docentes_inscritos}
               handleRefetch={handleRefetch}
             />
           ),

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import {
-  useEditCapacitacionMutation,
+  useEditEventoMutation,
   useDeleteEventoMutation,
 } from "@redux/services/evento/eventoApi";
 import { Notification, Modal, InfoPill } from "@components";

@@ -1,13 +1,13 @@
 import React from "react";
 
-import { ToggleSwitch, HorizontalPill } from "@components";
+import { ToggleSwitch, HorizontalPill, InfoPill } from "@components";
 import { Oval } from "react-loader-spinner";
 
 // Header subcomponent
 export const Header = ({ color, title, icon, subTitle, hasIcon, children }) => (
   <div className="w-full flex flex-col md:flex-row items-start md:items-center gap-4 justify-between mb-4">
     <div className="flex gap-2 items-center">
-      
+
       {hasIcon && <div className={`${color} p-2 rounded-lg`}>{icon}</div>}
       <div className="flex flex-col">
         <span className="font-medium text-xl text-primary_text_1">
@@ -24,7 +24,7 @@ export const Header = ({ color, title, icon, subTitle, hasIcon, children }) => (
 
 // Title subcomponent
 export const Title = ({ value }) => (
-  <span className="font-medium text-3xl text-primary_text_1 py-6">
+  <span className="font-medium text-3xl text-primary_text_1 py-3">
     {value}
   </span>
 );
@@ -70,11 +70,10 @@ export const Activator = ({
   isLoading,
 }) => (
   <div
-    className={`flex items-center justify-between ${
-      isActivatorActive
-        ? "bg-green-100 text-green-600"
-        : "bg-primary_gray_1 text-primary_gray_4"
-    }  px-4 py-2 rounded-lg ${isLoading ? "animate-pulse" : "animate-none"}`}
+    className={`flex items-center justify-between ${isActivatorActive
+      ? "bg-green-100 text-green-600"
+      : "bg-primary_gray_1 text-primary_gray_4"
+      }  px-4 py-2 rounded-lg ${isLoading ? "animate-pulse" : "animate-none"}`}
   >
     <span className="font-medium text-sm ">{value}</span>
     {isLoading ? (
@@ -130,46 +129,86 @@ export const SectionContainer = ({ extra, children }) => (
   </div>
 );
 
-export const TalleresPanel = ({ extra, talleresList }) => (
+export const TalleresPanel = ({ extra, taller }) => (
   <div className={`${extra}`}>
-    <div className="grid grid-cols-3 gap-4">
-      {talleresList.map((taller, index) => (
-        <div
-          className="col-span-3 md:col-span-1 bg-primary_gray_1 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-all duration-200 justify-between"
-          key={index}
-        >
-          <div className="flex items-center justify-end">
-            <span className="text-sm font-medium text-primary_text_1">
-              Taller {index + 1}
-            </span>
-          </div>
-
-          <span className="text-sm font-medium text-primary_gray_4">
-            {taller.nombre}
-          </span>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
+    <div className="grid grid-cols-1 gap-4">
+      <div className="col-span-3 md:col-span-1 bg-primary_gray_1 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-all duration-200 justify-between">
+        <span className="text-sm font-medium text-primary_gray_4">
+          {taller.nombre}
+        </span>
+        <div className="col-span-2 border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
               <span className="text-sm font-normal text-primary_gray_2">
-                Inscritos
+                Ponentes
               </span>
-              <span className="text-base font-medium text-primary_text_1">
-                {taller.docentes_inscritos.length}
-              </span>
+              {taller.ponentes.map((ponente, idx) => (
+                <span key={idx} className="text-base font-medium text-primary_text_1">
+                  {ponente.nombre}
+                </span>
+              ))}
             </div>
-            <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
-              <span className="text-sm font-normal text-primary_gray_2">
-                Por Aprobar
-              </span>
-              <span className="text-base font-medium text-primary_text_1">
-                {taller.docentes_pendientes.length}
-              </span>
+        {taller.sesiones.map((sesion, index) => (
+          <React.Fragment key={index}>
+            <Info>
+              <InfoPill
+                value={sesion.fecha}
+                size="medium"
+                type="date"
+                icon="date"
+              />
+            </Info>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
+                <span className="text-sm font-normal text-primary_gray_2">
+                  Modalidad
+                </span>
+                <span className="text-base font-medium text-primary_text_1">
+                  {sesion.modalidad}
+                </span>
+              </div>
+              <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
+                <span className="text-sm font-normal text-primary_gray_2">
+                  Ubicación
+                </span>
+                <span className="text-base font-medium text-primary_text_1">
+                  {sesion.ubicacion}
+                </span>
+              </div>
+              <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
+                <span className="text-sm font-normal text-primary_gray_2">
+                  Hora de inicio
+                </span>
+                <span className="text-base font-medium text-primary_text_1">
+                  {sesion.hora_inicio}
+                </span>
+              </div>
+              <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
+                <span className="text-sm font-normal text-primary_gray_2">
+                  Duración
+                </span>
+                <span className="text-base font-medium text-primary_text_1">
+                  {sesion.duracion}
+                </span>
+              </div>
             </div>
-          </div>
-        </div>
-      ))}
+          </React.Fragment>
+        ))}
+      </div>
     </div>
   </div>
 );
+
+
+{/* <div className="col-span-2 border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
+              <span className="text-sm font-normal text-primary_gray_2">
+                Ponentes
+              </span>
+              {taller.ponentes.map((ponente, idx) => (
+                <span key={idx} className="text-base font-medium text-primary_text_1">
+                  {ponente.nombre}
+                </span>
+              ))}
+            </div> */}
+
 
 const EventoView = ({ extra, children }) => (
   <div className={`flex flex-col w-full bg-white rounded-lg  md:p-6 ${extra}`}>

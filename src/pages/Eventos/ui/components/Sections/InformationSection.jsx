@@ -18,7 +18,7 @@ import EventoView, {
 } from "../EventoView/EventoView";
 
 import {
-  useEditCapacitacionMutation,
+  useEditEventoMutation,
   useDeleteEventoMutation,
 } from "@redux/services/evento/eventoApi";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
@@ -34,14 +34,12 @@ const InformationSection = (props) => {
     headerLinkToNew,
     headerLinkToEdit,
 
-    idCapacitacion,
-
+    id,
+    routeType,
     containerNombre,
     containerFechas,
     containerDataList,
 
-    toggleAllowEntrada,
-    toggleAllowSalida,
     toggleAllowInscripcion,
 
     handleRefetch,
@@ -53,7 +51,6 @@ const InformationSection = (props) => {
    * REDUX
    */
   const dispatch = useDispatch();
-
   /**
    * ROUTER
    */
@@ -68,7 +65,7 @@ const InformationSection = (props) => {
    * PARA BORRAR LA CAPACITACION
    */
   const [
-    deleteCapacitacion,
+    deleteEvento,
     {
       data: responseDelete,
       isLoading: isUpdatingDelete,
@@ -78,11 +75,11 @@ const InformationSection = (props) => {
     },
   ] = useDeleteEventoMutation();
 
-  const handleConfirmDeleteCapacitacion = () => {
+  const handleConfirmDeleteEvento = () => {
     const dataBody = {
-      id: idCapacitacion,
+      id: id,
     };
-    deleteCapacitacion(dataBody);
+    deleteEvento(dataBody);
   };
 
   // MENSAJES DE NOTIFICACION
@@ -106,7 +103,7 @@ const InformationSection = (props) => {
    * PARA EDITAR LA CAPACITACION
    */
   const [
-    editCapacitacion,
+    editEvento,
     {
       data: responseEdit,
       isLoading: isUpdatingEdit,
@@ -114,20 +111,20 @@ const InformationSection = (props) => {
       isError: isErrorEdit,
       error: errorEdit,
     },
-  ] = useEditCapacitacionMutation();
+  ] = useEditEventoMutation();
 
   // MENSAJES DE NOTIFICACION
   useEffect(() => {
     if (isSuccessEdit) {
       //console.log(responseEdit);
       triggerNotification(dispatch, {
-        message: "Capacitación actualizada con éxito",
+        message: "Inscripciones al evento actualizadas",
         type: "success",
       });
       handleRefetch();
     } else if (isErrorEdit && errorEdit) {
       triggerNotification(dispatch, {
-        message: errorEdit.message || "Error al actualizar la capacitación",
+        message: errorEdit.message || "Error al actualizar el evento",
         type: "error",
       });
     }
@@ -137,57 +134,17 @@ const InformationSection = (props) => {
    * PARA LOS TOGGLES
    */
 
-  // PARA LA ENTRADA
-  const handleAsistenciaEntradaTogle = (isActive) => {
-    console.log("asistencia entrada toggle", isActive);
-    const dataBody = {
-      id: idCapacitacion,
-      body: { allow_asistencia_entrada: isActive },
-    };
-    editCapacitacion(dataBody);
-  };
-
-  const handleAsistenciaSalidaTogle = (isActive) => {
-    console.log("asistencia salida toggle", isActive);
-    const dataBody = {
-      id: idCapacitacion,
-      body: { allow_asistencia_salida: isActive },
-    };
-    editCapacitacion(dataBody);
-  };
-
   const handleInscripcionTogle = (isActive) => {
     //console.log("inscripcion toggle", isActive);
     const dataBody = {
-      id: idCapacitacion,
-      body: { allow_inscripcion: isActive },
+      id: id,
+      tipo: routeType,
+      body: { inscripcion: isActive },
     };
-    editCapacitacion(dataBody);
+    editEvento(dataBody);
   };
 
   let toggles = [];
-
-  if (toggleAllowEntrada !== undefined) {
-    toggles.push(
-      <Activator
-        isActivatorActive={toggleAllowEntrada}
-        value={"Marcar Entrada"}
-        handleTogle={handleAsistenciaEntradaTogle}
-        isLoading={isUpdatingEdit}
-      />
-    );
-  }
-
-  if (toggleAllowSalida !== undefined) {
-    toggles.push(
-      <Activator
-        isActivatorActive={toggleAllowSalida}
-        value={"Marcar Salida"}
-        handleTogle={handleAsistenciaSalidaTogle}
-        isLoading={isUpdatingEdit}
-      />
-    );
-  }
 
   if (toggleAllowInscripcion !== undefined) {
     toggles.push(
@@ -227,7 +184,7 @@ const InformationSection = (props) => {
             size="medium"
             icon="delete"
             isPrimary={true}
-            onClick={handleConfirmDeleteCapacitacion}
+            onClick={handleConfirmDeleteEvento}
             isLoading={isUpdatingDelete}
           />
         )}
@@ -258,7 +215,7 @@ const InformationSection = (props) => {
               icon="edit"
               extra="w-full"
               isPrimary={false}
-              //isRadial={true}
+            //isRadial={true}
             />
           </Link>
           <Button
@@ -269,30 +226,23 @@ const InformationSection = (props) => {
             onClick={() => setModalOpen(true)}
             extra="w-full"
             isPrimary={false}
-            //isRadial={true}
+          //isRadial={true}
           />
         </div>
       </Header>
       <SectionContainer>
         <Title value={containerNombre} />
         <div className="flex flex-col gap-2">
-          <Info>
-            {containerFechas.map((fecha, index) => (
-              <InfoPill
-                value={fecha}
-                size="medium"
-                type="date"
-                icon="date"
-                key={index}
-              />
-            ))}
-          </Info>
+          <Data dataList={containerDataList} />
         </div>
-        <Data dataList={containerDataList} />
-        {hasTalleres && (
+        {talleresList.length>0 && (
           <>
             <SubTitle value={"Talleres"} />
-            <TalleresPanel talleresList={talleresList} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {talleresList.map((taller, index) => (
+                <TalleresPanel key={index} extra="col-span-1" taller={taller} />
+              ))}
+            </div>
           </>
         )}
         <SubTitle value={"Estados"} />

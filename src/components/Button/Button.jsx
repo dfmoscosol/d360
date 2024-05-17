@@ -94,6 +94,10 @@ const Button = ({
   } else if (size === "medium") {
     sizeIcon = 22;
     sizeText = "text-sm p-2";
+  }else if (size === "xxsmall") {
+    sizeIcon = 15;
+    sizeText = "text-xs p-2";
+
   }
 
   if (icon === "check") {

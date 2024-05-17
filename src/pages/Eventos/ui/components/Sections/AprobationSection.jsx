@@ -35,7 +35,7 @@ const AprobationSection = (props) => {
    * PARA APROBAR LA INSCRIPCION
    */
   const [
-    aprobarInscripcion,
+    actualizarInscripcion,
     {
       data: responseAprobar,
       isLoading: isUpdatingAprobar,
@@ -49,6 +49,7 @@ const AprobationSection = (props) => {
 
   const handleAprobarInscripcion = (id) => {
     setIdDocenteAprobacion(id);
+    console.log(id)
     setModalOpen(true);
   };
 
@@ -57,10 +58,10 @@ const AprobationSection = (props) => {
     console.log(idDocenteAprobacion);
     const paramsConfirm = {
       id: idDocenteAprobacion,
-      body: { isaccepted: true },
+      body: { aceptada: true },
     };
     console.log(paramsConfirm);
-    aprobarInscripcion(paramsConfirm);
+    actualizarInscripcion(paramsConfirm);
   };
 
   // MENSAJES DE NOTIFICACION
@@ -166,7 +167,9 @@ const AprobationSection = (props) => {
       <SectionContainer extra={"gap-4"}>
         {docentesPendientes.length > 0 ? (
           <div className="flex flex-col gap-4">
+            
             {docentesPendientes.map((docente, index) => (
+              
               <PillPorInscribir
                 index={index}
                 title={docente.nombres}

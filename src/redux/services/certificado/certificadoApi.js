@@ -82,6 +82,6 @@ export const {
   //useGetAllDocentesQuery,
   //useInscribirDocenteMutation,
   //useGetCapacitacionQuery,
-  //useEditCapacitacionMutation,
+  //useEditEventoMutation,
   //useDeleteEventoMutation,
 } = certificadoApi;

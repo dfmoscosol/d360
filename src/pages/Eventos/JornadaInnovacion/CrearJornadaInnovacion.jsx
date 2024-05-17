@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 
-import { ContainerPage } from "@components";
+import { ContainerPage, InfoPill } from "@components";
 import ContainerForm from "../ui/components/ContainerForm/ContainerForm";
 import FormLabel from "../ui/components/FormLabel/FormLabel";
 
@@ -37,66 +37,71 @@ const CrearJornadaInnovacion = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    //console.log(data);
-    let areValidDates;
-    let validDatesList = [];
-    let validInputsList = [];
-
-    if (dates.length == 0) {
+    console.log(data);
+    if (dates.length === 0) {
       console.log("ERROR: No se ha elegido más de una fecha.");
       setValidDate(false);
-      areValidDates = false;
-    } else {
-      console.log("Se ha elegido más de una fecha.");
-      setValidDate(true);
-      areValidDates = true;
-      dates.sort((a, b) => a - b);
-      dates.forEach((date) => {
-        validDatesList.push(date.format("DD-MM-YYYY"));
-      });
+      return; // Detener la ejecución si no hay fechas
     }
 
-    const areAllInputsFilled = inputs.every(
-      (input) => input.value.trim() !== ""
+    console.log("Se ha elegido más de una fecha.");
+    setValidDate(true);
+    dates.sort((a, b) => a - b);
+    const validDatesList = dates.map(date => date.format("YYYY-MM-DD"));
+
+    const areAllInputsFilled = inputs.every(input =>
+      input.value.trim() !== "" &&
+      input.sesiones.every(sesion =>
+        sesion.fecha_id &&
+        sesion.hora_inicio.trim() !== "" &&
+        sesion.duracion.trim() !== "" &&
+        sesion.modalidad.trim() !== "" &&
+        sesion.ubicacion.trim() !== ""
+      ) &&
+      input.ponentes.every(ponente => ponente.value.trim() !== "")
     );
+
     if (!areAllInputsFilled) {
-      console.log("ERROR: Todos los talleres deben tener un nombre.");
-      inputs.forEach((input) => {
-        if (input.value.trim() === "") {
-          input.isEmpty = true;
-        } else {
-          input.isEmpty = false;
-        }
-      });
-    } else {
-      console.log("Todos los talleres tienen un nombre.");
-      validInputsList = inputs.map((input) => ({ nombre: input.value }));
+      console.log("ERROR: Todos los campos deben estar completos.");
+      setInputs(inputs => inputs.map(input => ({
+        ...input,
+        isEmpty: input.value.trim() === "" || input.sesiones.some(sesion =>
+          !sesion.fecha_id || sesion.hora_inicio.trim() === "" ||
+          sesion.duracion.trim() === "" || sesion.modalidad.trim() === "" ||
+          sesion.ubicacion.trim() === ""
+        )
+      })));
+      return; // Detener la ejecución si algún campo está vacío
     }
 
-    let isModalidadPresencial = false;
-    if (selectedModalidad === "Presencial") {
-      isModalidadPresencial = true;
-    }
+    console.log("Todos los talleres están completos.");
+    const validInputsList = inputs.map(input => ({
+      nombre: input.value,
+      sesiones: input.sesiones.map(sesion => ({
+        fecha_id: sesion.fecha_id,
+        hora_inicio: sesion.hora_inicio,
+        duracion: sesion.duracion,
+        modalidad: sesion.modalidad === "Presencial" ? 1 : sesion.modalidad === "Virtual" ? 2 : sesion.modalidad === "Híbrida" ? 3 : 0,
+        ubicacion: sesion.ubicacion
+      })),
+      ponentes: input.ponentes.map(ponente => ({ nombre: ponente.value }))
+    }));
 
-    if (areValidDates && areAllInputsFilled) {
-      console.log("Se puede enviar el formulario");
-      data.fechas = validDatesList;
-      data.presencial = isModalidadPresencial;
-      data.talleres = validInputsList;
-      data.allow_inscripcion = false;
-      data.allow_asistencia_entrada = false;
-      data.allow_asistencia_salida = false;
-      data.horas = Number(data.horas);
-      data.cupo = Number(data.cupo);
-      data.tipo = "jornada";
-      //console.log(data);
-      console.log("Se enviará el formulario");
-      addEvento(data);
-      console.log("Enviado");
-    } else {
-      console.log("No se puede enviar el formulario");
-    }
+    data.fechas = validDatesList;
+    data.talleres = validInputsList;
+    data.inscripcion = false;
+    data.horas = Number(data.horas);
+    data.cupos = Number(data.cupos);
+    console.log("Final data to send:", data);
+
+    addEvento({
+        params: data,
+        tipo: "jornadas"
+    }); 
+
+    console.log("Formulario enviado");
   };
+
 
   /**
    * PARA LOS INPUTS DINÁMICOS
@@ -106,6 +111,9 @@ const CrearJornadaInnovacion = () => {
       id: 1,
       hasAddButton: true,
       hasRemoveButton: false,
+      sesiones: [
+      ],
+      ponentes: [{ id: 1, value: "", hasAddButton: true, hasRemoveButton: false, }],
       value: "",
       isEmpty: false,
     },
@@ -131,6 +139,14 @@ const CrearJornadaInnovacion = () => {
       id: lastInput.id + 1,
       hasAddButton: true,
       hasRemoveButton: true,
+      sesiones: dates.map(date => ({
+        fecha_id: date.format("YYYY-MM-DD"),  // Asume que las fechas son objetos moment o similar
+        hora_inicio: "",
+        duracion: "",
+        modalidad: "",
+        ubicacion: "",
+      })),
+      ponentes: [{ id: 1, value: "", hasAddButton: true, hasRemoveButton: false, }],
       value: "",
       isEmpty: false,
     });
@@ -151,6 +167,113 @@ const CrearJornadaInnovacion = () => {
     }
     setInputs(newInputs);
   };
+
+  const handleAddPonente = (tallerId) => {
+    setInputs(inputs.map(input => {
+      if (input.id === tallerId) {
+        const newPonenteId = input.ponentes[input.ponentes.length - 1].id + 1;
+        const newPonentes = input.ponentes.map(ponente => ({ ...ponente, hasAddButton: false, hasRemoveButton: false }));
+        newPonentes.push({
+          id: newPonenteId,
+          value: "",
+          hasAddButton: true,
+          hasRemoveButton: true,
+        });
+        return { ...input, ponentes: newPonentes };
+      }
+      return input;
+    }));
+  };
+
+  const handleRemovePonente = (tallerId, ponenteId) => {
+    setInputs(inputs.map(input => {
+      if (input.id === tallerId) {
+        let newPonentes = input.ponentes.filter(ponente => ponente.id !== ponenteId);
+        if (newPonentes.length > 1) {
+          newPonentes[newPonentes.length - 1].hasAddButton = true;
+          newPonentes[newPonentes.length - 1].hasRemoveButton = true;
+        } else if (newPonentes.length === 1) {
+          newPonentes[0].hasAddButton = true;
+          newPonentes[0].hasRemoveButton = false; // No mostrar botón de eliminar si hay solo un ponente
+        }
+        return { ...input, ponentes: newPonentes };
+      }
+      return input;
+    }));
+  };
+
+  const handleModalidadChange = (tallerId, sesionIndex, newValue) => {
+    setInputs(inputs => inputs.map(input => {
+      if (input.id === tallerId) {
+        return {
+          ...input,
+          sesiones: input.sesiones.map((sesion, index) =>
+            index === sesionIndex ? { ...sesion, modalidad: newValue } : sesion
+          )
+        };
+      }
+      return input;
+    }));
+  };
+
+  const handleHoraInicioChange = (tallerId, sesionIndex, newValue) => {
+    setInputs(inputs => inputs.map(input => {
+      if (input.id === tallerId) {
+        return {
+          ...input,
+          sesiones: input.sesiones.map((sesion, index) =>
+            index === sesionIndex ? { ...sesion, hora_inicio: newValue } : sesion
+          )
+        };
+      }
+      return input;
+    }));
+  };
+
+  const handleDuracionChange = (tallerId, sesionIndex, newValue) => {
+    setInputs(inputs => inputs.map(input => {
+      if (input.id === tallerId) {
+        return {
+          ...input,
+          sesiones: input.sesiones.map((sesion, index) =>
+            index === sesionIndex ? { ...sesion, duracion: newValue } : sesion
+          )
+        };
+      }
+      return input;
+    }));
+  };
+
+  const handleUbicacionChange = (tallerId, sesionIndex, newValue) => {
+    setInputs(inputs => inputs.map(input => {
+      if (input.id === tallerId) {
+        return {
+          ...input,
+          sesiones: input.sesiones.map((sesion, index) =>
+            index === sesionIndex ? { ...sesion, ubicacion: newValue } : sesion
+          )
+        };
+      }
+      return input;
+    }));
+  };
+
+
+  const handlePonenteChange = (tallerId, ponenteId, newValue) => {
+    setInputs(inputs.map(input => {
+      if (input.id === tallerId) {
+        const updatedPonentes = input.ponentes.map(ponente => {
+          if (ponente.id === ponenteId) {
+            return { ...ponente, value: newValue };
+          }
+          return ponente;
+        });
+        return { ...input, ponentes: updatedPonentes, isEmpty: false };
+      }
+      return input;
+    }));
+  };
+
 
   /**
    * PARA EL DATE PICKER
@@ -174,10 +297,37 @@ const CrearJornadaInnovacion = () => {
   ];
 
   function handleDateChange(value) {
+    // Actualizar la lista de fechas
     setDates(value);
-    if (value.length > 0) {
-      setValidDate(true);
-    }
+    setValidDate(value.length > 0);
+
+    // Actualizar las sesiones en cada taller para alinearlas con las nuevas fechas
+    setInputs(inputs => inputs.map(taller => ({
+      ...taller,
+      sesiones: synchronizeSessions(taller.sesiones, value),
+    })));
+  }
+
+  function synchronizeSessions(existingSessions, newDates) {
+    // Crear un mapa de las fechas existentes para acceso rápido
+    const existingDates = new Set(existingSessions.map(sesion => sesion.fecha_id));
+
+    // Añadir nuevas sesiones para fechas nuevas
+    const sessionsToAdd = newDates.filter(date => !existingDates.has(date.format('YYYY-MM-DD')))
+      .map(date => ({
+        fecha_id: date.format('YYYY-MM-DD'),
+        hora_inicio: '',
+        duracion: '',
+        modalidad: '',
+        ubicacion: '',
+      }));
+
+    // Filtrar las sesiones que ya no coinciden con ninguna fecha seleccionada
+    const updatedSessions = existingSessions.filter(session =>
+      newDates.some(date => date.format('YYYY-MM-DD') === session.fecha_id)
+    );
+
+    return [...updatedSessions, ...sessionsToAdd];
   }
 
   function CustomInput({ onFocus, value, onChange }) {
@@ -199,11 +349,8 @@ const CrearJornadaInnovacion = () => {
   /**
    * COMBOBOX
    */
-  const listModalidades = ["Virtual", "Presencial"];
-  const [selectedModalidad, setSelectedModalidad] = useState("");
-  const handleSelect = (value) => {
-    setSelectedModalidad(value);
-  };
+  const listModalidades = ["Virtual", "Presencial", "Híbrida"];
+
 
   /**
    * PARA LA NOTIFICACION
@@ -231,13 +378,12 @@ const CrearJornadaInnovacion = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <ContainerForm>
           {/**Nombre */}
-          <div className="md:col-span-8 col-span-12 flex flex-col gap-1">
+          <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
             <FormLabel value={"Nombre"} />
             <input
               //value="Jornada de Innovación Test"
               type="text"
               className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-              placeholder="Jornada 1"
               {...register("nombre", { required: true })}
             />
             {errors.nombre && (
@@ -247,49 +393,6 @@ const CrearJornadaInnovacion = () => {
             )}
           </div>
 
-          {/**Modalidad */}
-          <div className="md:col-span-4 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Modalidad"} />
-            <div className="w-full">
-              <ComboBox items={listModalidades} onSelect={handleSelect} />
-            </div>
-            {/*!isValidModalidad && (
-                <span className="text-red-600 text-sm font-light px-1">
-                  Seleccione una opción
-                </span>
-              )*/}
-          </div>
-
-          {/**Tutor */}
-          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Tutor"} />
-            <div className="w-full">
-              <input
-                type="text"
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                placeholder="Ing. Juan Perez"
-                {...register("nombre_tutor", { required: true })}
-              />
-            </div>
-            {errors.nombre_tutor && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Ingrese un valor válido.
-              </span>
-            )}
-          </div>
-
-          {/**Dirección */}
-          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Dirección"} />
-            <div className="w-full">
-              <input
-                type="text"
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("direccion", { required: false })}
-                placeholder="Universidad de Cuenca"
-              />
-            </div>
-          </div>
 
           {/**Fecha */}
           <div className="col-span-6 flex flex-col gap-1">
@@ -307,7 +410,7 @@ const CrearJornadaInnovacion = () => {
                 style={{
                   width: "100%",
                 }}
-                format="DD-MM-YYYY"
+                format="YYYY-MM-DD"
                 render={<CustomInput />}
               />
               {!isValidDate && (
@@ -346,12 +449,12 @@ const CrearJornadaInnovacion = () => {
                 //value={5}
                 type="number"
                 className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("cupo", { required: true })}
+                {...register("cupos", { required: true })}
                 min={1}
                 step={1}
               />
             </div>
-            {errors.cupo && (
+            {errors.cupos && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un valor válido
               </span>
@@ -359,62 +462,148 @@ const CrearJornadaInnovacion = () => {
           </div>
 
           {/**Talleres */}
-          <div className="flex flex-col col-span-12 gap-1">
+
+          {dates.length>0 && <div className="flex flex-col col-span-12 gap-1">
             <FormLabel value={"Talleres"} />
             <div className="flex flex-col gap-3">
               {inputs.map((input) => (
-                <div key={input.id} className="flex gap-4">
-                  <div className="flex flex-col w-full bg-white rounded-lg p-3 gap-1 border-[1px]">
-                    <span className="text-sm font-medium text-primary_text_1">
-                      Nombre del Taller
-                    </span>
-                    <input
-                      type="text"
-                      value={input.value}
-                      onChange={(e) =>
-                        handleInputChange(input.id, e.target.value)
-                      }
-                      className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                      placeholder={`Taller ${input.id}`}
-                      //{...register(`taller_${input.id}`, { required: true })}
-                    />
-                    {input.isEmpty && (
-                      <span className="text-red-600 text-sm font-light px-1">
-                        Ingrese un nombre válido
-                      </span>
-                    )}
+                <>
+                  <div key={input.id} className="flex flex-row justify-between items-center">
+                    <div className="bg-white rounded-lg p-3 border-[1px] flex-grow">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex flex-col">
+                          <label className="text-sm font-medium text-primary_text_1">
+                            Nombre del Taller
+                          </label>
+                          <input
+                            type="text"
+                            value={input.value}
+                            onChange={(e) => handleInputChange(input.id, e.target.value)}
+                            className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                            placeholder={`Taller ${input.id}`}
+                          />
+                        </div>
+                        {input.sesiones.map((sesion, index) => (
+                          <>
+                            <div className="flex flex-col items-start justify-start">
+                              <InfoPill
+                                value={sesion.fecha_id}
+                                size="small"
+                                type="date"
+                                icon="date"
+                              />
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                              {/* Hora, Duración, Modalidad, Ubicación */}
+                              <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                <label className="text-sm font-medium text-primary_text_1">Hora</label>
+                                <input type="time"
+                                  value={input.sesiones[index].hora_inicio}
+                                  onChange={(e) => handleHoraInicioChange(input.id, index, e.target.value)}
+                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
+                              </div>
+                              <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                <label className="text-sm font-medium text-primary_text_1">Duración</label>
+                                <input type="number"
+                                  value={input.sesiones[index].duracion}
+                                  onChange={(e) => handleDuracionChange(input.id, index, e.target.value)}
+                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" placeholder="Duración en horas" />
+                              </div>
+                              <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                <label className="text-sm font-medium text-primary_text_1">Modalidad</label>
+                                <ComboBox items={listModalidades} onSelect={(value) => handleModalidadChange(input.id, index, value)}
+                                  selectedValue={input.sesiones[index].modalidad} />
+                              </div>
+                              <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                <label className="text-sm font-medium text-primary_text_1">Ubicación</label>
+                                <input type="text"
+                                  value={input.sesiones[index].ubicacion}
+                                  onChange={(e) => handleUbicacionChange(input.id, index, e.target.value)}
+                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" placeholder="Ingrese ubicación" />
+                              </div>
+                            </div>
+                          </>
+                        ))}
+
+                        {input.ponentes.map(ponente => (
+                          <div key={ponente.id} className="flex items-center gap-2 w-full">
+                            <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                              <label className="text-sm font-medium text-primary_text_1">
+                                Ponente {ponente.id}
+                              </label>
+                              <input
+                                type="text"
+                                value={ponente.value}
+                                onChange={(e) => handlePonenteChange(input.id, ponente.id, e.target.value)}
+                                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm flex-grow bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                                placeholder=""
+                              />
+                            </div>
+
+                            <div className="flex gap-2">
+                              {ponente.hasAddButton && (
+                                <Button
+                                  type="ucuenca"
+                                  onClick={() => handleAddPonente(input.id)}
+                                  icon="add"
+                                  buttonType="button"
+                                  size="xsmall"
+                                  isRadial={true}
+                                  isPrimary={false}
+                                />
+                              )}
+                              {ponente.hasRemoveButton && (
+                                <Button
+                                  type="error"
+                                  onClick={() => handleRemovePonente(input.id, ponente.id)}
+                                  icon="delete"
+                                  buttonType="button"
+                                  size="xsmall"
+                                  isRadial={true}
+                                  isPrimary={false}
+                                />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2 ml-4">
+                      {input.hasAddButton && (
+                        <Button
+                          type="ucuenca"
+                          onClick={handleAddInput}
+                          icon="add"
+                          buttonType="button"
+                          size="small"
+                          isRadial={true}
+                          isPrimary={false}
+                        />
+                      )}
+                      {input.hasRemoveButton && (
+                        <Button
+                          type="error"
+                          onClick={handleRemoveInput}
+                          icon="delete"
+                          buttonType="button"
+                          size="small"
+                          isRadial={true}
+                          isPrimary={false}
+                        />
+                      )}
+                    </div>
                   </div>
-                  {input.hasAddButton && (
-                    <div className="flex items-center justify-center">
-                      <Button
-                        type="ucuenca"
-                        onClick={handleAddInput}
-                        icon={"add"}
-                        buttonType={"button"}
-                        value={"Atrás"}
-                        size={"small"}
-                        isRadial={true}
-                        isPrimary={false}
-                      />
-                    </div>
+                  {input.isEmpty && (
+                    <span className="text-red-600 text-sm font-light px-1">
+                      Complete todos los campos del Taller
+                    </span>
                   )}
-                  {input.hasRemoveButton && (
-                    <div className="flex items-center justify-center">
-                      <Button
-                        type="error"
-                        onClick={handleRemoveInput}
-                        icon={"delete"}
-                        buttonType={"button"}
-                        size={"small"}
-                        isRadial={true}
-                        isPrimary={false}
-                      />
-                    </div>
-                  )}
-                </div>
+                </>
               ))}
             </div>
-          </div>
+          </div>}
+
 
           {/**Footer */}
           <div className="col-span-12 text-primary_gray_5">

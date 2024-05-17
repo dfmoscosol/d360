@@ -4,7 +4,7 @@ import ComboBox from "../ui/components/ComboBox/ComboBox";
 import FormLabel from "../ui/components/FormLabel/FormLabel";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import { Link, useNavigate } from "react-router-dom";
-import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
+import { useEditEventoMutation } from "@redux/services/evento/eventoApi";
 import { useDispatch } from "react-redux";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 import { Modal, Button } from "@components";
@@ -33,7 +33,7 @@ const EditarTaller = (props) => {
   const [
     editCapacitacion,
     { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
-  ] = useEditCapacitacionMutation();
+  ] = useEditEventoMutation();
 
   /**
    * PARA EL FORMULARIO

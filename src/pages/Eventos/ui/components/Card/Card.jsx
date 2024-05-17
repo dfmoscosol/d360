@@ -8,45 +8,39 @@ import TallerCard from "../../../Taller/components/Card/TallerCard";
 const Card = (props) => {
   const { type, data } = props;
 
-  if (type === "jornada") {
+  if (type === 1) {
     return (
       <JornadaInnovacionCard
-        allow_asistencia_entrada={data.allow_asistencia_entrada}
-        allow_asistencia_salida={data.allow_asistencia_salida}
-        allow_inscripcion={data.allow_inscripcion}
+        inscripcion={data.inscripcion}
         fechas={data.fechas}
-        id_capacitacion={data.id_capacitacion}
+        id={data.id}
         nombre={data.nombre}
       />
     );
-  } else if (type === "observacion") {
+  } else if (type === 4) {
     return (
       <ObservacionAulicaCard
-        allow_inscripcion={data.allow_inscripcion}
+        inscripcion={data.inscripcion}
         fechas={data.fechas}
-        id_capacitacion={data.id_capacitacion}
+        id={data.id_capacitacion}
         nombre={data.nombre}
       />
     );
-  } else if (type === "charla") {
+  } else if (type === 2) {
     return (
       <CharlaCard
-        allow_asistencia_entrada={data.allow_asistencia_entrada}
-        allow_asistencia_salida={data.allow_asistencia_salida}
-        allow_inscripcion={data.allow_inscripcion}
+        inscripcion={data.inscripcion}
         fechas={data.fechas}
-        id_capacitacion={data.id_capacitacion}
+        id={data.id_capacitacion}
         nombre={data.nombre}
       />
     );
-  } else if (type === "taller") {
+  } else if (type === 3) {
     return (
       <TallerCard
-        allow_asistencia_entrada={data.allow_asistencia_entrada}
-        allow_asistencia_salida={data.allow_asistencia_salida}
-        allow_inscripcion={data.allow_inscripcion}
+        inscripcion={data.inscripcion}
         fechas={data.fechas}
-        id_capacitacion={data.id_capacitacion}
+        id={data.id_capacitacion}
         nombre={data.nombre}
       />
     );

@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import { useInscribirDocenteMutation } from "../../../../../redux/services/evento/eventoApi";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 
-const InscripcionesTab = ({ id, handleRefetch, idTaller }) => {
+const InscripcionesTab = ({ id, handleRefetch, idTaller, docentesInscritos }) => {
   /**
    * DATA FETCHING
    */
@@ -74,6 +74,10 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller }) => {
    * MANEJO DE LA DATA
    */
   const docentes = data.respuesta;
+  // Extraemos los correos de los docentes inscritos en un nuevo Set para búsqueda rápida
+  const correosInscritos = new Set(docentesInscritos.map(docente => docente.correo));
+  // Filtramos los docentes, dejando solo aquellos cuyo correo no está en el Set de inscritos
+  const docentesNoInscritos = docentes.filter(docente => !correosInscritos.has(docente.correo));
 
   const columnMappings = {
     nombre: "Nombres",
@@ -112,14 +116,14 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller }) => {
 
     if (idTaller !== undefined) {
       dataBody = {
-        id_capacitacion: id,
-        ids_docentes: selectedRows,
-        id_taller: idTaller,
+        evento_id: id,
+        docentes_uid_firebase: selectedRows,
+        taller_id: idTaller,
       };
     } else {
       dataBody = {
-        id_capacitacion: id,
-        ids_docentes: selectedRows,
+        evento_id: id,
+        docentes_uid_firebase: selectedRows,
       };
     }
     //console.log("dataBody", dataBody);
@@ -175,9 +179,9 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller }) => {
       </Modal>
 
       <DataTable
-        initialData={docentes}
+        initialData={docentesNoInscritos}
         idColumn={"id"}
-        searchColumn={"nombre"}
+        searchColumns={["nombre","correo"]}
         columnMappings={columnMappings}
         columnOrder={columnOrder}
         selectedRows={selectedRows}
@@ -198,8 +202,8 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller }) => {
                   icon="close"
                   onClick={() => setSelectedRows([])}
                   isPrimary={false}
-                  //isLoading={isUpdatingEdit}
-                  //isRadial={true}
+                //isLoading={isUpdatingEdit}
+                //isRadial={true}
                 />
                 <Button
                   value="Inscribir"
@@ -209,8 +213,8 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller }) => {
                   isPrimary={true}
                   //onClick={() => handleInscribirDocentes()}
                   onClick={() => setModalOpen(true)}
-                  //isLoading={isUpdatingEdit}
-                  //isRadial={true}
+                //isLoading={isUpdatingEdit}
+                //isRadial={true}
                 />
               </div>
             )}

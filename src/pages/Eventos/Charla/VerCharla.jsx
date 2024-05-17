@@ -63,8 +63,8 @@ const VerCharla = (props) => {
                   headerTitle="Charla"
                   headerSubTitle="Capacitación"
                   headerLinkToNew="/eventos/nuevoEvento/charla"
-                  headerLinkToEdit={`/eventos/editarEvento/${id_capacitacion}`}
-                  idCapacitacion={id_capacitacion}
+                  headerLinkToEdit={`/eventos/editarEvento/${id}`}
+                  id={id}
                   containerNombre={nombre}
                   containerFechas={fechas}
                   containerDataList={[

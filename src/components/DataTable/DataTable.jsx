@@ -1,4 +1,3 @@
-// DataTable.js
 import React from "react";
 import useTableData from "./useTableData";
 import { MdOutlineSearch } from "react-icons/md";
@@ -7,7 +6,7 @@ import { Button } from "@components";
 const DataTable = ({
   initialData,
   idColumn,
-  searchColumn,
+  searchColumns, // Cambiado para aceptar múltiples columnas
   columnMappings,
   columnOrder,
   selectedRows,
@@ -17,16 +16,11 @@ const DataTable = ({
     data,
     setSearchTerm,
     handleSort,
-    //toggleRowSelection,
-    //selectedRows,
     page,
     setPage,
     totalPages,
-  } = useTableData(initialData, searchColumn);
+  } = useTableData(initialData, searchColumns); // Pasar el array de columnas de búsqueda
 
-  //let columns = Object.keys(initialData[0]).filter((col) => col !== idColumn);
-
-  // Usar el mapeo y el orden de las columnas
   const columns = columnOrder.map((key) => ({
     key,
     label: columnMappings[key] || key,
@@ -39,7 +33,7 @@ const DataTable = ({
           <MdOutlineSearch size={23} className="text-primary_gray_4" />
           <input
             type="text"
-            placeholder="Buscar por nombre..."
+            placeholder="Buscar..."
             onChange={(e) => setSearchTerm(e.target.value)}
             className="text-sm bg-primary_gray_1 border-none outline-none"
           />

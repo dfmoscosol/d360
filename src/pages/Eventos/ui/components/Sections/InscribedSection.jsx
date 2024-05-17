@@ -1,8 +1,9 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import { MdOutlineSearch, MdFileDownload } from "react-icons/md";
+import descargarArchivoExcel from "@helpers/descargarArchivoExcel";
 import { Modal, Button } from "@components";
 import PillInscritos from "../PillInscritos/PillInscritos";
 
@@ -12,14 +13,16 @@ import { triggerNotification } from "@redux/features/notification/notificationSl
 
 import { useEliminarInscripcionMutation } from "@redux/services/evento/eventoApi";
 
-const InscribedSection = (props) => {
-  const { docentesInscritos, handleRefetch } = props;
+import { useDescargarInscritosMutation } from '@redux/services/inscripcion/inscripcionApi';
 
+
+const InscribedSection = (props) => {
+  const { docentesInscritos, idEvento, idTaller, handleRefetch } = props;
   /**
    * REDUX
    */
   const dispatch = useDispatch();
-
+  const token = useSelector((state) => state.authState.token);
   /**
    * PARA ELIMINAR LA INSCRIPCION
    */
@@ -35,6 +38,24 @@ const InscribedSection = (props) => {
   ] = useEliminarInscripcionMutation();
 
   const [idDocenteAprobacion, setIdDocenteAprobacion] = useState();
+  const [busqueda, setBusqueda] = useState('');
+  const [docentesFiltrados, setDocentesFiltrados] = useState(docentesInscritos);
+
+  // Función para manejar el cambio en el campo de texto
+  const handleSearchChange = (event) => {
+    setBusqueda(event.target.value);
+    console.log()
+    /* console.log(docentesFiltrados[0].nombre.toLowerCase())
+    console.log(event.target.value.toLowerCase())
+    console.log(docentesFiltrados[0].nombre.toLowerCase().includes(event.target.value.toLowerCase())) */
+  };
+
+  // Filtrar docentes basados en la búsqueda
+
+  const handleDescargarInscritos = () => {
+    descargarArchivoExcel(token, idEvento, idTaller, dispatch)
+  };
+
 
   const handleAprobarEliminacion = (id) => {
     setIdDocenteAprobacion(id);
@@ -50,6 +71,15 @@ const InscribedSection = (props) => {
     //console.log(paramsConfirm);
     eliminarInscripcion(paramsConfirm);
   };
+
+  useEffect(() => {
+    console.log(busqueda)
+    let newDocentesFiltrados = docentesInscritos.filter((docente) =>
+      docente.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      docente.correo.toLowerCase().includes(busqueda.toLowerCase())
+    );
+    setDocentesFiltrados(newDocentesFiltrados)
+  }, [busqueda])
 
   useEffect(() => {
     if (isSuccessEliminar) {
@@ -76,7 +106,6 @@ const InscribedSection = (props) => {
   return (
     <EventoView>
       <Modal
-        //isOpen={true}
         isOpen={isModalOpen}
         message="¿Desea eliminar esta inscripción?"
         onClose={() => setModalOpen(false)}
@@ -106,16 +135,46 @@ const InscribedSection = (props) => {
           />
         )}
       </Modal>
-      <Header
-        color="bg-primary_gray_1 text-primary_gray_4"
-        title="Inscritos"
-        subTitle="Docentes inscritos actualmente"
-        hasIcon={false}
-      />
+      <div className="flex items-center justify-between">
+        <Header
+          color="bg-primary_gray_1 text-primary_gray_4"
+          title="Inscritos"
+          subTitle="Docentes inscritos actualmente"
+          hasIcon={false}
+        />
+        <button onClick={handleDescargarInscritos}>
+          <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center">
+            <div className="p-2 bg-white rounded-lg text-primary_gray_3">
+              <MdFileDownload size={20} />
+            </div>
+            <div className="flex flex-col items-start">
+              <span className="text-primary_gray_3 text-xs">
+                Inscritos
+              </span>
+              <span className="text-primary_color_1 font-medium text-sm hover:underline">
+                Descargar
+              </span>
+            </div>
+          </div>
+        </button>
+      </div>
+
       <SectionContainer>
-        {docentesInscritos.length > 0 ? (
+
+        <div className="w-full flex items-center justify-end">
+          <div className="bg-primary_gray_1 flex gap-1 py-2 px-4 rounded-2xl items-center">
+            <MdOutlineSearch size={23} className="text-primary_gray_4" />
+            <input
+              type="text"
+              placeholder="Buscar docente..."
+              onChange={handleSearchChange}
+              className="text-sm bg-primary_gray_1 border-none outline-none"
+            />
+          </div>
+        </div>
+        {docentesFiltrados.length > 0 ? (
           <div className="flex flex-col gap-4">
-            {docentesInscritos.map((docente, index) => (
+            {docentesFiltrados.map((docente, index) => (
               <PillInscritos
                 index={index}
                 title={docente.nombres}

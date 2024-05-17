@@ -6,18 +6,16 @@ import { MdDateRange } from "react-icons/md";
 
 const TallerCard = (props) => {
   const {
-    allow_asistencia_entrada,
-    allow_asistencia_salida,
-    allow_inscripcion,
+    inscripcion,
     fechas,
-    id_capacitacion,
+    id,
     nombre,
   } = props;
 
   return (
     <div className="bg-white p-4 flex flex-col gap-4 rounded-lg hover:shadow-lg transition-all duration-300 h-full">
       <Link
-        to={`verEvento/${id_capacitacion}`}
+        to={`verEvento/${id}`}
         className="flex flex-col gap-4 w-full justify-between h-full"
       >
         <div className="flex flex-col w-full">
@@ -34,27 +32,17 @@ const TallerCard = (props) => {
             >
               <MdDateRange size={15} />
               <span className="text-xs font-normal tracking-tight">
-                {fecha}
+                {fecha.fecha}
               </span>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 gap-2">
           <StatePill
-            hasState={allow_inscripcion}
+            hasState={inscripcion}
             stateValue={"Inscripción"}
             icon={"inscripcion"}
-          />
-          <StatePill
-            hasState={allow_asistencia_entrada}
-            stateValue={"Entrada"}
-            icon={"entrada"}
-          />
-          <StatePill
-            hasState={allow_asistencia_salida}
-            stateValue={"Salida"}
-            icon={"salida"}
           />
         </div>
       </Link>

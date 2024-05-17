@@ -156,7 +156,7 @@ const CertificadoCard = ({
             icon="delete"
             isPrimary={true}
             onClick={handleDenegarAprobar}
-            //isLoading={isUpdatingEdit}
+          //isLoading={isUpdatingEdit}
           />
         )}
       </Modal>

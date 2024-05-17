@@ -1,23 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MdExpandMore } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 
-const ComboBox = ({ items, onSelect, hasBeenSelected, selected }) => {
+const ComboBox = ({ items, onSelect, selected = "", isEnabled = true, enableEdit = false }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(selected);
 
-  let selectedItemProp = "";
-  if (hasBeenSelected) {
-    selectedItemProp = selected;
-  }
+  useEffect(() => {
+    setSelectedItem(selected); // Esto asegura que el valor externo se refleje internamente
+  }, [selected]);
 
-  const [selectedItem, setSelectedItem] = useState(selectedItemProp);
-
-  const toggleComboBox = () => setIsVisible(!isVisible);
+  const toggleComboBox = () => {
+    if (isEnabled) setIsVisible(!isVisible);
+  };
 
   const handleSelectItem = (item) => {
-    setSelectedItem(item);
-    setIsVisible(false);
-    onSelect(item);
+    if (isEnabled) {
+      setSelectedItem(item);
+      setIsVisible(false);
+      onSelect(item);
+    }
   };
 
   const comboBoxVariants = {
@@ -42,25 +44,28 @@ const ComboBox = ({ items, onSelect, hasBeenSelected, selected }) => {
 
   return (
     <div className="relative">
-      <div className="flex items-center rounded-lg text-sm w-full relative cursor-pointer">
+      <div className={`flex items-center rounded-lg text-sm w-full relative cursor-pointer ${!isEnabled ? 'cursor-not-allowed' : ''}`}>
         <input
           type="text"
-          className="cursor-pointer focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+          className={`cursor-pointer focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${
+            enableEdit ? "outline-none ring-1 ring-inset ring-primary_gray_5" : "bg-primary_gray_1"
+          }`}
           value={selectedItem}
           onChange={(e) => setSelectedItem(e.target.value)}
           onClick={toggleComboBox}
-          readOnly
+          readOnly={!enableEdit}
           placeholder="Seleccionar..."
+          disabled={!isEnabled}
         />
         <MdExpandMore
           size={30}
-          className="absolute right-0 text-primary_color_1"
+          className={`absolute right-0 text-primary_color_1 ${!isEnabled ? 'opacity-50' : ''}`}
           onClick={toggleComboBox}
         />
       </div>
 
       <AnimatePresence>
-        {isVisible && (
+        {isVisible && isEnabled && (
           <motion.div
             className="absolute z-10 w-full bg-white shadow-lg mt-1 p-4 rounded-lg border border-primary_gray_5"
             variants={comboBoxVariants}

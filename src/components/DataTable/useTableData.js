@@ -1,7 +1,6 @@
-// useTableData.js
 import { useState, useMemo, useEffect } from "react";
 
-const useTableData = (initialData, searchColumn) => {
+const useTableData = (initialData, searchColumns) => {
   const [data, setData] = useState(initialData);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortKey, setSortKey] = useState("");
@@ -10,15 +9,14 @@ const useTableData = (initialData, searchColumn) => {
   const [page, setPage] = useState(1);
   const pageSize = 10; // Número de filas por página
 
-  // Actualizar la lógica de filtrado para usar la columna de búsqueda dinámica
+  // Actualizar la lógica de filtrado para usar múltiples columnas de búsqueda
   const filteredData = useMemo(() => {
     return data.filter((item) =>
-      item[searchColumn]
-        .toString()
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+      searchColumns.some((column) =>
+        item[column].toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
     );
-  }, [data, searchTerm, searchColumn]);
+  }, [data, searchTerm, searchColumns]);
 
   // Ordenar los datos
   const sortedData = useMemo(() => {
@@ -39,8 +37,6 @@ const useTableData = (initialData, searchColumn) => {
 
   // Cambiar el orden de las columnas
   const handleSort = (key) => {
-    console.log("handleSort");
-    console.log(key);
     setSortKey(key);
     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
   };

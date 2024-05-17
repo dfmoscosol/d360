@@ -3,18 +3,19 @@ import { useForm } from "react-hook-form";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
 import { Link, useNavigate } from "react-router-dom";
-import { ContainerPage } from "@components";
+import { ContainerPage, InfoPill } from "@components";
 import ContainerForm from "../ui/components/ContainerForm/ContainerForm";
 import FormLabel from "../ui/components/FormLabel/FormLabel";
 import { Modal, Button } from "@components";
-import { useEditCapacitacionMutation } from "@redux/services/evento/eventoApi";
+import { useEditEventoMutation } from "@redux/services/evento/eventoApi";
 import {
-  useEditTallerMutation,
+  useEditTallerMutation, useAddTallerMutation,
   useDeleteTallerMutation,
 } from "@redux/services/taller/tallerApi";
 
 import { useDispatch } from "react-redux";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
+import { data } from "autoprefixer";
 
 const EditarJornadaInnovacion = (props) => {
   /**
@@ -22,16 +23,11 @@ const EditarJornadaInnovacion = (props) => {
    */
   const {
     nombre,
-    nombre_tutor,
     fechas,
     horas,
-    isPresencial,
-    direccion,
-    cupo,
+    cupos,
     talleres,
-    allow_asistencia,
-    allow_inscripcion,
-    id_capacitacion,
+    id,
     handleRefetch,
   } = props;
 
@@ -41,9 +37,20 @@ const EditarJornadaInnovacion = (props) => {
   const dispatch = useDispatch();
 
   const [
-    editCapacitacion,
+    editEvento,
     { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
-  ] = useEditCapacitacionMutation();
+  ] = useEditEventoMutation();
+
+  const [
+    addTaller,
+    {
+      data: responseAddTaller,
+      isLoading: isUpdatingAddTaller,
+      isSuccess: isSuccessAddTaller,
+      isError: isErrorAddTaller,
+      error: errorAddTaller,
+    },
+  ] = useAddTallerMutation();
 
   const [
     editTaller,
@@ -82,12 +89,10 @@ const EditarJornadaInnovacion = (props) => {
   const [formData, setFormData] = useState(null);
 
   const onSubmit = (data) => {
-    //console.log(data);
     let areValidDates;
     let validDatesList = [];
-    let validInputsList = [];
+    console.log(dates.length)
 
-    //console.log(dates);
     if (dates.length == 0) {
       console.log("ERROR: No se ha elegido más de una fecha.");
       setValidDate(false);
@@ -101,47 +106,21 @@ const EditarJornadaInnovacion = (props) => {
         validDatesList.push(date.format("DD-MM-YYYY"));
       });
     }
-
-    const areAllInputsFilled = inputs.every(
-      (input) => input.value.trim() !== ""
-    );
-    if (!areAllInputsFilled) {
-      console.log("ERROR: Todos los talleres deben tener un nombre.");
-      inputs.forEach((input) => {
-        if (input.value.trim() === "") {
-          input.isEmpty = true;
-        } else {
-          input.isEmpty = false;
-        }
-      });
-    } else {
-      console.log("Todos los talleres tienen un nombre.");
-      validInputsList = inputs.map((input) => ({ nombre: input.value }));
-    }
-
-    let isModalidadPresencial = false;
-    if (selectedModalidad === "Presencial") {
-      isModalidadPresencial = true;
-    }
-
-    if (areValidDates && areAllInputsFilled) {
-      console.log("Se puede enviar el formulario");
+    if (areValidDates) {
       data.fechas = validDatesList;
-      data.presencial = isModalidadPresencial;
-      data.talleres = validInputsList;
       data.horas = Number(data.horas);
-      data.cupo = Number(data.cupo);
-      //data.tipo = "Jornada";
-      //console.log(data);
+      data.cupos = Number(data.cupos);
+      data.nombre = data.nombre;
+      console.log(data);
       console.log("Se enviará el formulario");
       setFormData({
-        id: id_capacitacion,
+        id: id,
         body: data,
+        tipo: "jornadas"
       });
       setModalOpen(true);
-    } else {
-      console.log("No se puede enviar el formulario");
     }
+
   };
 
   /**
@@ -150,20 +129,43 @@ const EditarJornadaInnovacion = (props) => {
 
   let allTalleresList = [];
 
-  talleres.forEach((taller, index) => {
-    allTalleresList.push({
-      id_taller: taller.id_taller,
-      id: index + 1,
+  talleres.forEach((taller, indexTaller) => {
+    const nuevoTaller = {
+      id_taller: taller.id,
+      id: indexTaller + 1,
       value: taller.nombre,
       isEmpty: false,
       isEnabled: false,
       enableEdit: false,
-      index: index,
-      originalValue: taller.nombre,
-    });
+      index: indexTaller,
+      sesiones: taller.sesiones,
+      ponentes: [],
+      isNew: false
+    };
+
+    // Asignar un ID incremental a cada ponente
+    if (taller.ponentes && taller.ponentes.length > 0) {
+      taller.ponentes.forEach((ponente, index) => {
+        nuevoTaller.ponentes.push({
+          nombre: ponente.nombre,
+          id: index + 1
+        });
+      });
+
+    }
+    // Agregar el taller procesado a la lista de talleres
+    nuevoTaller.originalValue = {
+      sesiones: nuevoTaller.sesiones,
+      ponentes: nuevoTaller.ponentes.map(ponente => ({
+        nombre: ponente.nombre,
+        id: ponente.id
+      }))
+    };
+    allTalleresList.push(nuevoTaller);
   });
 
   const [inputs, setInputs] = useState(allTalleresList);
+
   const handleInputChange = (id, newValue) => {
     setInputs(
       inputs.map((input) => {
@@ -173,6 +175,128 @@ const EditarJornadaInnovacion = (props) => {
         return input;
       })
     );
+  }
+
+  const handleAddInput = () => {
+    const newInputs = [...inputs];
+    console.log(dates)
+    newInputs.push({
+      value: "",
+      isEmpty: false,
+      enableEdit: true,
+      isNew: true,
+      sesiones: fechas.map(fecha => ({
+        fecha_id: fecha.id,  // Asume que las fechas son objetos moment o similar
+        fecha: fecha.fecha,  
+        hora_inicio: "",
+        duracion: "",
+        modalidad: "",
+        ubicacion: "",
+      })),
+      ponentes: [{ id: 1, nombre: "", hasAddButton: true, hasRemoveButton: false, }]
+    });
+    setInputs(newInputs);
+  };
+
+  const handleRemoveInput = () => {
+    const newInputs = [...inputs];
+    newInputs.pop();
+    setInputs(newInputs);
+  };
+
+  const handleModalidadChange = (tallerId, sesionIndex, newValue) => {
+    setInputs(inputs.map(input => {
+      if (input.id === tallerId) {
+        // Actualiza la modalidad de la sesión específica
+        const updatedSesiones = input.sesiones.map((sesion, index) => {
+          if (index === sesionIndex) {
+            return { ...sesion, modalidad: newValue };
+          }
+          return sesion;
+        });
+        return { ...input, sesiones: updatedSesiones, isEmpty: false };
+      }
+      return input;
+    }));
+  };
+
+  const handleHoraInicioChange = (tallerId, sesionIndex, newValue) => {
+    setInputs(inputs.map(input => {
+      if (input.id === tallerId) {
+        // Actualiza la hora_inicio de la sesión específica
+        const updatedSesiones = input.sesiones.map((sesion, index) => {
+          if (index === sesionIndex) {
+            return { ...sesion, hora_inicio: newValue };
+          }
+          return sesion;
+        });
+        return { ...input, sesiones: updatedSesiones, isEmpty: false };
+      }
+      return input;
+    }));
+  };
+
+  const handleDuracionChange = (tallerId, sesionIndex, newValue) => {
+    setInputs(inputs.map(input => {
+      if (input.id === tallerId) {
+        // Actualiza la duracion de la sesión específica
+        const updatedSesiones = input.sesiones.map((sesion, index) => {
+          if (index === sesionIndex) {
+            return { ...sesion, duracion: newValue };
+          }
+          return sesion;
+        });
+        return { ...input, sesiones: updatedSesiones, isEmpty: false };
+      }
+      return input;
+    }));
+  };
+
+
+  const handleUbicacionChange = (tallerId, sesionIndex, newValue) => {
+    setInputs(inputs.map(input => {
+      if (input.id === tallerId) {
+        // Actualiza la ubicacion de la sesión específica
+        const updatedSesiones = input.sesiones.map((sesion, index) => {
+          if (index === sesionIndex) {
+            return { ...sesion, ubicacion: newValue };
+          }
+          return sesion;
+        });
+        return { ...input, sesiones: updatedSesiones, isEmpty: false };
+      }
+      return input;
+    }));
+  };
+
+
+  const handleAddPonente = (tallerIndex) => {
+    /* console.log("antes",inputs[tallerIndex].originalValuePonentes.map((ponente) => (
+      {
+        nombre: ponente.nombre,
+        id: ponente.id
+      }
+    ))) */
+    const newInputs = [...inputs];
+    const ponentes = newInputs[tallerIndex].ponentes || [];
+    ponentes.push({ id: ponentes.length + 1, nombre: '', isNew: true });
+    newInputs[tallerIndex].ponentes = ponentes;
+    setInputs(newInputs);
+
+  };
+
+  const handleRemovePonente = (tallerIndex, ponenteIndex) => {
+
+    const newInputs = [...inputs];
+    newInputs[tallerIndex].ponentes.splice(ponenteIndex, 1);
+    setInputs(newInputs);
+  };
+
+  const handlePonenteChange = (tallerIndex, ponenteIndex, newName) => {
+    const newInputs = [...inputs];
+    newInputs[tallerIndex].ponentes[ponenteIndex].nombre = newName;
+    newInputs[tallerIndex].isEmpty = false;
+    setInputs(newInputs);
   };
 
   /**
@@ -193,12 +317,19 @@ const EditarJornadaInnovacion = (props) => {
    * Para el boton de cancelar
    */
   const handleCancelEdit = (index) => {
-    console.log("cancelando");
-    console.log(index);
     setInputs(
       inputs.map((input) => {
         if (input.index === index) {
-          return { ...input, enableEdit: false, value: input.originalValue };
+          return {
+            ...input, enableEdit: false, value: input.originalValue.nombre,
+            sesiones: input.originalValue.sesiones,
+            ponentes: input.originalValue.ponentes
+              .filter(ponente => ponente.isNew !== true)
+              .map(ponente => ({
+                nombre: ponente.nombre,
+                id: ponente.id
+              }))
+          };
         }
         return input;
       })
@@ -208,19 +339,63 @@ const EditarJornadaInnovacion = (props) => {
   /**
    * PARA EDITAR EL TALLER
    */
+  const handleNewTaller = (index) => {
+    const areAllInputsFilled = (inputs[index].value.trim() !== "")
+      && inputs[index].sesiones.every(sesion =>
+        sesion.fecha_id &&
+        sesion.hora_inicio.trim() !== "" &&
+        sesion.duracion.trim() !== "" &&
+        sesion.modalidad.trim() !== "" &&
+        sesion.ubicacion.trim() !== "")
+      && inputs[index].ponentes.every(ponente => ponente.nombre.trim() !== "");
+    console.log(areAllInputsFilled)
+    if (areAllInputsFilled) {
+      let input = inputs[index]
+      const dataBody = {
+        id_evento: id,
+        body: {
+          nombre: input.value,
+          sesiones: input.sesiones.map(({ fecha, ...sesion }) => ({
+            ...sesion,
+            modalidad: sesion.modalidad === "Presencial" ? 1 : sesion.modalidad === "Virtual" ? 2 : sesion.modalidad === "Híbrida" ? 3 : 0
+          })),
+          ponentes: input.ponentes.map((ponente) => ({ "nombre": ponente.nombre }))
+        },
+      };
+      console.log(dataBody);
+      addTaller(dataBody);
+    } else {
+      setInputs(inputs.map((input, idx) => {
+        if (idx === index) {
+          return { ...input, isEmpty: true };
+        }
+        return input;
+      }));
+    }
+    //console.log("editado");
+  }
+
+
+
   const handleSaveEdit = (index) => {
     //console.log("guardando");
-    //console.log(index);
     setInputs(
       inputs.map((input) => {
         if (input.index === index) {
           const dataBody = {
             id: input.id_taller,
-            body: { nombre: input.value },
+            id_evento: id,
+            body: {
+              nombre: input.value,
+              sesiones: input.sesiones.map(({ fecha, fecha_id, ...sesion }) => ({
+                ...sesion,
+                modalidad: sesion.modalidad === "Presencial" ? 1 : sesion.modalidad === "Virtual" ? 2 : sesion.modalidad === "Híbrida" ? 3 : 0
+              })),
+              ponentes: input.ponentes.map((ponente) => ({ nombre: ponente.nombre }))
+            },
           };
-          //console.log(dataBody);
           editTaller(dataBody);
-          //console.log("editado");
+          console.log("editado", dataBody);
           return { ...input, enableEdit: false };
         }
         return input;
@@ -229,15 +404,28 @@ const EditarJornadaInnovacion = (props) => {
   };
 
   useEffect(() => {
-    if (isSuccessTaller) {
-      console.log(responseTaller);
+    if (isSuccessAddTaller) {
       triggerNotification(dispatch, {
-        message: responseTaller.respuesta,
+        message: "Nuevo taller guardado exitosamente.",
+        type: "success",
+      });
+      handleRefetch();
+    } else if (isErrorAddTaller && errorAddTaller) {
+      triggerNotification(dispatch, {
+        message: error.data.error || "Error al crear el taller.",
+        type: "error",
+      });
+    }
+  }, [isSuccessAddTaller, isErrorAddTaller, errorAddTaller, dispatch]);
+
+  useEffect(() => {
+    if (isSuccessTaller) {
+      triggerNotification(dispatch, {
+        message: "Cambios en el taller guardados exitosamente.",
         type: "success",
       });
       handleRefetch();
     } else if (isErrorTaller && errorTaller) {
-      console.log(errorTaller);
       triggerNotification(dispatch, {
         message: error.data.error || "Error al editar el taller.",
         type: "error",
@@ -260,14 +448,12 @@ const EditarJornadaInnovacion = (props) => {
     const dataBody = {
       id: idTallerToDelete,
     };
-    console.log(dataBody);
     setModalOpen(false);
     deleteTaller(dataBody);
   };
 
   useEffect(() => {
     if (isSuccessDeleteTaller) {
-      console.log(responseDeleteTaller);
       triggerNotification(dispatch, {
         message: responseDeleteTaller.respuesta,
         type: "success",
@@ -275,7 +461,6 @@ const EditarJornadaInnovacion = (props) => {
       handleRefetch();
       //navigate(-1);
     } else if (isErrorDeleteTaller && errorDeleteTaller) {
-      console.log(errorDeleteTaller);
       triggerNotification(dispatch, {
         message: errorDeleteTaller.data.error || "Error al borrar el taller.",
         type: "error",
@@ -288,7 +473,7 @@ const EditarJornadaInnovacion = (props) => {
    */
   const fechasDateFormat = [];
   fechas.forEach((fecha, index) => {
-    const parts = fecha.split("-");
+    const parts = fecha.fecha.split("-");
     const formattedDate = `${parts[1]}-${parts[0]}-${parts[2]}`;
     fechasDateFormat.push(new DateObject(new Date(formattedDate)));
   });
@@ -336,27 +521,17 @@ const EditarJornadaInnovacion = (props) => {
    * COMBOBOX
    */
 
-  const listModalidades = ["Virtual", "Presencial"];
-  let selectedModalidadProp;
-  if (isPresencial) {
-    selectedModalidadProp = "Presencial";
-  } else {
-    selectedModalidadProp = "Virtual";
-  }
-  const [selectedModalidad, setSelectedModalidad] = useState(
-    selectedModalidadProp
-  );
-  const handleSelect = (value) => {
-    setSelectedModalidad(value);
-  };
+  const listModalidades = ["Virtual", "Presencial", "Híbrida"];
+
+
 
   /**
    * PARA ENVIAR EL FORMULARIO
    */
-  const handleConfirmEditCapacitacion = () => {
+  const handleConfirmeditEvento = () => {
     //console.log("Se enviará el formulario xxxx");
-    //console.log(formData);
-    editCapacitacion(formData);
+    console.log(formData);
+    editEvento(formData);
   };
 
   /**
@@ -413,7 +588,7 @@ const EditarJornadaInnovacion = (props) => {
             size="medium"
             icon="check"
             isPrimary={true}
-            onClick={handleConfirmEditCapacitacion}
+            onClick={handleConfirmeditEvento}
             isLoading={isUpdating}
           />
         )}
@@ -469,28 +644,9 @@ const EditarJornadaInnovacion = (props) => {
               )}
             </div>
 
-            {/**Tutor */}
-            <div className="col-span-5 flex flex-col gap-1">
-              <FormLabel value={"Tutor"} />
-              <div className="w-full">
-                <input
-                  type="text"
-                  defaultValue={nombre_tutor}
-                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                  placeholder="Ing. Juan Perez"
-                  {...register("nombre_tutor", { required: true })}
-                />
-              </div>
-              {errors.nombre_tutor && (
-                <span className="text-red-600 text-sm font-light px-1">
-                  Ingrese un valor válido.
-                </span>
-              )}
-            </div>
-
-            {/**Fecha */}
-            <div className="col-span-5 flex flex-col gap-1">
-              <FormLabel value={"Fecha"} />
+            {/**Fecha**/}
+            <div className="col-span-8 flex flex-col gap-1">
+              <FormLabel value={"Fechas"} />
               <div className="w-full flex flex-col">
                 <DatePicker
                   multiple
@@ -536,80 +692,172 @@ const EditarJornadaInnovacion = (props) => {
               )}
             </div>
 
-            {/**Modalidad */}
-            <div className="col-span-5 flex flex-col gap-1">
-              <FormLabel value={"Modalidad"} />
-              <div className="w-full">
-                <ComboBox
-                  items={listModalidades}
-                  onSelect={handleSelect}
-                  hasBeenSelected={true}
-                  selected={selectedModalidad}
-                />
-              </div>
-            </div>
-
-            {/**Dirección */}
-            <div className="col-span-5 flex flex-col gap-1">
-              <FormLabel value={"Dirección"} />
-              <div className="w-full">
-                <input
-                  type="text"
-                  defaultValue={direccion}
-                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                  {...register("direccion", { required: false })}
-                />
-              </div>
-            </div>
-
             {/**Cupos */}
             <div className="col-span-2 flex flex-col gap-1">
               <FormLabel value={"Cupos"} />
               <div className="w-full h-full ">
                 <input
-                  defaultValue={cupo}
+                  defaultValue={cupos}
                   type="number"
                   className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                  {...register("cupo", { required: true })}
+                  {...register("cupos", { required: true })}
                   min={1}
                   step={1}
                 />
               </div>
-              {errors.cupo && (
+              {errors.cupos && (
                 <span className="text-red-600 text-sm font-light px-1">
                   Ingrese un valor válido
                 </span>
               )}
             </div>
 
+            <div className="col-span-12 text-primary_gray_5">
+              <hr />
+            </div>
+
+            {/**Buttons */}
+            <div className="flex items-center justify-center col-span-12 gap-4">
+              <Button
+                type="gray"
+                onClick={() => navigate(-1)}
+                icon={"left"}
+                buttonType={"button"}
+                value={"Atrás"}
+                size={"medium"}
+              />
+              <Button
+                type="ucuenca"
+                icon={"saveEdit"}
+                buttonType={"submit"}
+                value={"Guardar"}
+                size={"medium"}
+                isLoading={isUpdating}
+                isPrimary={true}
+              />
+            </div>
+
             {/**Talleres */}
             <div className="flex flex-col col-span-12 gap-1">
-              <FormLabel value={`Talleres (${talleres.length})`} />
+              <div className="flex items-center justify-start gap-4">
+                <FormLabel value={`Talleres (${inputs.length})`} />
+                <Button
+                  type="ucuenca"
+                  onClick={handleAddInput}
+                  icon="add"
+                  buttonType="button"
+                  value="Atrás"
+                  size="small"
+                  isRadial={true}
+                  isPrimary={false}
+                />
+              </div>
               <div className="flex flex-col gap-3 mt-2">
                 {inputs.map((input, index) => (
                   <div key={input.id} className="flex gap-4">
                     <div className="flex flex-col w-full bg-white rounded-lg p-3 gap-1 border-[1px]">
-                      <span className="text-sm font-medium text-primary_text_1">
-                        Nombre del Taller
-                      </span>
-                      <input
-                        type="text"
-                        value={input.value}
-                        onChange={(e) =>
-                          handleInputChange(input.id, e.target.value)
-                        }
-                        className={` ${
-                          input.enableEdit
+                      <div className="flex flex-col">
+                        <label className="text-sm font-medium text-primary_text_1">
+                          Nombre del Taller
+                        </label>
+                        <input
+                          type="text"
+                          value={input.value}
+                          onChange={(e) =>
+                            handleInputChange(input.id, e.target.value)
+                          }
+                          className={` ${input.enableEdit
                             ? "bg-white outline-none ring-1 ring-inset ring-primary_gray_5"
                             : "bg-primary_gray_1"
-                        } text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full`}
-                        placeholder={`Taller ${input.id}`}
-                        disabled={!input.enableEdit}
+                            } text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full`}
+                          disabled={!input.enableEdit}
                         //{...register(`taller_${input.id}`, { required: true })}
-                      />
+                        />
+                      </div>
+                      {input.sesiones.map((sesion, index) => (<>
+                        <div className="flex flex-col items-start justify-start pt-3">
+                          <InfoPill
+                            value={sesion.fecha}
+                            size="small"
+                            type="date"
+                            icon="date"
+                          />
+                        </div>
+                        <div className="flex flex-wrap pt-1 gap-3">
+                          {/* Hora, Duración, Modalidad, Ubicación */}
+                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                            <label className="text-sm font-medium text-primary_text_1">Hora</label>
+                            <input type="time"
+                              disabled={!input.enableEdit}
+                              value={sesion.hora_inicio}
+                              onChange={(e) => handleHoraInicioChange(input.id, index, e.target.value)}
+                              className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit ? "outline-none ring-1 ring-inset ring-primary_gray_5" : "bg-primary_gray_1"}`} />
+                          </div>
+                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                            <label className="text-sm font-medium text-primary_text_1">Duración</label>
+                            <input type="number"
+                              value={sesion.duracion}
+                              disabled={!input.enableEdit}
+                              onChange={(e) => handleDuracionChange(input.id, index, e.target.value)}
+                              className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit ? "outline-none ring-1 ring-inset ring-primary_gray_5" : "bg-primary_gray_1"}`} placeholder="Duración en horas" />
+                          </div>
+                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                            <label className="text-sm font-medium text-primary_text_1">Modalidad</label>
+                            <ComboBox items={listModalidades} onSelect={(value) => handleModalidadChange(input.id, index, value)}
+                              selected={sesion.modalidad} enableEdit={input.enableEdit} isEnabled={input.enableEdit} />
+                          </div>
+                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                            <label className="text-sm font-medium text-primary_text_1">Ubicación</label>
+                            <input type="text"
+                              value={sesion.ubicacion}
+                              disabled={!input.enableEdit}
+                              onChange={(e) => handleUbicacionChange(input.id, index, e.target.value)}
+                              className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit ? "outline-none ring-1 ring-inset ring-primary_gray_5" : "bg-primary_gray_1"}`} placeholder="Ingrese ubicación" />
+                          </div>
+                        </div></>
+                      ))}
+
+                      <div className="flex items-center justify-start pt-2 gap-3">
+                        <label className="text-sm font-medium text-primary_text_1">Ponentes</label>
+                        {input.enableEdit && (
+                          <Button
+                            onClick={() => handleAddPonente(index)}
+                            icon="add"
+                            buttonType="button"
+                            type="ucuenca"
+                            size="xsmall"
+                            isRadial={true}
+                            isPrimary={false}
+                          />
+                        )}
+                      </div>
+                      {input.ponentes.map((ponente, ponenteIndex) => (
+                        <div key={ponente.id} className="flex gap-2 pt-2 items-center">
+                          <input
+                            type="text"
+                            value={ponente.nombre}
+                            onChange={(e) => handlePonenteChange(index, ponenteIndex, e.target.value)}
+                            className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit ? "outline-none ring-1 ring-inset ring-primary_gray_5" : "bg-primary_gray_1"}`}
+                            disabled={!input.enableEdit}
+                          />
+                          {input.enableEdit && (
+                            <Button
+                              type="error"
+                              onClick={() => handleRemovePonente(index, ponenteIndex)}
+                              icon="delete"
+                              buttonType="button"
+                              size="xsmall"
+                              isRadial={true}
+                              isPrimary={false}
+                            />
+                          )}
+                        </div>
+                      ))}
+
+
                       {input.isEmpty && (
                         <span className="text-red-600 text-sm font-light px-1">
-                          Ingrese un nombre válido
+                          Complete todos los campos del Taller
                         </span>
                       )}
 
@@ -643,7 +891,7 @@ const EditarJornadaInnovacion = (props) => {
                             icon="close"
                             isPrimary={false}
                             buttonType={"button"}
-                            onClick={() => handleCancelEdit(index)}
+                            onClick={() => input.isNew ? handleRemoveInput() : handleCancelEdit(index)}
                           />
 
                           <Button
@@ -653,41 +901,23 @@ const EditarJornadaInnovacion = (props) => {
                             icon="check"
                             isPrimary={true}
                             buttonType={"button"}
-                            onClick={() => handleSaveEdit(index)}
+                            onClick={() => input.isNew ? handleNewTaller(index) : handleSaveEdit(index)}
                             isLoading={isUpdatingTaller}
                           />
                         </div>
                       )}
                     </div>
+
                   </div>
+
                 ))}
+
               </div>
             </div>
 
             {/**Footer */}
             <div className="col-span-12 text-primary_gray_5">
               <hr />
-            </div>
-
-            {/**Buttons */}
-            <div className="flex items-center justify-center col-span-12 gap-4">
-              <Button
-                type="gray"
-                onClick={() => navigate(-1)}
-                icon={"left"}
-                buttonType={"button"}
-                value={"Atrás"}
-                size={"medium"}
-              />
-              <Button
-                type="ucuenca"
-                icon={"saveEdit"}
-                buttonType={"submit"}
-                value={"Guardar"}
-                size={"medium"}
-                isLoading={isUpdating}
-                isPrimary={true}
-              />
             </div>
           </ContainerForm>
         </form>
