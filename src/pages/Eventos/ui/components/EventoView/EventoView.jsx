@@ -137,15 +137,15 @@ export const TalleresPanel = ({ extra, taller }) => (
           {taller.nombre}
         </span>
         <div className="col-span-2 border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
-              <span className="text-sm font-normal text-primary_gray_2">
-                Ponentes
-              </span>
-              {taller.ponentes.map((ponente, idx) => (
-                <span key={idx} className="text-base font-medium text-primary_text_1">
-                  {ponente.nombre}
-                </span>
-              ))}
-            </div>
+          <span className="text-sm font-normal text-primary_gray_2">
+            Ponentes
+          </span>
+          {taller.ponentes.map((ponente, idx) => (
+            <span key={idx} className="text-base font-medium text-primary_text_1">
+              {ponente.nombre}
+            </span>
+          ))}
+        </div>
         {taller.sesiones.map((sesion, index) => (
           <React.Fragment key={index}>
             <Info>
@@ -197,17 +197,132 @@ export const TalleresPanel = ({ extra, taller }) => (
   </div>
 );
 
+export const SesionesPanel = ({ extra, sesion }) => (
+  <div className={`${extra}`}>
+    <div className="grid grid-cols-1 gap-4">
+      <div className="col-span-3 md:col-span-1 bg-primary_gray_1 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-all duration-200 justify-between">
+        <Info>
+          <InfoPill
+            value={sesion.fecha}
+            size="medium"
+            type="date"
+            icon="date"
+          />
+        </Info>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
+            <span className="text-sm font-normal text-primary_gray_2">
+              Modalidad
+            </span>
+            <span className="text-base font-medium text-primary_text_1">
+              {sesion.modalidad}
+            </span>
+          </div>
+          <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
+            <span className="text-sm font-normal text-primary_gray_2">
+              Ubicación
+            </span>
+            <span className="text-base font-medium text-primary_text_1">
+              {sesion.ubicacion}
+            </span>
+          </div>
+          <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
+            <span className="text-sm font-normal text-primary_gray_2">
+              Hora de inicio
+            </span>
+            <span className="text-base font-medium text-primary_text_1">
+              {sesion.hora_inicio}
+            </span>
+          </div>
+          <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
+            <span className="text-sm font-normal text-primary_gray_2">
+              Duración
+            </span>
+            <span className="text-base font-medium text-primary_text_1">
+              {sesion.duracion}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
-{/* <div className="col-span-2 border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
-              <span className="text-sm font-normal text-primary_gray_2">
-                Ponentes
-              </span>
-              {taller.ponentes.map((ponente, idx) => (
-                <span key={idx} className="text-base font-medium text-primary_text_1">
-                  {ponente.nombre}
-                </span>
-              ))}
-            </div> */}
+export const PonentesPanel = ({ extra, ponente }) => (
+  <div className={`${extra}`}>
+    <div className="grid grid-cols-1 gap-4">
+      <div className="col-span-3 md:col-span-1 bg-primary_gray_1 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-all duration-200 justify-between">
+        <span className="text-sm font-medium text-primary_gray_4">
+          {ponente.titulo_charla}
+        </span>
+          <span className="text-base font-medium text-primary_text_1">
+            {ponente.nombre}
+          </span>
+      </div>
+    </div>
+  </div>
+);
+
+export const PonentesPanelMicrotalleres = ({ extra, ponente }) => (
+  <div className={`${extra}`}>
+    <div className="grid grid-cols-1 gap-4">
+      <div className="col-span-3 md:col-span-1 bg-primary_gray_1 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-all duration-200 justify-between">
+          <span className="text-base font-medium text-primary_text_1">
+            {ponente}
+          </span>
+      </div>
+    </div>
+  </div>
+);
+
+export const customStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    border: state.isFocused ? "2px solid #D1D5DB" : "2px solid #E5E7EB",
+    boxShadow: state.isFocused ? "0 0 0 1px #D1D5DB" : "none",
+    "&:hover": {
+      border: state.isFocused ? "2px solid #D1D5DB" : "2px solid #D1D5DB",
+    },
+    padding: "0.25rem 0.5rem",
+    borderRadius: "0.65rem", // More rounded corners
+    fontSize: '14px', // Smaller font size
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? "#FAFAFA" : state.isFocused ? "#F5F5F5" : "#FFFFFF",
+    color: "#4B5563",
+    "&:hover": {
+      backgroundColor: "#F5F5F5",
+    },
+    borderRadius: "0.5rem", // More rounded corners
+    margin: "0.25rem 0",
+    fontSize: '14px', // Smaller font size
+  }),
+  dropdownIndicator: (provided) => ({
+    ...provided,
+    color: "#D1D5DB",
+    "&:hover": {
+      color: "#D1D5DB",
+    },
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: "#9CA3AF",
+    fontSize: '14px', // Smaller font size
+  }),
+  menu: (provided) => ({
+    ...provided,
+    borderRadius: "0.65rem", // More rounded corners
+    overflow: "hidden",
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: "#4B5563",
+    fontSize: '14px', // Smaller font size
+  }),
+};
+
+
 
 
 const EventoView = ({ extra, children }) => (

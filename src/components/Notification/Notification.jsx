@@ -25,6 +25,7 @@ const Notification = () => {
     visible: {
       x: 0,
       opacity: 1,
+      zIndex:999,
       //transition: { duration: 0.1 },
     },
     exit: {

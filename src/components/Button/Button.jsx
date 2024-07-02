@@ -20,6 +20,8 @@ import {
   MdOutlineCheckBox,
   MdLogin,
   MdLogout,
+  MdFileUpload 
+
 } from "react-icons/md";
 
 import { Oval } from "react-loader-spinner";
@@ -136,6 +138,8 @@ const Button = ({
     iconPill = <MdLogin size={sizeIcon} />;
   } else if (icon === "logout") {
     iconPill = <MdLogout size={sizeIcon} />;
+  }else if (icon === "upload") {
+    iconPill = <MdFileUpload size={sizeIcon} />;
   }
 
   return (

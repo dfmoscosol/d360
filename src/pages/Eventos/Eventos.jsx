@@ -9,20 +9,20 @@ import { MdAdd } from "react-icons/md";
 import { useGetAllEventosQuery } from "@redux/services/evento/eventoApi";
 
 const Eventos = () => {
-   const { data, error, isLoading, isFetching, isError } =
+  const { data, error, isLoading, isFetching, isError } =
     useGetAllEventosQuery();
-
+  
   if (isLoading || isFetching) return <Loader />;
 
   if (isError) return <FetchError error={error} />;
 
-  const eventos = data.respuesta.eventos; 
+  const eventos = data.respuesta.eventos;
 
   return (
     <div className="pb-12">
       <div className="py-2 flex items-center justify-end">
         <span className="text-sm font-medium text-primary_text_1">
-           {eventos.length} eventos
+          {eventos.length} eventos
         </span>
       </div>
       <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -36,11 +36,11 @@ const Eventos = () => {
             </span>
           </div>
         </Link>
-         {eventos.map((evento, index) => (
+        {eventos.map((evento, index) => (
           <div className="col-span-1 h-full flex flex-col" key={index}>
             <Card type={evento.tipo} data={evento} />
           </div>
-        ))} 
+        ))}
       </div>
     </div>
   );

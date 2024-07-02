@@ -130,17 +130,9 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller, docentesInscritos }) =>
     agregarInscripciones(dataBody);
   };
 
-  const handleConfirmDeleteCapacitacion = () => {
-    const dataBody = {
-      id: id_capacitacion,
-    };
-    console.log("confirm");
-    deleteCapacitacion(dataBody);
-    //setModalOpen(false);
-  };
-
+ 
   const handleInscripcionCompleta = () => {
-    console.log("handleInscripcionCcompleta");
+    console.log("handleInscripcionCompleta");
     refetchGetAllDocentes();
     handleRefetch();
   };

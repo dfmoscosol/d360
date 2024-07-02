@@ -65,17 +65,15 @@ const CrearObservacionAulica = () => {
     if (areValidDates) {
       console.log("Se puede enviar el formulario");
       data.fechas = validDatesList;
-      data.presencial = isModalidadPresencial;
-      data.allow_inscripcion = false;
-      data.allow_asistencia_entrada = false;
-      data.allow_asistencia_salida = false;
+      data.inscripcion = false;
       data.horas = Number(data.horas);
-      data.cupo = Number(data.cupo);
-      data.tipo = "observacion";
-      data.nombre_tutor = ".";
+      data.cupos = Number(data.cupos);
       console.log(data);
       console.log("Se enviará el formulario");
-      addEvento(data);
+       addEvento({
+        params: data,
+        tipo: "observaciones"
+      });
       console.log("Enviado");
     } else {
       console.log("No se puede enviar el formulario");
@@ -175,7 +173,7 @@ const CrearObservacionAulica = () => {
               //value="Jornada de Innovación Test"
               type="text"
               className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-              placeholder="Jornada 1"
+              placeholder=""
               {...register("nombre", { required: true })}
             />
             {errors.nombre && (
@@ -185,29 +183,11 @@ const CrearObservacionAulica = () => {
             )}
           </div>
 
-          {/**Modalidad */}
-          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Modalidad"} />
-            <div className="w-full">
-              <ComboBox items={listModalidades} onSelect={handleSelect} />
-            </div>
-          </div>
-
-          {/**Dirección */}
-          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Dirección"} />
-            <div className="w-full">
-              <input
-                type="text"
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("direccion", { required: false })}
-              />
-            </div>
-          </div>
+          
 
           {/**Fecha */}
           <div className="col-span-6 flex flex-col gap-1">
-            <FormLabel value={"Fecha"} />
+            <FormLabel value={"Período"} />
             <div className="w-full flex flex-col">
               <DatePicker
                 range
@@ -260,12 +240,12 @@ const CrearObservacionAulica = () => {
                 //value={5}
                 type="number"
                 className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("cupo", { required: true })}
+                {...register("cupos", { required: true })}
                 min={1}
                 step={1}
               />
             </div>
-            {errors.cupo && (
+            {errors.cupos && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un valor válido
               </span>

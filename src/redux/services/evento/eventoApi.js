@@ -51,7 +51,29 @@ export const eventoApi = createApi({
     getAllDocentes: builder.query({
       query: (params) => `/eventos/docentes/${params.value}`,
     }),
-
+    getAllObservadores: builder.query({
+      query: () => `/observadores`,
+    }),
+    agregarObservadores: builder.mutation({
+      query: (params) => ({
+        url: `/observadores`,
+        method: "POST",
+        body: params,
+      }),
+    }),
+    editObservadores: builder.mutation({
+      query: (params) => ({
+        url: `/observadores/${params.id}`,
+        method: "PUT",
+        body: params.body,
+      }),
+    }),
+    deleteObservadores: builder.mutation({
+      query: (params) => ({
+        url: `/observadores/${params.id}`,
+        method: "DELETE",
+      }),
+    }),
     inscribirDocente: builder.mutation({
       query: (body) => ({
         url: `/eventos/inscripcion`,
@@ -75,17 +97,82 @@ export const eventoApi = createApi({
         //body: params.body,
       }),
     }),
+    getAcreditaciones: builder.query({
+      query: ({ id_evento, id_taller }) => {
+        const baseUrl = `/eventos/acreditaciones/${id_evento}`;
+        return id_taller ? `${baseUrl}/${id_taller}` : baseUrl;
+      },
+      providesTags: ["getAcreditaciones"],
+    }),
+    updateAcreditaciones: builder.mutation({
+      query: (body) => ({
+        url: `/eventos/acreditaciones`,
+        method: "PUT",
+        body,
+      }),
+    }),
+    uploadAcreditaciones: builder.mutation({
+      query: ({ id_evento, id_taller, file }) => {
+        const formData = new FormData();
+        formData.append('id_evento', id_evento);
+        if (id_taller) {
+          formData.append('id_taller', id_taller);
+        }
+        formData.append('file', file);
+        return {
+          url: '/eventos/acreditaciones',
+          method: 'POST',
+          body: formData,
+        };
+      },
+    }),
+    uploadPdf: builder.mutation({
+      query: ({ acreditacionId, file }) => {
+        const formData = new FormData();
+        formData.append('archivo_pdf', file);
+        return {
+          url: `eventos/acreditaciones/pdf/${acreditacionId}`,
+          method: 'PATCH',
+          body: formData,
+        };
+      },
+    }),
+    deletePdf: builder.mutation({
+      query: (acreditacionId) => ({
+        url: `eventos/acreditaciones/pdf/${acreditacionId}`,
+        method: 'DELETE',
+      }),
+    }),
+    downloadPdf: builder.query({
+      query: (acreditacionId) => ({
+        url: `eventos/acreditaciones/pdf/${acreditacionId}`,
+        method: 'GET',
+        responseHandler: (response) => response.blob(),
+      }),
+    }),
+    
   }),
 });
 
 export const {
+  useLazyDownloadPdfQuery,
+  useDeletePdfMutation,
+  useUploadPdfMutation,
+  useUploadAcreditacionesMutation,
+  useUpdateAcreditacionesMutation,
   useAddEventoMutation,
   useGetAllEventosQuery,
   useGetEventoQuery,
+  useLazyGetAcreditacionesQuery,
+  useGetAcreditacionesQuery,
   useEditEventoMutation,
   useDeleteEventoMutation,
   useInscribirDocenteMutation,
   useGetAllDocentesQuery,
+  useGetAllObservadoresQuery,
+  useAgregarObservadoresMutation,
   useActualizarInscripcionMutation,
+  useEditObservadoresMutation,
+  useDeleteObservadoresMutation,
   useEliminarInscripcionMutation,
 } = eventoApi;

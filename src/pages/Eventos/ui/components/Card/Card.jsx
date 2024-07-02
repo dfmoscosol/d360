@@ -22,7 +22,7 @@ const Card = (props) => {
       <ObservacionAulicaCard
         inscripcion={data.inscripcion}
         fechas={data.fechas}
-        id={data.id_capacitacion}
+        id={data.id}
         nombre={data.nombre}
       />
     );
@@ -31,7 +31,7 @@ const Card = (props) => {
       <CharlaCard
         inscripcion={data.inscripcion}
         fechas={data.fechas}
-        id={data.id_capacitacion}
+        id={data.id}
         nombre={data.nombre}
       />
     );
@@ -40,7 +40,7 @@ const Card = (props) => {
       <TallerCard
         inscripcion={data.inscripcion}
         fechas={data.fechas}
-        id={data.id_capacitacion}
+        id={data.id}
         nombre={data.nombre}
       />
     );

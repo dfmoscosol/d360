@@ -18,13 +18,11 @@ const EditarObservacionAulica = (props) => {
    * PROPS
    */
   const {
-    cupo,
-    direccion,
+    cupos,
     fechas,
     horas,
-    id_capacitacion,
+    id,
     nombre,
-    isPresencial,
     handleRefetch,
   } = props;
 
@@ -33,7 +31,7 @@ const EditarObservacionAulica = (props) => {
    */
   const dispatch = useDispatch();
   const [
-    editCapacitacion,
+    editEvento,
     { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
   ] = useEditEventoMutation();
 
@@ -70,23 +68,17 @@ const EditarObservacionAulica = (props) => {
       });
     }
 
-    let isModalidadPresencial = false;
-    if (selectedModalidad === "Presencial") {
-      isModalidadPresencial = true;
-    }
-
     if (areValidDates) {
       console.log("Se puede enviar el formulario");
       data.fechas = validDatesList;
-      data.presencial = isModalidadPresencial;
       data.horas = Number(data.horas);
-      data.cupo = Number(data.cupo);
-      data.nombre_tutor = ".";
+      data.cupos = Number(data.cupos);
       console.log(data);
       console.log("Se enviará el formulario");
       setFormData({
-        id: id_capacitacion,
+        id: id,
         body: data,
+        tipo: "observaciones"
       });
       setModalOpen(true);
     } else {
@@ -99,7 +91,7 @@ const EditarObservacionAulica = (props) => {
    */
   const fechasDateFormat = [];
   fechas.forEach((fecha, index) => {
-    const parts = fecha.split("-");
+    const parts = fecha.fecha.split("-");
     // Cambia el orden de los elementos para adaptarse al formato MM-DD-YYYY
     const formattedDate = `${parts[1]}-${parts[0]}-${parts[2]}`;
     //console.log(formattedDate);
@@ -147,32 +139,12 @@ const EditarObservacionAulica = (props) => {
   }
 
   /**
-   * COMBOBOX
-   */
-
-  const listModalidades = ["Virtual", "Presencial"];
-  let selectedModalidadProp;
-  if (isPresencial) {
-    selectedModalidadProp = "Presencial";
-  } else {
-    selectedModalidadProp = "Virtual";
-  }
-
-  const [selectedModalidad, setSelectedModalidad] = useState(
-    selectedModalidadProp
-  );
-
-  const handleSelect = (value) => {
-    setSelectedModalidad(value);
-  };
-
-  /**
    * PARA ENVIAR EL FORMULARIO
    */
   const handleConfirmEditCapacitacion = () => {
     console.log("Se enviará el formulario xxxx");
     console.log(formData);
-    editCapacitacion(formData);
+    editEvento(formData);
   };
 
   /**
@@ -243,7 +215,7 @@ const EditarObservacionAulica = (props) => {
               defaultValue={nombre}
               type="text"
               className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-              placeholder="Jornada 1"
+              placeholder=""
               {...register("nombre", { required: true })}
             />
             {errors.nombre && (
@@ -251,19 +223,6 @@ const EditarObservacionAulica = (props) => {
                 Ingrese un nombre válido.
               </span>
             )}
-          </div>
-
-          {/**Modalidad */}
-          <div className="col-span-6 flex flex-col gap-1">
-            <FormLabel value={"Modalidad"} />
-            <div className="w-full">
-              <ComboBox
-                items={listModalidades}
-                onSelect={handleSelect}
-                hasBeenSelected={true}
-                selected={selectedModalidad}
-              />
-            </div>
           </div>
 
           {/**Fecha */}
@@ -294,19 +253,6 @@ const EditarObservacionAulica = (props) => {
             </div>
           </div>
 
-          {/**Dirección */}
-          <div className="col-span-6 flex flex-col gap-1">
-            <FormLabel value={"Dirección"} />
-            <div className="w-full">
-              <input
-                type="text"
-                defaultValue={direccion}
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("direccion", { required: false })}
-              />
-            </div>
-          </div>
-
           {/**Horas */}
           <div className="col-span-3 flex flex-col gap-1">
             <FormLabel value={"Horas"} />
@@ -332,15 +278,15 @@ const EditarObservacionAulica = (props) => {
             <FormLabel value={"Cupos"} />
             <div className="w-full h-full ">
               <input
-                defaultValue={cupo}
+                defaultValue={cupos}
                 type="number"
                 className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("cupo", { required: true })}
+                {...register("cupos", { required: true })}
                 min={1}
                 step={1}
               />
             </div>
-            {errors.cupo && (
+            {errors.cupos && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un valor válido
               </span>

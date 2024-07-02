@@ -8,12 +8,14 @@ import {
   MdOutlineTextSnippet,
   MdFormatListBulleted,
 } from "react-icons/md";
+import { PiCertificate } from "react-icons/pi";
 
 const Home = React.lazy(() => import("@pages"));
 const About = React.lazy(() => import("@pages"));
 const Page1 = React.lazy(() => import("@pages"));
 const Page2 = React.lazy(() => import("@pages"));
 const Eventos = React.lazy(() => import("@pages"));
+const Acreditacion = React.lazy(() => import("@pages"));
 const Keywords = React.lazy(() => import("@pages"));
 
 // SOLO PARA EL SIDEBAR
@@ -28,6 +30,12 @@ const routes = [
         element: <Eventos />,
         name: "Eventos",
         icon: <MdOutlineEvent size={20} />,
+      },
+      {
+        path: PathConstants.ACREDITACION,
+        element: <Acreditacion />,
+        name: "Acreditacion",
+        icon: <PiCertificate size={20} />,
       },
     ],
   },

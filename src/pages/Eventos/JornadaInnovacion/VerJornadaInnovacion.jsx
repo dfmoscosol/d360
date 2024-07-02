@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import { GiTeamIdea } from "react-icons/gi";
 import EventoView from "../ui/components/EventoView/EventoView";
 import InformationSection from "../ui/components/Sections/InformationSection";
@@ -14,24 +14,13 @@ import {
 } from "react-icons/md";
 
 const VerJornadaInnovacion = (props) => {
-  /**
-   * PROPS
-   */
-  const {
-    inscripcion,
-    cupos,
-    fechas,
-    horas,
-    id,
-    nombre,
-    talleres,
-    handleRefetch,
-  } = props;
+  const { inscripcion, cupos, fechas, horas, id, nombre, talleres, handleRefetch } = props;
 
-  /**
-   * MODALIDAD
-   */
+  const [activeIndex, setActiveIndex] = useState(0);
 
+  const handleTabChange = (index) => {
+    setActiveIndex(index);
+  };
 
   let talleresInfo = [];
 
@@ -52,18 +41,9 @@ const VerJornadaInnovacion = (props) => {
         containerNombre={nombre}
         containerFechas={fechas}
         containerDataList={[
-          {
-            key: "Cupo",
-            value: cupos,
-          },
-          {
-            key: "Horas",
-            value: horas,
-          },
-          {
-            key: "Talleres",
-            value: talleres.length,
-          },
+          { key: "Cupo", value: cupos },
+          { key: "Horas", value: horas },
+          { key: "Talleres", value: talleres.length },
         ]}
         toggleAllowInscripcion={inscripcion}
         handleRefetch={handleRefetch}
@@ -75,7 +55,6 @@ const VerJornadaInnovacion = (props) => {
 
   let contIndex = 0;
   talleres.forEach((taller, index) => {
-    console.log(taller)
     talleresInfo.push({
       hasTitle: true,
       title: taller.nombre,
@@ -122,13 +101,10 @@ const VerJornadaInnovacion = (props) => {
     contIndex += 3;
   });
 
-  //console.log("talleresInfo");
-  //console.log(talleresInfo);
-
   return (
     <ContainerPage>
       <EventoView extra={"p-4 md:p-6"}>
-        <Tabs tabList={talleresInfo} activeIndex={0} />
+        <Tabs tabList={talleresInfo} activeIndex={activeIndex} onTabChange={handleTabChange} />
       </EventoView>
     </ContainerPage>
   );

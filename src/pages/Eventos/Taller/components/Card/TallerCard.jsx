@@ -22,7 +22,7 @@ const TallerCard = (props) => {
           <span className="text-lg font-medium text-primary_text_1 truncate tracking-tight leading-tight">
             {nombre}
           </span>
-          <span className="text-xs font-light text-primary_gray_2">Taller</span>
+          <span className="text-xs font-light text-primary_gray_2">Microtaller</span>
         </div>
         <div className="flex gap-2">
           {fechas.map((fecha, index) => (

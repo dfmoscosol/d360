@@ -375,8 +375,6 @@ const EditarJornadaInnovacion = (props) => {
     //console.log("editado");
   }
 
-
-
   const handleSaveEdit = (index) => {
     //console.log("guardando");
     setInputs(

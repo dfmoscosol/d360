@@ -40,7 +40,7 @@ const InscribedSection = (props) => {
   const [idDocenteAprobacion, setIdDocenteAprobacion] = useState();
   const [busqueda, setBusqueda] = useState('');
   const [docentesFiltrados, setDocentesFiltrados] = useState(docentesInscritos);
-
+console.log(docentesFiltrados)
   // Función para manejar el cambio en el campo de texto
   const handleSearchChange = (event) => {
     setBusqueda(event.target.value);
@@ -107,10 +107,10 @@ const InscribedSection = (props) => {
     <EventoView>
       <Modal
         isOpen={isModalOpen}
-        message="¿Desea eliminar esta inscripción?"
+        message="¿Desea pasar esta inscripción a pendientes?"
         onClose={() => setModalOpen(false)}
         type={"error"}
-        title={"Eliminar inscripción"}
+        title={"Revertir aprobación de la inscripción"}
         showCancel={!isSuccessEliminar}
       >
         {isSuccessEliminar ? (
@@ -125,7 +125,7 @@ const InscribedSection = (props) => {
           </Link>
         ) : (
           <Button
-            value="Eliminar"
+            value="Revertir"
             type="error"
             size="medium"
             icon="delete"
@@ -177,10 +177,12 @@ const InscribedSection = (props) => {
             {docentesFiltrados.map((docente, index) => (
               <PillInscritos
                 index={index}
-                title={docente.nombres}
+                title={docente.nombre}
                 subTitle={docente.correo}
+                observador={docente.observador}
                 key={index}
               >
+                {console.log(docente)}
                 <Button
                   value=""
                   type="error"

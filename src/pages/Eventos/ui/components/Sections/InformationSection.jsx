@@ -15,6 +15,9 @@ import EventoView, {
   TogglePanel,
   SectionContainer,
   TalleresPanel,
+  PonentesPanel,
+  SesionesPanel,
+  PonentesPanelMicrotalleres
 } from "../EventoView/EventoView";
 
 import {
@@ -45,6 +48,10 @@ const InformationSection = (props) => {
     handleRefetch,
     hasTalleres,
     talleresList,
+    isCharla,
+    isMicrotaller,
+    sesiones,
+    ponentes
   } = props;
 
   /**
@@ -235,12 +242,38 @@ const InformationSection = (props) => {
         <div className="flex flex-col gap-2">
           <Data dataList={containerDataList} />
         </div>
-        {talleresList.length>0 && (
+        {hasTalleres && (
           <>
             <SubTitle value={"Talleres"} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {talleresList.map((taller, index) => (
                 <TalleresPanel key={index} extra="col-span-1" taller={taller} />
+              ))}
+            </div>
+          </>
+        )}
+        {isMicrotaller && (
+          <>
+            <SubTitle value={"Sesiones"} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {sesiones.map((sesion, index) => (
+                <SesionesPanel key={index} extra="col-span-1" sesion={sesion} />
+              ))}
+            </div>
+            <SubTitle value={"Ponentes"} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {ponentes.map((ponente, index) => (
+                <PonentesPanelMicrotalleres key={index} extra="col-span-1" ponente={ponente} />
+              ))}
+            </div>
+          </>
+        )}
+        {isCharla && (
+          <>
+            <SubTitle value={"Ponentes"} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {ponentes.map((ponente, index) => (
+                <PonentesPanel key={index} extra="col-span-1" ponente={ponente} />
               ))}
             </div>
           </>

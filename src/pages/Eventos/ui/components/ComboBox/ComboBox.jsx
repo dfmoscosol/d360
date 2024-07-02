@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MdExpandMore } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 
-const ComboBox = ({ items, onSelect, selected = "", isEnabled = true, enableEdit = false }) => {
+const ComboBox = ({ items, indexGeneral,onSelect, selected = "", isEnabled = true, enableEdit = false }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(selected);
 
@@ -18,7 +18,7 @@ const ComboBox = ({ items, onSelect, selected = "", isEnabled = true, enableEdit
     if (isEnabled) {
       setSelectedItem(item);
       setIsVisible(false);
-      onSelect(item);
+      onSelect(item,indexGeneral);
     }
   };
 

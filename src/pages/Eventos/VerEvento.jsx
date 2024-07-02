@@ -26,7 +26,6 @@ const VerEvento = () => {
   if (isError) return <FetchError error={error} />;
 
   const evento = data.respuesta.evento;
-  console.log(evento.talleres)
 
   const handleRefetch = () => {
     refetchVerEvento();
@@ -45,63 +44,59 @@ const VerEvento = () => {
         handleRefetch={handleRefetch}
       />
     );
-  }  else if (evento.tipo === 3) {
+  }  else if (evento.tipo === 2) {
     return (
       <VerCharla
-        allow_asistencia_entrada={true}
-        allow_asistencia_salida={true}
-        allow_inscripcion={true}
-        cupo={1}
-        direccion={"capacitacion.direccion"}
-        docentesInscritos={[]}
-        docentesPendientes={[]}
-        fechas={[]}
-        horas={1}
-        id_capacitacion={1}
-        nombre={"capacitacion.nombre"}
-        nombre_tutor={"capacitacion.nombre_tutor"}
-        isPresencial={true}
+        inscripcion={evento.inscripcion}
+        cupos={evento.cupos}
+        fechas={evento.fechas}
+        docentesInscritos={evento.docentes_inscritos}
+        docentesPendientes={evento.docentes_pendientes}
+        horas={evento.horas}
+        id={evento.id}
+        modalidad={evento.modalidad}
+        ubicacion={evento.ubicacion}
+        duracion={evento.duracion}
+        hora_inicio={evento.hora_inicio}
+        nombre={evento.nombre}
+        ponentes={evento.ponentes}
         handleRefetch={handleRefetch}
       />
     );
-  } /*else if (tipo_evento === "taller") {
+  } else if (evento.tipo === 3) {
+    {console.log(evento.id)}
     return (
       <VerTaller
-        allow_asistencia_entrada={capacitacion.allow_asistencia_entrada}
-        allow_asistencia_salida={capacitacion.allow_asistencia_salida}
-        allow_inscripcion={capacitacion.allow_inscripcion}
-        cupo={capacitacion.cupo}
-        direccion={capacitacion.direccion}
-        docentesInscritos={capacitacion.docentes_inscritos}
-        docentesPendientes={capacitacion.docentes_pendientes}
-        fechas={capacitacion.fechas}
-        horas={capacitacion.horas}
-        id_capacitacion={capacitacion.id_capacitacion}
-        nombre={capacitacion.nombre}
-        nombre_tutor={capacitacion.nombre_tutor}
-        isPresencial={capacitacion.presencial}
+        inscripcion={evento.inscripcion}
+        cupo={evento.cupos}
+        docentesInscritos={evento.docentes_inscritos}
+        docentesPendientes={evento.docentes_pendientes}
+        fechas={evento.fechas}
+        horas={evento.horas}
+        id={evento.id}
+        nombre={evento.nombre}
+        sesiones={evento.sesiones}
+        ponentes={evento.ponentes}
         handleRefetch={handleRefetch}
       />
     );
-  } else if (tipo_evento === "observacion") {
+  } else if (evento.tipo === 4) {
     return (
       <VerObservacionAulica
-        allow_inscripcion={capacitacion.allow_inscripcion}
-        cupo={capacitacion.cupo}
-        direccion={capacitacion.direccion}
-        docentesInscritos={capacitacion.docentes_inscritos}
-        docentesPendientes={capacitacion.docentes_pendientes}
-        fechas={capacitacion.fechas}
-        horas={capacitacion.horas}
-        id_capacitacion={capacitacion.id_capacitacion}
-        nombre={capacitacion.nombre}
-        isPresencial={capacitacion.presencial}
+        inscripcion={evento.inscripcion}
+        cupo={evento.cupos}
+        docentesInscritos={evento.docentes_inscritos}
+        docentesPendientes={evento.docentes_pendientes}
+        fechas={evento.fechas}
+        horas={evento.horas}
+        id={evento.id}
+        nombre={evento.nombre}
         handleRefetch={handleRefetch}
       />
     );
   } else {
     return <div className="bg-red-500">Revisando Evento {idEvento}</div>;
-  } */
+  } 
 };
 
 export default VerEvento;

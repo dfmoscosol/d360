@@ -480,7 +480,6 @@ const CrearJornadaInnovacion = () => {
                             value={input.value}
                             onChange={(e) => handleInputChange(input.id, e.target.value)}
                             className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                            placeholder={`Taller ${input.id}`}
                           />
                         </div>
                         {input.sesiones.map((sesion, index) => (
@@ -507,7 +506,7 @@ const CrearJornadaInnovacion = () => {
                                 <input type="number"
                                   value={input.sesiones[index].duracion}
                                   onChange={(e) => handleDuracionChange(input.id, index, e.target.value)}
-                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" placeholder="Duración en horas" />
+                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"  />
                               </div>
                               <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
                                 <label className="text-sm font-medium text-primary_text_1">Modalidad</label>
@@ -519,7 +518,7 @@ const CrearJornadaInnovacion = () => {
                                 <input type="text"
                                   value={input.sesiones[index].ubicacion}
                                   onChange={(e) => handleUbicacionChange(input.id, index, e.target.value)}
-                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" placeholder="Ingrese ubicación" />
+                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"  />
                               </div>
                             </div>
                           </>

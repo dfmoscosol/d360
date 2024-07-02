@@ -19,31 +19,20 @@ const VerTaller = (props) => {
    * PROPS
    */
   const {
-    allow_asistencia_entrada,
-    allow_asistencia_salida,
-    allow_inscripcion,
+    inscripcion,
     cupo,
-    direccion,
     docentesInscritos,
     docentesPendientes,
     fechas,
     horas,
-    id_capacitacion,
+    id,
     nombre,
-    nombre_tutor,
-    isPresencial,
+    sesiones,
+    ponentes,
     handleRefetch,
   } = props;
 
-  /**
-   * MODALIDAD
-   */
-  let modalidad = "";
-  if (isPresencial) {
-    modalidad = "Presencial";
-  } else {
-    modalidad = "Virtual";
-  }
+
 
   return (
     <ContainerPage>
@@ -57,22 +46,15 @@ const VerTaller = (props) => {
               content: (
                 <InformationSection
                   headerIcon={<GrWorkshop size={25} />}
-                  headerTitle="Taller"
-                  headerSubTitle="Capacitación"
-                  headerLinkToNew="/eventos/nuevoEvento/taller"
-                  headerLinkToEdit={`/eventos/editarEvento/${id_capacitacion}`}
-                  idCapacitacion={id_capacitacion}
+                  headerTitle="Microtaller"
+                  headerSubTitle="Evento"
+                  headerLinkToNew="/eventos/nuevoEvento/microtaller"
+                  headerLinkToEdit={`/eventos/editarEvento/${id}`}
+                  id={id}
+                  routeType={'microtalleres'}
                   containerNombre={nombre}
                   containerFechas={fechas}
                   containerDataList={[
-                    {
-                      key: "Tutor",
-                      value: nombre_tutor,
-                    },
-                    {
-                      key: "Dirección",
-                      value: direccion,
-                    },
                     {
                       key: "Cupo",
                       value: cupo,
@@ -80,23 +62,12 @@ const VerTaller = (props) => {
                     {
                       key: "Horas",
                       value: horas,
-                    },
-                    {
-                      key: "Modalidad",
-                      value: modalidad,
-                    },
-                    {
-                      key: "Inscritos",
-                      value: docentesInscritos.length,
-                    },
-                    {
-                      key: "Por Aprobar",
-                      value: docentesPendientes.length,
-                    },
+                    }
                   ]}
-                  toggleAllowEntrada={allow_asistencia_entrada}
-                  toggleAllowSalida={allow_asistencia_salida}
-                  toggleAllowInscripcion={allow_inscripcion}
+                  toggleAllowInscripcion={inscripcion}
+                  isMicrotaller={true}
+                  sesiones={sesiones}
+                  ponentes={ponentes}
                   handleRefetch={handleRefetch}
                 />
               ),
@@ -120,6 +91,7 @@ const VerTaller = (props) => {
                 <InscribedSection
                   docentesInscritos={docentesInscritos}
                   handleRefetch={handleRefetch}
+                  idEvento={id}
                 />
               ),
             },
@@ -129,7 +101,8 @@ const VerTaller = (props) => {
               index: 3,
               content: (
                 <EnrollSection
-                  idCapacitacion={id_capacitacion}
+                  idEvento={id}
+                  docentesInscritos={docentesInscritos}
                   handleRefetch={handleRefetch}
                 />
               ),

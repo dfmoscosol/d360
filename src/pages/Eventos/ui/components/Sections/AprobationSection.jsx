@@ -6,6 +6,9 @@ import { useActualizarInscripcionMutation } from "@redux/services/evento/eventoA
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 import PillPorInscribir from "../PillPorInscribir/PillPorInscribir";
 import { useEliminarInscripcionMutation } from "@redux/services/evento/eventoApi";
+import { useGetAllObservadoresQuery } from "@redux/services/evento/eventoApi";
+import ComboBox from "../ComboBox/ComboBox";
+import { MdOutlinePersonSearch } from "react-icons/md";
 
 import EventoView, {
   Header,
@@ -24,7 +27,7 @@ const AprobationSection = (props) => {
   /**
    * PROPS
    */
-  const { docentesPendientes, handleRefetch } = props;
+  const { docentesPendientes, observacion, handleRefetch } = props;
 
   /**
    * REDUX
@@ -34,6 +37,16 @@ const AprobationSection = (props) => {
   /**
    * PARA APROBAR LA INSCRIPCION
    */
+
+  const {
+    data,
+    refetch: refetchGetAllObservadores,
+    error,
+    isLoading,
+    isFetching,
+    isError,
+  } = useGetAllObservadoresQuery();
+
   const [
     actualizarInscripcion,
     {
@@ -45,12 +58,38 @@ const AprobationSection = (props) => {
     },
   ] = useActualizarInscripcionMutation();
 
-  const [idDocenteAprobacion, setIdDocenteAprobacion] = useState();
+  const observadores = data && data.respuesta.map((observador) => observador.nombre)
 
-  const handleAprobarInscripcion = (id) => {
+  const [idDocenteAprobacion, setIdDocenteAprobacion] = useState();
+  const [idObservadorAprobacion, setIdObservadorAprobacion] = useState();
+  const [observadoresSelected, setObservadoresSelected] = useState([]);
+  const [errorObservador, setErrorObservador] = useState(false);
+
+  const handleAprobarInscripcion = (id, indexObservador) => {
+
     setIdDocenteAprobacion(id);
-    console.log(id)
+
+    if (observacion) {
+      const observador = data && data.respuesta.find((obs) => obs.nombre === observadoresSelected[indexObservador]);
+      if (observador) {
+        setIdObservadorAprobacion(observador.id)
+      } else {
+        setErrorObservador(true)
+        return
+      }
+      console.log(id, observacion, observador.id)
+    }
     setModalOpen(true);
+  };
+
+  const handleSelect = (value, index) => {
+    console.log(index, value)
+    setErrorObservador(false)
+    setObservadoresSelected(prevState => {
+      const newState = [...prevState];
+      newState[index] = value;
+      return newState;
+    });
   };
 
   const handleConfirmarAprobacion = () => {
@@ -58,7 +97,7 @@ const AprobationSection = (props) => {
     console.log(idDocenteAprobacion);
     const paramsConfirm = {
       id: idDocenteAprobacion,
-      body: { aceptada: true },
+      body: { aceptada: true, ...(observacion && { observador_id: idObservadorAprobacion }) },
     };
     console.log(paramsConfirm);
     actualizarInscripcion(paramsConfirm);
@@ -72,6 +111,7 @@ const AprobationSection = (props) => {
         message: "Inscripción aprobada exitosamente",
         type: "success",
       });
+      setErrorObservador(false)
       handleRefetch();
     } else if (isErrorAprobar && errorAprobar) {
       console.log(errorAprobar);
@@ -110,7 +150,7 @@ const AprobationSection = (props) => {
     if (isSuccessEliminar) {
       console.log(responseEliminar);
       triggerNotification(dispatch, {
-        message: "Inscripción denegada.",
+        message: "Inscripción eliminada.",
         type: "success",
       });
       handleRefetch();
@@ -166,17 +206,31 @@ const AprobationSection = (props) => {
       />
       <SectionContainer extra={"gap-4"}>
         {docentesPendientes.length > 0 ? (
+
           <div className="flex flex-col gap-4">
-            
             {docentesPendientes.map((docente, index) => (
-              
               <PillPorInscribir
                 index={index}
-                title={docente.nombres}
+                title={docente.nombre}
                 subTitle={docente.correo}
                 key={index}
+                data={docente.encuesta ? docente.encuesta : []}
               >
-                <div className="flex gap-2">
+                {docente.encuesta && <div className="flex flex-col col-span-1 md:col-span-2">
+                  <div className="flex items-center gap-2">
+                    <MdOutlinePersonSearch size={20} className="text-primary_gray_4" />
+                    <span className="text-sm font-medium text-primary_text_1">Asignar Observador:</span>
+                  </div>
+                  <div className="pt-2 w-full">
+                    <ComboBox items={observadores} indexGeneral={index} onSelect={handleSelect} />
+                  </div>
+                  {errorObservador && (
+                    <span className="text-red-600 text-sm font-light px-1">
+                      Seleccione una opción
+                    </span>
+                  )}
+                </div>}
+                <div className="flex justify-end gap-2">
                   <Button
                     value="Aceptar"
                     type="success"
@@ -185,7 +239,7 @@ const AprobationSection = (props) => {
                     isPrimary={true}
                     setModalOpen
                     onClick={() =>
-                      handleAprobarInscripcion(docente.id_inscripcion)
+                      handleAprobarInscripcion(docente.id_inscripcion, index)
                     }
                   />
                   <Button
@@ -200,6 +254,7 @@ const AprobationSection = (props) => {
                     isLoading={isUpdatingEliminar}
                   />
                 </div>
+
               </PillPorInscribir>
             ))}
           </div>

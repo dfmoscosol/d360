@@ -2,6 +2,7 @@ export const PathConstants = {
   ABOUT: "about",
   EVENTOS: "eventos",
   VEREVENTO: "verEvento",
+  ACREDITACION: "acreditacion",
   PAGE1: "page1",
   PAGE2: "page2",
 
@@ -14,6 +15,7 @@ export const PathNames = {
   ABOUT: "About",
   EVENTOS: "Eventos",
   VEREVENTO: "Ver Evento",
+  ACREDITACION: "Acreditación",
   PAGE1: "Página 1",
   PAGE2: "Página 2",
 };
@@ -31,7 +33,7 @@ export const PathNamesTranslations = {
   charla: "Charla",
   taller: "Taller",
   observacionAulica: "Observación Áulica",
-
+  acreditacion: "Acreditación",
   
   pentagono: "Pentágono",
   keywords: "Palabras Clave",

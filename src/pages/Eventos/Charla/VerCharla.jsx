@@ -22,31 +22,22 @@ const VerCharla = (props) => {
    * PROPS
    */
   const {
-    allow_asistencia_entrada,
-    allow_asistencia_salida,
-    allow_inscripcion,
-    cupo,
-    direccion,
+    inscripcion,
+    cupos,
+    fechas,
     docentesInscritos,
     docentesPendientes,
-    fechas,
     horas,
-    id_capacitacion,
+    id,
     nombre,
-    nombre_tutor,
-    isPresencial,
+    ubicacion,
+    modalidad,
+    duracion,
+    hora_inicio,
+    ponentes,
     handleRefetch,
   } = props;
 
-  /**
-   * MODALIDAD
-   */
-  let modalidad = "";
-  if (isPresencial) {
-    modalidad = "Presencial";
-  } else {
-    modalidad = "Virtual";
-  }
 
   return (
     <ContainerPage>
@@ -61,24 +52,17 @@ const VerCharla = (props) => {
                 <InformationSection
                   headerIcon={<GrWorkshop size={25} />}
                   headerTitle="Charla"
-                  headerSubTitle="Capacitación"
+                  headerSubTitle="Evento"
                   headerLinkToNew="/eventos/nuevoEvento/charla"
                   headerLinkToEdit={`/eventos/editarEvento/${id}`}
                   id={id}
+                  routeType={'charlas'}
                   containerNombre={nombre}
                   containerFechas={fechas}
                   containerDataList={[
                     {
-                      key: "Tutor",
-                      value: nombre_tutor,
-                    },
-                    {
-                      key: "Dirección",
-                      value: direccion,
-                    },
-                    {
                       key: "Cupo",
-                      value: cupo,
+                      value: cupos,
                     },
                     {
                       key: "Horas",
@@ -89,18 +73,23 @@ const VerCharla = (props) => {
                       value: modalidad,
                     },
                     {
-                      key: "Inscritos",
-                      value: docentesInscritos.length,
+                      key: "Ubicación",
+                      value: ubicacion,
                     },
                     {
-                      key: "Por Aprobar",
-                      value: docentesPendientes.length,
+                      key: "Hora de Inicio",
+                      value: hora_inicio,
                     },
+                    {
+                      key: "Duración",
+                      value: duracion,
+                    }
                   ]}
-                  toggleAllowEntrada={allow_asistencia_entrada}
-                  toggleAllowSalida={allow_asistencia_salida}
-                  toggleAllowInscripcion={allow_inscripcion}
+                  toggleAllowInscripcion={inscripcion}
                   handleRefetch={handleRefetch}
+                  hasTalleres={false}
+                  isCharla={true}
+                  ponentes={ponentes}
                 />
               ),
             },
@@ -123,6 +112,7 @@ const VerCharla = (props) => {
                 <InscribedSection
                   docentesInscritos={docentesInscritos}
                   handleRefetch={handleRefetch}
+                  idEvento={id}
                 />
               ),
             },
@@ -132,7 +122,8 @@ const VerCharla = (props) => {
               index: 3,
               content: (
                 <EnrollSection
-                  idCapacitacion={id_capacitacion}
+                  idEvento={id}
+                  docentesInscritos={docentesInscritos}
                   handleRefetch={handleRefetch}
                 />
               ),
@@ -147,219 +138,3 @@ const VerCharla = (props) => {
 
 export default VerCharla;
 
-{
-  /**
-        <Info>
-          {isInscripcionOpen ? (
-            <InfoPill
-              value="Inscripciones"
-              size="medium"
-              type="success"
-              icon="inscripciones"
-            />
-          ) : (
-            <InfoPill
-              value="Inscripciones"
-              size="medium"
-              type="warning"
-              icon="close"
-            />
-          )}
-          {isAsistenciaEntradaOpen ? (
-            <InfoPill
-              value="Entrada"
-              size="medium"
-              type="success"
-              icon="entrada"
-            />
-          ) : (
-            <InfoPill
-              value="Entrada"
-              size="medium"
-              type="warning"
-              icon="close"
-            />
-          )}
-          {isAsistenciaSalidaOpen ? (
-            <InfoPill
-              value="Salida"
-              size="medium"
-              type="success"
-              icon="salida"
-            />
-          ) : (
-            <InfoPill
-              value="Salida"
-              size="medium"
-              type="warning"
-              icon="close"
-            />
-          )}
-        </Info>
- */
-}
-
-/**
- *   
-  const handleCloseInscripcion = () => {
-    console.log(id_capacitacion);
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_inscripcion: false },
-    };
-    setParamUpdated({ key: "allow_inscripcion", value: false });
-    editCapacitacion(dataBody);
-  };
-
-  const handleOpenInscripcion = () => {
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_inscripcion: true },
-    };
-    setParamUpdated({ key: "allow_inscripcion", value: true });
-    editCapacitacion(dataBody);
-  };
-
-  const handleCloseEntrada = () => {
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_asistencia_entrada: false },
-    };
-    setParamUpdated({ key: "allow_asistencia_entrada", value: false });
-    editCapacitacion(dataBody);
-  };
-
-  const handleOpenEntrada = () => {
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_asistencia_entrada: true },
-    };
-    setParamUpdated({ key: "allow_asistencia_entrada", value: true });
-    editCapacitacion(dataBody);
-  };
-
-  const handleCloseSalida = () => {
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_asistencia_salida: false },
-    };
-    setParamUpdated({ key: "allow_asistencia_salida", value: false });
-    editCapacitacion(dataBody);
-  };
-
-  const handleOpenSalida = () => {
-    const dataBody = {
-      id: id_capacitacion,
-      body: { allow_asistencia_salida: true },
-    };
-    setParamUpdated({ key: "allow_asistencia_salida", value: true });
-    editCapacitacion(dataBody);
-  };
- */
-
-/**
-
-  const [isInscripcionOpen, setIsInscripcionOpen] = useState(allow_inscripcion);
-  const [isAsistenciaEntradaOpen, setIsAsistenciaEntradaOpen] = useState(
-    allow_asistencia_entrada
-  );
-  const [isAsistenciaSalidaOpen, setIsAsistenciaSalidaOpen] = useState(
-    allow_asistencia_salida
-  );
-
-   */
-
-/**      <Footer>
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-3 items-center justify-center">
-          <div className="col-span-6 md:col-span-2">
-            {isInscripcionOpen ? (
-              <Button
-                value="Inscripciones"
-                type="warning"
-                size="medium"
-                icon="close"
-                onClick={handleCloseInscripcion}
-                isLoading={isUpdatingEdit}
-                extra="w-full"
-              />
-            ) : (
-              <Button
-                value="Inscripciones"
-                type="success"
-                size="medium"
-                icon="inscripciones"
-                onClick={handleOpenInscripcion}
-                isLoading={isUpdatingEdit}
-                extra="w-full"
-              />
-            )}
-          </div>
-          <div className="col-span-6 md:col-span-2">
-            {isAsistenciaEntradaOpen ? (
-              <Button
-                value="Entrada"
-                type="warning"
-                size="medium"
-                icon="close"
-                onClick={handleCloseEntrada}
-                isLoading={isUpdatingEdit}
-                extra="w-full"
-              />
-            ) : (
-              <Button
-                value="Entrada"
-                type="success"
-                size="medium"
-                icon="entrada"
-                onClick={handleOpenEntrada}
-                isLoading={isUpdatingEdit}
-                extra="w-full"
-              />
-            )}
-          </div>
-          <div className="col-span-6 md:col-span-2">
-            {isAsistenciaSalidaOpen ? (
-              <Button
-                value="Salida"
-                type="warning"
-                size="medium"
-                icon="close"
-                onClick={handleCloseSalida}
-                isLoading={isUpdatingEdit}
-                extra="w-full"
-              />
-            ) : (
-              <Button
-                value="Salida"
-                type="success"
-                size="medium"
-                icon="salida"
-                onClick={handleOpenSalida}
-                isLoading={isUpdatingEdit}
-                extra="w-full"
-              />
-            )}
-          </div>
-          <div className="col-span-6 md:col-span-3">
-            <Link className="" to={`/eventos/editarEvento/${id_capacitacion}`}>
-              <Button
-                value="Editar"
-                type="info"
-                size="medium"
-                icon="edit"
-                extra="w-full"
-              />
-            </Link>
-
-            <Button
-              value="Eliminar"
-              type="error"
-              size="medium"
-              icon="delete"
-              onClick={() => setModalOpen(true)}
-              extra="w-full"
-            />
-          </div>
-          <div className="col-span-6 md:col-span-3"></div>
-        </div>
-      </Footer> */

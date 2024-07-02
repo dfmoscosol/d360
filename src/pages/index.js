@@ -1,6 +1,7 @@
 export { default as About } from "./About/About";
 export { default as Eventos } from "./Eventos/Eventos";
 export { default as VerEvento } from "./Eventos/VerEvento";
+export { default as Acreditacion } from "./Eventos/Acreditacion";
 export { default as EditarEvento } from "./Eventos/EditarEvento";
 export { default as Home } from "./Home/Home";
 export { default as Page1 } from "./Page1/Page1";

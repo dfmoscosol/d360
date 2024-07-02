@@ -18,14 +18,16 @@ const EditarCharla = (props) => {
    * PROPS
    */
   const {
-    cupo,
-    direccion,
+    cupos,
+    ponentes,
+    hora_inicio,
+    duracion,
     fechas,
     horas,
-    id_capacitacion,
+    id,
     nombre,
-    nombre_tutor,
-    isPresencial,
+    ubicacion,
+    modalidad,
     handleRefetch,
   } = props;
 
@@ -36,7 +38,7 @@ const EditarCharla = (props) => {
   const dispatch = useDispatch();
 
   const [
-    editCapacitacion,
+    editEvento,
     { data: response, isLoading: isUpdating, isSuccess, isError, error }, // This is the destructured mutation result
   ] = useEditEventoMutation();
 
@@ -73,21 +75,35 @@ const EditarCharla = (props) => {
       validDatesList.push(dates.format("DD-MM-YYYY"));
     }
 
-    let isModalidadPresencial = false;
-    if (selectedModalidad === "Presencial") {
-      isModalidadPresencial = true;
+    const areAllPonentesFilled = inputs.every(input =>
+      input.value.trim() !== "" &&
+      input.charla.trim() !== ""
+    );
+
+    if (!areAllPonentesFilled) {
+      console.log("ERROR: Todos los campos deben estar completos.");
+      setInputs(inputs => inputs.map(input => ({
+        ...input,
+        isEmpty: input.value.trim() === "" || input.charla.trim() === ""
+      })));
+      return; // Detener la ejecución si algún campo está vacío
     }
 
-    if (areValidDates) {
+    if (areValidDates && areAllPonentesFilled) {
       console.log("Se puede enviar el formulario");
       data.fechas = validDatesList;
-      data.presencial = isModalidadPresencial;
       data.horas = Number(data.horas);
-      data.cupo = Number(data.cupo);
-      console.log(data);
+      data.cupos = Number(data.cupos);
+      data.ponentes = inputs.map(input => ({
+        nombre: input.value,
+        titulo_charla: input.charla
+      }));
+      data.modalidad = selectedModalidad === "Presencial" ? 1 : selectedModalidad === "Virtual" ? 2 : selectedModalidad === "Híbrida" ? 3 : 0,
+        console.log(data);
       setFormData({
-        id: id_capacitacion,
+        id: id,
         body: data,
+        tipo: "charlas"
       });
       setModalOpen(true);
     } else {
@@ -98,7 +114,7 @@ const EditarCharla = (props) => {
   /**
    * PARA EL DATE PICKER
    */
-  const parts = fechas[0].split("-");
+  const parts = fechas[0].fecha.split("-");
   const formattedDate = `${parts[1]}-${parts[0]}-${parts[2]}`;
   const [dates, setDates] = useState(new DateObject(new Date(formattedDate)));
   const today = new Date();
@@ -140,23 +156,88 @@ const EditarCharla = (props) => {
       </>
     );
   }
+  /**
+     * PARA LOS INPUTS DINÁMICOS
+     */
 
+  let allPonentesList = [];
+
+  ponentes.forEach((ponente, index) => {
+    const nuevoPonente = {
+      id: index + 1,
+      hasAddButton: index === ponentes.length - 1,
+      hasRemoveButton: index === ponentes.length - 1,
+      value: ponente.nombre,
+      charla: ponente.titulo_charla,
+      isEmpty: false,
+      originalValue: ponente
+    };
+    allPonentesList.push(nuevoPonente);
+  });
+
+  const [inputs, setInputs] = useState(allPonentesList);
+
+  const handleInputChange = (id, newValue) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === id) {
+          return { ...input, value: newValue, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  }
+
+  const handleCharlaChange = (id, newValue) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === id) {
+          return { ...input, charla: newValue, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  }
+
+  const handleAddInput = () => {
+    const newInputs = inputs.map(input => ({
+      ...input,
+      hasAddButton: false,
+      hasRemoveButton: false
+    }));
+
+    newInputs.push({
+      hasAddButton: true,
+      hasRemoveButton: true,
+      value: "",
+      charla: "",
+      isEmpty: false,
+    });
+
+    setInputs(newInputs);
+  };
+
+  const handleRemoveInput = () => {
+    const newInputs = [...inputs];
+    newInputs.pop();
+
+    if (newInputs.length > 0) {
+      const lastInput = newInputs[newInputs.length - 1];
+      lastInput.hasAddButton = true;
+      lastInput.hasRemoveButton = true;
+    }
+
+    setInputs(newInputs);
+  };
   /**
    * COMBOBOX
    */
 
-  const listModalidades = ["Virtual", "Presencial"];
-  let selectedModalidadProp;
-  if (isPresencial) {
-    selectedModalidadProp = "Presencial";
-  } else {
-    selectedModalidadProp = "Virtual";
-  }
+  const listModalidades = ["Presencial", "Virtual", "Híbrida"];
+
 
   // Estado para almacenar el valor seleccionado
-  const [selectedModalidad, setSelectedModalidad] = useState(
-    selectedModalidadProp
-  );
+  const [selectedModalidad, setSelectedModalidad] = useState(modalidad);
 
   const handleSelect = (value) => {
     setSelectedModalidad(value);
@@ -168,7 +249,7 @@ const EditarCharla = (props) => {
   const handleConfirmEditCapacitacion = () => {
     console.log("Se enviará el formulario xxxx");
     console.log(formData);
-    editCapacitacion(formData);
+    editEvento(formData);
   };
 
   /**
@@ -250,27 +331,8 @@ const EditarCharla = (props) => {
             )}
           </div>
 
-          {/**Tutor */}
-          <div className="col-span-5 flex flex-col gap-1">
-            <FormLabel value={"Tutor"} />
-            <div className="w-full">
-              <input
-                type="text"
-                defaultValue={nombre_tutor}
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                placeholder="Ing. Juan Perez"
-                {...register("nombre_tutor", { required: true })}
-              />
-            </div>
-            {errors.nombre_tutor && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Ingrese un valor válido.
-              </span>
-            )}
-          </div>
-
           {/**Fecha */}
-          <div className="col-span-5 flex flex-col gap-1">
+          <div className="col-span-6 flex flex-col gap-1">
             <FormLabel value={"Fecha"} />
             <div className="w-full flex flex-col">
               <DatePicker
@@ -298,7 +360,7 @@ const EditarCharla = (props) => {
           </div>
 
           {/**Horas */}
-          <div className="col-span-2 flex flex-col gap-1">
+          <div className="col-span-3 flex flex-col gap-1">
             <FormLabel value={"Horas"} />
             <div className="w-full">
               <input
@@ -317,8 +379,28 @@ const EditarCharla = (props) => {
             )}
           </div>
 
+          {/**Cupos */}
+          <div className="col-span-3 flex flex-col gap-1">
+            <FormLabel value={"Cupos"} />
+            <div className="w-full h-full ">
+              <input
+                defaultValue={cupos}
+                type="number"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                {...register("cupos", { required: true })}
+                min={1}
+                step={1}
+              />
+            </div>
+            {errors.cupos && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese un valor válido
+              </span>
+            )}
+          </div>
+
           {/**Modalidad */}
-          <div className="col-span-5 flex flex-col gap-1">
+          <div className="col-span-6 flex flex-col gap-1">
             <FormLabel value={"Modalidad"} />
             <div className="w-full">
               <ComboBox
@@ -332,40 +414,131 @@ const EditarCharla = (props) => {
             <span className="text-red-600 text-sm font-light px-1">
               Seleccione una opción
             </span>
-          )*/}
+            )*/}
           </div>
 
-          {/**Dirección */}
-          <div className="col-span-5 flex flex-col gap-1">
-            <FormLabel value={"Dirección"} />
+          {/**Ubicación */}
+          <div className="col-span-6 flex flex-col gap-1">
+            <FormLabel value={"Ubicación"} />
             <div className="w-full">
               <input
                 type="text"
-                defaultValue={direccion}
+                defaultValue={ubicacion}
                 className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("direccion", { required: false })}
+                {...register("ubicacion", { required: true })}
               />
             </div>
-          </div>
-
-          {/**Cupos */}
-          <div className="col-span-2 flex flex-col gap-1">
-            <FormLabel value={"Cupos"} />
-            <div className="w-full h-full ">
-              <input
-                defaultValue={cupo}
-                type="number"
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("cupo", { required: true })}
-                min={1}
-                step={1}
-              />
-            </div>
-            {errors.cupo && (
+            {errors.ubicacion && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un valor válido
               </span>
             )}
+          </div>
+
+          {/**Hora_Inicio */}
+          <div className="col-span-6 flex flex-col gap-1">
+            <FormLabel value={"Hora de Inicio"} />
+            <div className="w-full">
+              <input
+                type="time"
+                defaultValue={hora_inicio}
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                {...register("hora_inicio", { required: true })}
+              />
+            </div>
+            {errors.hora_inicio && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese un valor válido
+              </span>
+            )}
+          </div>
+
+          {/**Duracion */}
+          <div className="col-span-6 flex flex-col gap-1">
+            <FormLabel value={"Duración"} />
+            <div className="w-full">
+              <input
+                type="number"
+                defaultValue={duracion}
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                {...register("duracion", { required: true })}
+              />
+            </div>
+            {errors.duracion && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese un valor válido
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-col col-span-12 gap-1">
+            <FormLabel value={"Ponentes"} />
+            <div className="flex flex-col gap-3">
+              {inputs.map((input) => (
+                <>
+                  <div key={input.id} className="flex flex-row justify-between items-center">
+                    <div className="bg-white rounded-lg p-3 border-[1px] flex-grow">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex flex-col">
+                          <label className="text-sm font-medium text-primary_text_1">
+                            Nombre
+                          </label>
+                          <input
+                            type="text"
+                            value={input.value}
+                            onChange={(e) => handleInputChange(input.id, e.target.value)}
+                            className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        <div className="flex flex-col">
+                          <label className="text-sm font-medium text-primary_text_1 pt-3">
+                            Charla
+                          </label>
+                          <input
+                            type="text"
+                            value={input.charla}
+                            onChange={(e) => handleCharlaChange(input.id, e.target.value)}
+                            className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2 ml-4">
+                      {input.hasAddButton && (
+                        <Button
+                          type="ucuenca"
+                          onClick={handleAddInput}
+                          icon="add"
+                          buttonType="button"
+                          size="small"
+                          isRadial={true}
+                          isPrimary={false}
+                        />
+                      )}
+                      {input.hasRemoveButton && inputs.length > 1 && (
+                        <Button
+                          type="error"
+                          onClick={handleRemoveInput}
+                          icon="delete"
+                          buttonType="button"
+                          size="small"
+                          isRadial={true}
+                          isPrimary={false}
+                        />
+                      )}
+                    </div>
+                  </div>
+                  {input.isEmpty && (
+                    <span className="text-red-600 text-sm font-light px-1">
+                      Complete todos los campos para el Ponente
+                    </span>
+                  )}
+                </>
+              ))}
+            </div>
           </div>
 
           {/**Footer */}

@@ -17,6 +17,7 @@ import {
   Page1,
   Page2,
   Eventos,
+  Acreditacion,
   VerEvento,
   EditarEvento,
   CrearJornadaInnovacion,
@@ -72,6 +73,10 @@ function App() {
               element: <Eventos />,
             },
             {
+              path: "/acreditacion",
+              element: <Acreditacion />,
+            },
+            {
               path: "eventos/verEvento/:idEvento",
               element: <VerEvento />,
             },
@@ -92,7 +97,7 @@ function App() {
               element: <CrearCharla />,
             },
             {
-              path: "eventos/nuevoEvento/taller",
+              path: "eventos/nuevoEvento/microtaller",
               element: <CrearTaller />,
             },
             {

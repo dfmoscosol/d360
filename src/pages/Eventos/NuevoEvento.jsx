@@ -21,8 +21,8 @@ const NuevoEvento = () => {
       icon: <GrWorkshop size={30} />,
     },
     {
-      to: "taller",
-      label: "Taller",
+      to: "microtaller",
+      label: "Microtaller",
       icon: <FaChalkboardTeacher size={30} />,
     },
     {

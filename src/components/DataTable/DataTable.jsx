@@ -63,17 +63,16 @@ const DataTable = ({
           {data.map((item) => (
             <tr
               key={item[idColumn]}
-              className={` transition-all duration-200 ${
-                selectedRows.includes(item[idColumn])
+              className={` transition-all duration-200 ${selectedRows.includes(item[idColumn])
                   ? "bg-primary_gray_5"
                   : "bg-white hover:bg-primary_gray_5"
-              }`}
+                }`}
             >
               <td className="px-2">
                 <input
                   type="checkbox"
                   checked={selectedRows.includes(item[idColumn])}
-                  onChange={() => toggleRowSelection(item.id)}
+                  onChange={() => toggleRowSelection(item.id, item.nombre)}
                   className="cursor-pointer"
                 />
               </td>

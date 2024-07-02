@@ -46,48 +46,47 @@ const EditarEvento = () => {
         handleRefetch={handleRefetch}
       />
     );
-  } /* else if (tipo_evento === "charla") {
+  }  else if (evento.tipo === 2) {
     return (
       <EditarCharla
-        cupo={capacitacion.cupo}
-        direccion={capacitacion.direccion}
-        fechas={capacitacion.fechas}
-        horas={capacitacion.horas}
-        id_capacitacion={capacitacion.id_capacitacion}
-        nombre={capacitacion.nombre}
-        nombre_tutor={capacitacion.nombre_tutor}
-        isPresencial={capacitacion.presencial}
+        cupos={evento.cupos}
+        ubicacion={evento.ubicacion}
+        hora_inicio={evento.hora_inicio}
+        duracion={evento.duracion}
+        fechas={evento.fechas}
+        horas={evento.horas}
+        id={evento.id}
+        nombre={evento.nombre}
+        modalidad={evento.modalidad}
+        ponentes={evento.ponentes}
         handleRefetch={handleRefetch}
       />
     );
-  } else if (tipo_evento === "observacion") {
+  } else if (evento.tipo === 4) {
     return (
       <EditarObservacionAulica
-        cupo={capacitacion.cupo}
-        direccion={capacitacion.direccion}
-        fechas={capacitacion.fechas}
-        horas={capacitacion.horas}
-        id_capacitacion={capacitacion.id_capacitacion}
-        nombre={capacitacion.nombre}
-        isPresencial={capacitacion.presencial}
+        cupos={evento.cupos}
+        fechas={evento.fechas}
+        horas={evento.horas}
+        id={evento.id}
+        nombre={evento.nombre}
         handleRefetch={handleRefetch}
       />
     );
-  } else if (tipo_evento === "taller") {
+  } else if (evento.tipo === 3) {
     return (
       <EditarTaller
-        cupo={capacitacion.cupo}
-        direccion={capacitacion.direccion}
-        fechas={capacitacion.fechas}
-        horas={capacitacion.horas}
-        id_capacitacion={capacitacion.id_capacitacion}
-        nombre={capacitacion.nombre}
-        nombre_tutor={capacitacion.nombre_tutor}
-        isPresencial={capacitacion.presencial}
+        cupos={evento.cupos}
+        direccion={evento.direccion}
+        horas={evento.horas}
+        id={evento.id}
+        nombre={evento.nombre}
+        ponentes={evento.ponentes}
+        currentSesiones={evento.sesiones}
         handleRefetch={handleRefetch}
       />
     );
-  }  */else {
+  }  else {
     return <div className="bg-red-500">Revisando Evento {idEvento}</div>;
   }
 };
