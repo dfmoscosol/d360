@@ -145,7 +145,7 @@ const CrearTaller = () => {
    * PARA LAS SESIONES DINAMICAS
    */
 
-  const listModalidades = ["Virtual", "Presencial", "Híbrida"];
+  const listModalidades = ["Virtual", "Presencial"];
   const handleSelect = (value, fecha) => {
     let numValue = value === "Presencial" ? 1 : value === "Virtual" ? 2 : value === "Híbrida" ? 3 : 0;
     let sesionesActualizadas = [...sesiones];

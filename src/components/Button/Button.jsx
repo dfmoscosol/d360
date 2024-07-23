@@ -4,7 +4,7 @@ import {
   MdCheckCircle,
   MdClose,
   MdEditNote,
-  MdDoDisturbOn,
+  MdPictureAsPdf ,
   MdEmojiPeople,
   MdDateRange,
   MdOutlineEdit,
@@ -140,6 +140,8 @@ const Button = ({
     iconPill = <MdLogout size={sizeIcon} />;
   }else if (icon === "upload") {
     iconPill = <MdFileUpload size={sizeIcon} />;
+  }else if (icon === "pdf") {
+    iconPill = <MdPictureAsPdf  size={sizeIcon} />;
   }
 
   return (

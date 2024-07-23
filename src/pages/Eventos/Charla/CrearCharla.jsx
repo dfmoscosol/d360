@@ -138,7 +138,7 @@ const CrearCharla = () => {
   /**
    * COMBOBOX
    */
-  const listModalidades = ["Presencial", "Virtual", "Híbrida"];
+  const listModalidades = ["Presencial", "Virtual"];
   const [selectedModalidad, setSelectedModalidad] = useState("");
   const [isValidModalidad, setIsValidModalidad] = useState(true);
 

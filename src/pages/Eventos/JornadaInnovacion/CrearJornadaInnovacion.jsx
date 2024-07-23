@@ -349,7 +349,7 @@ const CrearJornadaInnovacion = () => {
   /**
    * COMBOBOX
    */
-  const listModalidades = ["Virtual", "Presencial", "Híbrida"];
+  const listModalidades = ["Virtual", "Presencial"];
 
 
   /**

@@ -233,7 +233,7 @@ const EditarCharla = (props) => {
    * COMBOBOX
    */
 
-  const listModalidades = ["Presencial", "Virtual", "Híbrida"];
+  const listModalidades = ["Presencial", "Virtual"];
 
 
   // Estado para almacenar el valor seleccionado

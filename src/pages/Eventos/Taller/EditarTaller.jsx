@@ -177,7 +177,7 @@ const EditarTaller = (props) => {
    * COMBOBOX
    */
 
-  const listModalidades = ["Virtual", "Presencial", "Híbrida"];
+  const listModalidades = ["Virtual", "Presencial"];
 
 
   // Estado para almacenar el valor seleccionado

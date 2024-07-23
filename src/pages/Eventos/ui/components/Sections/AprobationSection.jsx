@@ -2,90 +2,53 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Modal, Button } from "@components";
-import { useActualizarInscripcionMutation } from "@redux/services/evento/eventoApi";
+import { useActualizarInscripcionMutation, useEliminarInscripcionMutation, useGetAllObservadoresQuery } from "@redux/services/evento/eventoApi";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 import PillPorInscribir from "../PillPorInscribir/PillPorInscribir";
-import { useEliminarInscripcionMutation } from "@redux/services/evento/eventoApi";
-import { useGetAllObservadoresQuery } from "@redux/services/evento/eventoApi";
 import ComboBox from "../ComboBox/ComboBox";
 import { MdOutlinePersonSearch } from "react-icons/md";
-
-import EventoView, {
-  Header,
-  Title,
-  Info,
-  Data,
-  Footer,
-  TitlePanel,
-  Activator,
-  SubTitle,
-  TogglePanel,
-  SectionContainer,
-} from "../EventoView/EventoView";
+import EventoView, { Header, SectionContainer } from "../EventoView/EventoView";
 
 const AprobationSection = (props) => {
-  /**
-   * PROPS
-   */
   const { docentesPendientes, observacion, handleRefetch } = props;
-
-  /**
-   * REDUX
-   */
   const dispatch = useDispatch();
-
-  /**
-   * PARA APROBAR LA INSCRIPCION
-   */
-
-  const {
-    data,
-    refetch: refetchGetAllObservadores,
-    error,
-    isLoading,
-    isFetching,
-    isError,
-  } = useGetAllObservadoresQuery();
+  const { data, refetch: refetchGetAllObservadores } = useGetAllObservadoresQuery();
 
   const [
     actualizarInscripcion,
-    {
-      data: responseAprobar,
-      isLoading: isUpdatingAprobar,
-      isSuccess: isSuccessAprobar,
-      isError: isErrorAprobar,
-      error: errorAprobar,
-    },
+    { isSuccess: isSuccessAprobar, isError: isErrorAprobar, error: errorAprobar },
   ] = useActualizarInscripcionMutation();
 
-  const observadores = data && data.respuesta.map((observador) => observador.nombre)
+  const [
+    eliminarInscripcion,
+    { isSuccess: isSuccessEliminar, isError: isErrorEliminar, error: errorEliminar },
+  ] = useEliminarInscripcionMutation();
 
+  const observadores = data && data.respuesta.map((observador) => observador.nombre);
   const [idDocenteAprobacion, setIdDocenteAprobacion] = useState();
   const [idObservadorAprobacion, setIdObservadorAprobacion] = useState();
   const [observadoresSelected, setObservadoresSelected] = useState([]);
   const [errorObservador, setErrorObservador] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [isEliminarModalOpen, setEliminarModalOpen] = useState(false);
 
   const handleAprobarInscripcion = (id, indexObservador) => {
-
     setIdDocenteAprobacion(id);
-
     if (observacion) {
       const observador = data && data.respuesta.find((obs) => obs.nombre === observadoresSelected[indexObservador]);
       if (observador) {
-        setIdObservadorAprobacion(observador.id)
+        setIdObservadorAprobacion(observador.id);
       } else {
-        setErrorObservador(true)
-        return
+        setErrorObservador(true);
+        return;
       }
-      console.log(id, observacion, observador.id)
     }
     setModalOpen(true);
   };
 
   const handleSelect = (value, index) => {
-    console.log(index, value)
-    setErrorObservador(false)
-    setObservadoresSelected(prevState => {
+    setErrorObservador(false);
+    setObservadoresSelected((prevState) => {
       const newState = [...prevState];
       newState[index] = value;
       return newState;
@@ -93,28 +56,32 @@ const AprobationSection = (props) => {
   };
 
   const handleConfirmarAprobacion = () => {
-    console.log("confirmar aprobación");
-    console.log(idDocenteAprobacion);
     const paramsConfirm = {
       id: idDocenteAprobacion,
       body: { aceptada: true, ...(observacion && { observador_id: idObservadorAprobacion }) },
     };
-    console.log(paramsConfirm);
     actualizarInscripcion(paramsConfirm);
   };
 
-  // MENSAJES DE NOTIFICACION
+  const handleAprobarEliminacion = (id) => {
+    setIdDocenteAprobacion(id);
+    setEliminarModalOpen(true);
+  };
+
+  const handleEliminarInscripcion = () => {
+    eliminarInscripcion({ id: idDocenteAprobacion });
+    setEliminarModalOpen(false);
+  };
+
   useEffect(() => {
     if (isSuccessAprobar) {
-      console.log(responseAprobar);
       triggerNotification(dispatch, {
         message: "Inscripción aprobada exitosamente",
         type: "success",
       });
-      setErrorObservador(false)
+      setErrorObservador(false);
       handleRefetch();
     } else if (isErrorAprobar && errorAprobar) {
-      console.log(errorAprobar);
       triggerNotification(dispatch, {
         message: errorAprobar.message || "Error al aprobar la inscripción",
         type: "error",
@@ -122,51 +89,20 @@ const AprobationSection = (props) => {
     }
   }, [isSuccessAprobar, isErrorAprobar, errorAprobar, dispatch]);
 
-  /**
-   * PARA ELIMINAR LA INSCRIPCION
-   */
-  const [
-    eliminarInscripcion,
-    {
-      data: responseEliminar,
-      isLoading: isUpdatingEliminar,
-      isSuccess: isSuccessEliminar,
-      isError: isErrorEliminar,
-      error: errorEliminar,
-    },
-  ] = useEliminarInscripcionMutation();
-
-  const handleEliminarInscripcion = (id) => {
-    console.log("denegar inscripción");
-    console.log(id);
-    const paramsConfirm = {
-      id: id,
-    };
-    console.log(paramsConfirm);
-    eliminarInscripcion(paramsConfirm);
-  };
-
   useEffect(() => {
     if (isSuccessEliminar) {
-      console.log(responseEliminar);
       triggerNotification(dispatch, {
         message: "Inscripción eliminada.",
         type: "success",
       });
       handleRefetch();
     } else if (isErrorEliminar && errorEliminar) {
-      console.log(errorEliminar);
       triggerNotification(dispatch, {
-        message: errorEliminar.message || "Error al aprobar la inscripción",
+        message: errorEliminar.message || "Error al eliminar la inscripción",
         type: "error",
       });
     }
   }, [isSuccessEliminar, isErrorEliminar, errorEliminar, dispatch]);
-
-  /**
-   * PARA EL MODAL
-   */
-  const [isModalOpen, setModalOpen] = useState(false);
 
   return (
     <EventoView>
@@ -180,7 +116,7 @@ const AprobationSection = (props) => {
       >
         {isSuccessAprobar ? (
           <Button
-            value="Eliminación exitosa"
+            value="Aprobación exitosa"
             type="success"
             size="medium"
             icon="check"
@@ -193,8 +129,34 @@ const AprobationSection = (props) => {
             size="medium"
             icon="check"
             isPrimary={true}
-            onClick={() => handleConfirmarAprobacion()}
-            isLoading={isUpdatingAprobar}
+            onClick={handleConfirmarAprobacion}
+          />
+        )}
+      </Modal>
+      <Modal
+        isOpen={isEliminarModalOpen}
+        message="¿Desea eliminar esta inscripción?"
+        onClose={() => setEliminarModalOpen(false)}
+        type={"error"}
+        title={"Eliminar inscripción"}
+        showCancel={!isSuccessEliminar}
+      >
+        {isSuccessEliminar ? (
+          <Button
+            value="Eliminación exitosa"
+            type="success"
+            size="medium"
+            icon="check"
+            isPrimary={true}
+          />
+        ) : (
+          <Button
+            value="Confirmar"
+            type="error"
+            size="medium"
+            icon="delete"
+            isPrimary={true}
+            onClick={handleEliminarInscripcion}
           />
         )}
       </Modal>
@@ -202,34 +164,32 @@ const AprobationSection = (props) => {
         color="bg-primary_gray_1 text-primary_gray_4"
         title="Aprobar"
         subTitle="Docentes pendientes de aprobación"
-        hasIcon={false}
       />
       <SectionContainer extra={"gap-4"}>
         {docentesPendientes.length > 0 ? (
-
           <div className="flex flex-col gap-4">
             {docentesPendientes.map((docente, index) => (
               <PillPorInscribir
+                key={index}
                 index={index}
                 title={docente.nombre}
                 subTitle={docente.correo}
-                key={index}
                 data={docente.encuesta ? docente.encuesta : []}
               >
-                {docente.encuesta && <div className="flex flex-col col-span-1 md:col-span-2">
-                  <div className="flex items-center gap-2">
-                    <MdOutlinePersonSearch size={20} className="text-primary_gray_4" />
-                    <span className="text-sm font-medium text-primary_text_1">Asignar Observador:</span>
+                {docente.encuesta && (
+                  <div className="flex flex-col col-span-1 md:col-span-2">
+                    <div className="flex items-center gap-2">
+                      <MdOutlinePersonSearch size={20} className="text-primary_gray_4" />
+                      <span className="text-sm font-medium text-primary_text_1">Asignar Observador:</span>
+                    </div>
+                    <div className="pt-2 w-full">
+                      <ComboBox items={observadores} indexGeneral={index} onSelect={handleSelect} />
+                    </div>
+                    {errorObservador && (
+                      <span className="text-red-600 text-sm font-light px-1">Seleccione una opción</span>
+                    )}
                   </div>
-                  <div className="pt-2 w-full">
-                    <ComboBox items={observadores} indexGeneral={index} onSelect={handleSelect} />
-                  </div>
-                  {errorObservador && (
-                    <span className="text-red-600 text-sm font-light px-1">
-                      Seleccione una opción
-                    </span>
-                  )}
-                </div>}
+                )}
                 <div className="flex justify-end gap-2">
                   <Button
                     value="Aceptar"
@@ -237,10 +197,7 @@ const AprobationSection = (props) => {
                     size="small"
                     icon="check"
                     isPrimary={true}
-                    setModalOpen
-                    onClick={() =>
-                      handleAprobarInscripcion(docente.id_inscripcion, index)
-                    }
+                    onClick={() => handleAprobarInscripcion(docente.id_inscripcion, index)}
                   />
                   <Button
                     value="Denegar"
@@ -248,20 +205,14 @@ const AprobationSection = (props) => {
                     size="small"
                     icon="close"
                     isPrimary={false}
-                    onClick={() =>
-                      handleEliminarInscripcion(docente.id_inscripcion)
-                    }
-                    isLoading={isUpdatingEliminar}
+                    onClick={() => handleAprobarEliminacion(docente.id_inscripcion)}
                   />
                 </div>
-
               </PillPorInscribir>
             ))}
           </div>
         ) : (
-          <span className="text-sm font-medium text-primary_gray_4">
-            Ningún docente pendiente por aprobación.
-          </span>
+          <span className="text-sm font-medium text-primary_gray_4">Ningún docente pendiente por aprobación.</span>
         )}
       </SectionContainer>
     </EventoView>

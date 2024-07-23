@@ -11,13 +11,14 @@ import {
   useUploadAcreditacionesMutation,
   useUploadPdfMutation,
   useDeletePdfMutation,
-  useLazyDownloadPdfQuery
+  useLazyDownloadPdfQuery, useEditEventoMutation
 } from "@redux/services/evento/eventoApi";
 import { useDispatch } from "react-redux";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 
 const Acreditacion = () => {
   const dispatch = useDispatch();
+  const [editEvento, { data: response, isLoading: isUpdatingEvent, isSuccess, isError: isUpdateEventError, error: updateEventError }] = useEditEventoMutation();
   const { data: apiData, error, isLoading, isFetching, isError } = useGetAllEventosQuery();
   const [triggerGetAcreditaciones, { data: dataAcreditacion, error: errorAcreditacion, isLoading: isLoadingAcreditacion, isFetching: isFetchingAcreditacion, isError: isErrorAcreditacion }] = useLazyGetAcreditacionesQuery();
   const [updateAcreditaciones, { data: updateResponse, isSuccess: isUpdateSuccess, isError: isUpdateError, error: updateError }] = useUpdateAcreditacionesMutation();
@@ -114,6 +115,21 @@ const Acreditacion = () => {
     }
   }, [isDeletePdfSuccess, isDeletePdfError, deletePdfError, dispatch]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      triggerNotification(dispatch, {
+        message: "Acreditación de certificado actualizada correctamente",
+        type: "success",
+      });
+      setModalOpen(false);
+    } else if (isUpdateEventError && updateEventError) {
+      triggerNotification(dispatch, {
+        message: updateEventError?.data?.error || "Error al actualizar la acreditación de certificado",
+        type: "error",
+      });
+    }
+  }, [isSuccess, isUpdateEventError, updateEventError, dispatch]);
+
   if (isLoading || isFetching || isLoadingAcreditacion || isFetchingAcreditacion) return <Loader />;
   if (isError) return <FetchError error={error} />;
   if (isErrorAcreditacion) {
@@ -136,6 +152,16 @@ const Acreditacion = () => {
     const newData = data.map((item, i) => {
       if (i === index) {
         return { ...item, comments: value };
+      }
+      return item;
+    });
+    setData(newData);
+  };
+
+  const handleHoursChange = (index, value) => {
+    const newData = data.map((item, i) => {
+      if (i === index) {
+        return { ...item, horas: value };
       }
       return item;
     });
@@ -183,6 +209,19 @@ const Acreditacion = () => {
       return item;
     });
     setData(newData);
+  };
+
+  const handleSetHours = (index) => {
+    const item = data[index];
+    console.log(item)
+    setModalMessage("¿Desea actualizar las horas acreditadas?");
+    setModalAction(() => () => confirmSetHours(item));
+    setModalOpen(true);
+  };
+
+  const confirmSetHours = (item) => {
+    editEvento({ id: item.evento_id, body: { horas: Number(item.horas) }, tipo: "certificados" })
+    setModalOpen(false);
   };
 
   const handleFileUpload = (index) => {
@@ -265,6 +304,7 @@ const Acreditacion = () => {
   };
 
   const handleEventChange = (selectedOption) => {
+
     if (selectedOption.tipo === 1) {
       setData([]);
     }
@@ -300,6 +340,12 @@ const Acreditacion = () => {
     tipo: event.tipo // Add event type to option
   }));
 
+  events.unshift({
+    value: 0,
+    label: 'Certificados',
+    tipo: 5
+  });
+
   const workshops = selectedEvent && eventos.find(event => event.id === selectedEvent.value)?.talleres?.map(taller => ({
     value: taller.id,
     label: taller.nombre
@@ -327,7 +373,7 @@ const Acreditacion = () => {
               styles={customStyles}
             />
           )}
-          {selectedEvent && selectedEvent.tipo !== 4 &&
+          {selectedEvent && ((selectedEvent.tipo !== 4 && selectedEvent.tipo !== 1 && selectedEvent.tipo !== 5) || (selectedEvent.tipo === 1 && selectedWorkshop !== null)) &&
             <div className="mt-4 flex items-center justify-end space-x-4">
               <label className="block">
                 <input
@@ -382,9 +428,19 @@ const Acreditacion = () => {
                     </>
                   ) : (
                     <>
-                      <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Asistió</th>
-                      <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Aprobó</th>
-                      <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Comentarios</th>
+                      {selectedEvent && selectedEvent.tipo === 5 ? (
+                        <>
+                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Archivo</th>
+                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Horas</th>
+                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Acción</th>
+                        </>
+                      ) : (
+                        <>
+                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Asistió</th>
+                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Aprobó</th>
+                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Comentarios</th>
+                        </>
+                      )}
                     </>
                   )}
                 </tr>
@@ -399,24 +455,29 @@ const Acreditacion = () => {
                         {item.has_pdf ? (
                           <>
                             <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
-                              <button
-                                type="button"
-                                onClick={() => handleDownload(item.id)}
-                                className="cursor-pointer text-sm text-primary_gray_4 border border-gray-300 rounded-md py-1 px-4 bg-white hover:bg-gray-100 "
-                              >
-                                Descargar
-                              </button>
+                              <div className="inline-block">
+                                <Button
+                                  type="gray"
+                                  size="small"
+                                  icon="pdf"
+                                  value="Descargar"
+                                  onClick={() => handleDownload(item.id)}
+                                  isPrimary={true}
+                                />
+                              </div>
                             </td>
-                            <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center flex justify-center items-center">
-                              <Button
-                                type="error"
-                                size="small"
-                                value="Eliminar"
-                                icon="delete"
-                                onClick={() => handleDelete(item.id)}
-                                isPrimary={true}
-                                className="py-2 px-4 rounded-md flex items-center space-x-2"
-                              />
+                            <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
+                              <div className="inline-block">
+                                <Button
+                                  type="error"
+                                  size="small"
+                                  value="Eliminar"
+                                  icon="delete"
+                                  onClick={() => handleDelete(item.id)}
+                                  isPrimary={true}
+                                  className="py-2 px-4 rounded-md space-x-2"
+                                />
+                              </div>
                             </td>
                           </>
                         ) : (
@@ -472,39 +533,79 @@ const Acreditacion = () => {
                       </>
                     ) : (
                       <>
-                        <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
-                          <Switch
-                            checked={item.attended}
-                            onChange={() => handleToggle(startIndex + index, "attended")}
-                            className={`${item.attended ? "bg-green-500" : "bg-gray-200"} relative inline-flex items-center h-6 rounded-full w-11`}
-                            aria-label={`Toggle attended for ${item.name}`}
-                          >
-                            <span
-                              className={`${item.attended ? "translate-x-6" : "translate-x-1"} inline-block w-4 h-4 transform bg-white rounded-full`}
-                            />
-                          </Switch>
-                        </td>
-                        <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
-                          <Switch
-                            checked={item.passed}
-                            onChange={() => handleToggle(startIndex + index, "passed")}
-                            className={`${item.passed ? "bg-green-500" : "bg-gray-200"} relative inline-flex items-center h-6 rounded-full w-11`}
-                            aria-label={`Toggle passed for ${item.name}`}
-                          >
-                            <span
-                              className={`${item.passed ? "translate-x-6" : "translate-x-1"} inline-block w-4 h-4 transform bg-white rounded-full`}
-                            />
-                          </Switch>
-                        </td>
-                        <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
-                          <input
-                            type="text"
-                            value={item.comments}
-                            onChange={(e) => handleCommentChange(startIndex + index, e.target.value)}
-                            className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                            aria-label={`Comments for ${item.name}`}
-                          />
-                        </td>
+                        {
+                          selectedEvent && selectedEvent.tipo === 5 ? (
+                            <>
+                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center flex justify-center items-center">
+                                <Button
+                                  type="gray"
+                                  size="small"
+                                  icon="pdf"
+                                  value="Descargar"
+                                  onClick={() => handleDownload(item.id)}
+                                  isPrimary={true}
+                                />
+                              </td>
+                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
+                                <input
+                                  type="number"
+                                  value={item.horas}
+                                  onChange={(e) => handleHoursChange(startIndex + index, e.target.value)}
+                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-20 bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                                  aria-label={`Hours for ${item.name}`}
+                                />
+                              </td>
+                              { }
+                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center flex justify-center items-center">
+                                <Button
+                                  type="ucuenca"
+                                  size="small"
+                                  value="Guardar"
+                                  icon="save"
+                                  onClick={() => handleSetHours(startIndex + index)}
+                                  isPrimary={true}
+                                  className="py-2 px-4 rounded-md flex items-center space-x-2"
+                                />
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
+                                <Switch
+                                  checked={item.attended}
+                                  onChange={() => handleToggle(startIndex + index, "attended")}
+                                  className={`${item.attended ? "bg-green-500" : "bg-gray-200"} relative inline-flex items-center h-6 rounded-full w-11`}
+                                  aria-label={`Toggle attended for ${item.name}`}
+                                >
+                                  <span
+                                    className={`${item.attended ? "translate-x-6" : "translate-x-1"} inline-block w-4 h-4 transform bg-white rounded-full`}
+                                  />
+                                </Switch>
+                              </td>
+                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
+                                <Switch
+                                  checked={item.passed}
+                                  onChange={() => handleToggle(startIndex + index, "passed")}
+                                  className={`${item.passed ? "bg-green-500" : "bg-gray-200"} relative inline-flex items-center h-6 rounded-full w-11`}
+                                  aria-label={`Toggle passed for ${item.name}`}
+                                >
+                                  <span
+                                    className={`${item.passed ? "translate-x-6" : "translate-x-1"} inline-block w-4 h-4 transform bg-white rounded-full`}
+                                  />
+                                </Switch>
+                              </td>
+                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
+                                <input
+                                  type="text"
+                                  value={item.comments}
+                                  onChange={(e) => handleCommentChange(startIndex + index, e.target.value)}
+                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                                  aria-label={`Comments for ${item.name}`}
+                                />
+                              </td>
+                            </>
+                          )
+                        }
                       </>
                     )}
                   </tr>
@@ -535,7 +636,7 @@ const Acreditacion = () => {
               />
             </div>
           </div>
-          {selectedEvent && selectedEvent.tipo !== 4 && <div className="flex items-center justify-center col-span-12 gap-4 mt-4">
+          {selectedEvent && selectedEvent.tipo !== 4 && selectedEvent.tipo !== 5 && <div className="flex items-center justify-center col-span-12 gap-4 mt-4">
             <Button
               type="ucuenca"
               icon={"saveEdit"}
@@ -565,7 +666,7 @@ const Acreditacion = () => {
             icon="check"
             isPrimary={true}
             onClick={modalAction}
-            isLoading={isUpdating || isUploadPdfLoading || isDeletePdfLoading}
+            isLoading={isUpdating || isUploadPdfLoading || isDeletePdfLoading || isUpdatingEvent}
           />
         }
       </Modal>

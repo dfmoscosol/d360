@@ -125,7 +125,7 @@ console.log(docentesFiltrados)
           </Link>
         ) : (
           <Button
-            value="Revertir"
+            value="Confirmar"
             type="error"
             size="medium"
             icon="delete"

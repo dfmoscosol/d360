@@ -149,7 +149,7 @@ export const eventoApi = createApi({
         method: 'GET',
         responseHandler: (response) => response.blob(),
       }),
-    }),
+    })
     
   }),
 });
