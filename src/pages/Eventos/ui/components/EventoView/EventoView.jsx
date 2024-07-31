@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ToggleSwitch, HorizontalPill, InfoPill } from "@components";
+import { ToggleSwitch, CarouselComponent, InfoPill } from "@components";
 import { Oval } from "react-loader-spinner";
 
 // Header subcomponent
@@ -25,6 +25,13 @@ export const Header = ({ color, title, icon, subTitle, hasIcon, children }) => (
 // Title subcomponent
 export const Title = ({ value }) => (
   <span className="font-medium text-3xl text-primary_text_1 py-3">
+    {value}
+  </span>
+);
+
+// Title subcomponent
+export const TitleTaller = ({ value }) => (
+  <span className="font-medium text-xl text-primary_text_1 py-3">
     {value}
   </span>
 );
@@ -133,9 +140,8 @@ export const TalleresPanel = ({ extra, taller }) => (
   <div className={`${extra}`}>
     <div className="grid grid-cols-1 gap-4">
       <div className="col-span-3 md:col-span-1 bg-primary_gray_1 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-all duration-200 justify-between">
-        <span className="text-sm font-medium text-primary_gray_4">
-          {taller.nombre}
-        </span>
+      <TitleTaller value={taller.nombre} />
+      
         <div className="col-span-2 border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
           <span className="text-sm font-normal text-primary_gray_2">
             Ponentes
@@ -146,52 +152,8 @@ export const TalleresPanel = ({ extra, taller }) => (
             </span>
           ))}
         </div>
-        {taller.sesiones.map((sesion, index) => (
-          <React.Fragment key={index}>
-            <Info>
-              <InfoPill
-                value={sesion.fecha}
-                size="medium"
-                type="date"
-                icon="date"
-              />
-            </Info>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
-                <span className="text-sm font-normal text-primary_gray_2">
-                  Modalidad
-                </span>
-                <span className="text-base font-medium text-primary_text_1">
-                  {sesion.modalidad}
-                </span>
-              </div>
-              <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
-                <span className="text-sm font-normal text-primary_gray_2">
-                  Ubicación
-                </span>
-                <span className="text-base font-medium text-primary_text_1">
-                  {sesion.ubicacion}
-                </span>
-              </div>
-              <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
-                <span className="text-sm font-normal text-primary_gray_2">
-                  Hora de inicio
-                </span>
-                <span className="text-base font-medium text-primary_text_1">
-                  {sesion.hora_inicio}
-                </span>
-              </div>
-              <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
-                <span className="text-sm font-normal text-primary_gray_2">
-                  Duración
-                </span>
-                <span className="text-base font-medium text-primary_text_1">
-                  {sesion.duracion}
-                </span>
-              </div>
-            </div>
-          </React.Fragment>
-        ))}
+        <CarouselComponent  taller={taller} />
+        
       </div>
     </div>
   </div>

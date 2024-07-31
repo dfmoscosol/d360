@@ -4,7 +4,7 @@ import { triggerNotification } from "@redux/features/notification/notificationSl
 
 const descargarArchivo = async (idCertificado, token, dispatch) => {
   try {
-    const BASE_URL = `https://d360api.ucuenca.edu.ec/descargar_certificado/${idCertificado}`;
+    const BASE_URL = `http://localhost:5000/descargar_certificado/${idCertificado}`;
 
     const response = await axios.get(BASE_URL, {
       responseType: "blob", // Indica que esperas una respuesta tipo 'blob'

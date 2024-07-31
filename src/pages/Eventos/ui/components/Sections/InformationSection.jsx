@@ -2,8 +2,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-import { Modal, InfoPill, Button } from "@components";
+import { Modal, Button } from "@components";
 
 import EventoView, {
   Header,
@@ -245,7 +244,7 @@ const InformationSection = (props) => {
         {hasTalleres && (
           <>
             <SubTitle value={"Talleres"} />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1  gap-4">
               {talleresList.map((taller, index) => (
                 <TalleresPanel key={index} extra="col-span-1" taller={taller} />
               ))}
