@@ -163,7 +163,7 @@ const EditarObservacionAulica = (props) => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.message || "Error al aprobar la inscripción",
+        message: error.data.error || "Error al editar la observación",
         type: "error",
       });
     }

@@ -37,7 +37,7 @@ const CrearJornadaInnovacion = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
+    console.log(inputs);
     if (dates.length === 0) {
       console.log("ERROR: No se ha elegido más de una fecha.");
       setValidDate(false);
@@ -51,6 +51,9 @@ const CrearJornadaInnovacion = () => {
 
     const areAllInputsFilled = inputs.every(input =>
       input.value.trim() !== "" &&
+      input.descripcion.trim() !== "" &&
+      input.competencia.trim() !== "" &&
+      input.momento.trim() !== "" &&
       input.sesiones.every(sesion =>
         sesion.fecha_id &&
         sesion.hora_inicio.trim() !== "" &&
@@ -65,7 +68,7 @@ const CrearJornadaInnovacion = () => {
       console.log("ERROR: Todos los campos deben estar completos.");
       setInputs(inputs => inputs.map(input => ({
         ...input,
-        isEmpty: input.value.trim() === "" || input.sesiones.some(sesion =>
+        isEmpty: input.value.trim() === "" || input.descripcion.trim() === "" || input.competencia.trim() === "" || input.momento.trim() === "" || input.sesiones.some(sesion =>
           !sesion.fecha_id || sesion.hora_inicio.trim() === "" ||
           sesion.duracion.trim() === "" || sesion.modalidad.trim() === "" ||
           sesion.ubicacion.trim() === ""
@@ -77,11 +80,14 @@ const CrearJornadaInnovacion = () => {
     console.log("Todos los talleres están completos.");
     const validInputsList = inputs.map(input => ({
       nombre: input.value,
+      descripcion: input.descripcion,
+      competencia: listCompetencias.indexOf(input.competencia)+1,
+      momento: listMomentos.indexOf(input.momento)+1,
       sesiones: input.sesiones.map(sesion => ({
         fecha_id: sesion.fecha_id,
         hora_inicio: sesion.hora_inicio,
         duracion: sesion.duracion,
-        modalidad: sesion.modalidad === "Presencial" ? 1 : sesion.modalidad === "Virtual" ? 2 : sesion.modalidad === "Híbrida" ? 3 : 0,
+        modalidad: listModalidades.indexOf(sesion.modalidad)+1,
         ubicacion: sesion.ubicacion
       })),
       ponentes: input.ponentes.map(ponente => ({ nombre: ponente.value }))
@@ -95,13 +101,12 @@ const CrearJornadaInnovacion = () => {
     console.log("Final data to send:", data);
 
     addEvento({
-        params: data,
-        tipo: "jornadas"
+      params: data,
+      tipo: "jornadas"
     }); 
 
     console.log("Formulario enviado");
   };
-
 
   /**
    * PARA LOS INPUTS DINÁMICOS
@@ -111,10 +116,12 @@ const CrearJornadaInnovacion = () => {
       id: 1,
       hasAddButton: true,
       hasRemoveButton: false,
-      sesiones: [
-      ],
+      sesiones: [],
       ponentes: [{ id: 1, value: "", hasAddButton: true, hasRemoveButton: false, }],
       value: "",
+      descripcion: "",
+      competencia:"",
+      momento:"",
       isEmpty: false,
     },
   ]);
@@ -124,6 +131,39 @@ const CrearJornadaInnovacion = () => {
       inputs.map((input) => {
         if (input.id === id) {
           return { ...input, value: newValue, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  };
+
+  const handleDescriptionChange = (id, newValue) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === id) {
+          return { ...input, descripcion: newValue, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  };
+
+  const handleCompetenciaChange = (id, newValue) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === id) {
+          return { ...input, competencia: newValue, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  };
+
+  const handleMomentoChange = (id, newValue) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === id) {
+          return { ...input, momento: newValue, isEmpty: false };
         }
         return input;
       })
@@ -349,7 +389,9 @@ const CrearJornadaInnovacion = () => {
   /**
    * COMBOBOX
    */
-  const listModalidades = ["Virtual", "Presencial"];
+  const listModalidades = ["Presencial", "Virtual"];
+  const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
+  const listMomentos = ["Explorador", "Integrador", "Innovador"];
 
 
   /**
@@ -463,7 +505,7 @@ const CrearJornadaInnovacion = () => {
 
           {/**Talleres */}
 
-          {dates.length>0 && <div className="flex flex-col col-span-12 gap-1">
+          {dates.length > 0 && <div className="flex flex-col col-span-12 gap-1">
             <FormLabel value={"Talleres"} />
             <div className="flex flex-col gap-3">
               {inputs.map((input) => (
@@ -482,6 +524,31 @@ const CrearJornadaInnovacion = () => {
                             className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
                           />
                         </div>
+                        <div className="flex flex-col">
+                          <label className="text-sm font-medium text-primary_text_1">
+                            Descripción del Taller
+                          </label>
+                          <textarea
+                            value={input.descripcion}
+                            onChange={(e) => handleDescriptionChange(input.id, e.target.value)}
+                            maxLength={250}
+                            className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5 h-32"
+                          />
+                        </div>
+                        <div className="flex flex-wrap gap-3">
+
+                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                            <label className="text-sm font-medium text-primary_text_1">Competencia</label>
+                            <ComboBox items={listCompetencias} onSelect={(value) => handleCompetenciaChange(input.id, value)}
+                            />
+                          </div>
+                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                            <label className="text-sm font-medium text-primary_text_1">Momento</label>
+                            <ComboBox items={listMomentos} onSelect={(value) => handleMomentoChange(input.id, value)}
+                            />
+                          </div>
+                        </div>
+
                         {input.sesiones.map((sesion, index) => (
                           <>
                             <div className="flex flex-col items-start justify-start">
@@ -506,7 +573,7 @@ const CrearJornadaInnovacion = () => {
                                 <input type="number"
                                   value={input.sesiones[index].duracion}
                                   onChange={(e) => handleDuracionChange(input.id, index, e.target.value)}
-                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"  />
+                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
                               </div>
                               <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
                                 <label className="text-sm font-medium text-primary_text_1">Modalidad</label>
@@ -518,7 +585,7 @@ const CrearJornadaInnovacion = () => {
                                 <input type="text"
                                   value={input.sesiones[index].ubicacion}
                                   onChange={(e) => handleUbicacionChange(input.id, index, e.target.value)}
-                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"  />
+                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
                               </div>
                             </div>
                           </>

@@ -51,10 +51,11 @@ const CrearCharla = () => {
       areValidDates = true;
       validDatesList.push(dates.format("DD-MM-YYYY"));
     }
-    if (selectedModalidad === "") {
-      setIsValidModalidad(false)
-    }
 
+    setIsValidModalidad(selectedModalidad!="")
+    setIsValidCompetencia(selectedCompetencia!="")
+    setIsValidMomento(selectedMomento!="")
+    
     const areAllPonentesFilled = inputs.every(input =>
       input.value.trim() !== "" &&
       input.charla.trim() !== ""
@@ -69,21 +70,23 @@ const CrearCharla = () => {
       return; // Detener la ejecución si algún campo está vacío
     }
 
-    if (areValidDates && isValidModalidad && areAllPonentesFilled) {
+    if (areValidDates && selectedCompetencia!="" && selectedModalidad!="" && selectedMomento!="" && areAllPonentesFilled) {
       console.log("Se puede enviar el formulario");
       data.fechas = validDatesList;
       data.inscripcion = false;
-      data.modalidad = selectedModalidad === "Presencial" ? 1 : selectedModalidad === "Virtual" ? 2 : selectedModalidad === "Híbrida" ? 3 : 0,
-      data.ponentes = inputs.map(input => ({
-        nombre: input.value,
-        titulo_charla: input.charla
-      }));
+      data.modalidad = listModalidades.indexOf(selectedModalidad)+1,
+      data.competencia = listCompetencias.indexOf(selectedCompetencia)+1,
+      data.momento = listMomentos.indexOf(selectedMomento)+1,
+        data.ponentes = inputs.map(input => ({
+          nombre: input.value,
+          titulo_charla: input.charla
+        }));
       console.log(data);
       console.log("Se enviará el formulario");
       addEvento({
         params: data,
         tipo: "charlas"
-      });
+      }); 
       console.log("Enviado");
     } else {
       console.log("No se puede enviar el formulario");
@@ -135,16 +138,33 @@ const CrearCharla = () => {
     );
   }
 
+ 
   /**
    * COMBOBOX
    */
   const listModalidades = ["Presencial", "Virtual"];
+  const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
+  const listMomentos = ["Explorador", "Integrador", "Innovador"];
+
   const [selectedModalidad, setSelectedModalidad] = useState("");
   const [isValidModalidad, setIsValidModalidad] = useState(true);
-
   const handleSelect = (value) => {
     setSelectedModalidad(value);
     setIsValidModalidad(true)
+  };
+
+  const [selectedCompetencia, setSelectedCompetencia] = useState("");
+  const [isValidCompetencia, setIsValidCompetencia] = useState(true);
+  const handleSelectCompetencia = (value) => {
+    setSelectedCompetencia(value);
+    setIsValidCompetencia(true)
+  };
+
+  const [selectedMomento, setSelectedMomento] = useState("");
+  const [isValidMomento, setIsValidMomento] = useState(true);
+  const handleSelectMomento = (value) => {
+    setSelectedMomento(value);
+    setIsValidMomento(true)
   };
 
   /**
@@ -228,7 +248,7 @@ const CrearCharla = () => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.message || "Error al aprobar la inscripción",
+        message: error.data.error || "Error al crear la charla",
         type: "error",
       });
     }
@@ -249,6 +269,46 @@ const CrearCharla = () => {
             {errors.nombre && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un nombre válido.
+              </span>
+            )}
+          </div>
+          <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Descripción"} />
+            <textarea
+              type="text"
+              maxLength={500}
+              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+              {...register("descripcion", { required: true })}
+            />
+            {errors.descripcion && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese una descripción válida.
+              </span>
+            )}
+          </div>
+
+          {/**Competencia */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Competencia"} />
+            <div className="w-full">
+              <ComboBox items={listCompetencias} onSelect={handleSelectCompetencia} />
+            </div>
+            {!isValidCompetencia && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Seleccione una opción
+              </span>
+            )}
+          </div>
+
+          {/**Momento */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Momentos"} />
+            <div className="w-full">
+              <ComboBox items={listMomentos} onSelect={handleSelectMomento} />
+            </div>
+            {!isValidMomento && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Seleccione una opción
               </span>
             )}
           </div>

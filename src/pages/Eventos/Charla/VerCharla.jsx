@@ -32,9 +32,12 @@ const VerCharla = (props) => {
     nombre,
     ubicacion,
     modalidad,
+    competencia,
+    momento,
     duracion,
     hora_inicio,
     ponentes,
+    descripcion,
     handleRefetch,
   } = props;
 
@@ -59,7 +62,14 @@ const VerCharla = (props) => {
                   routeType={'charlas'}
                   containerNombre={nombre}
                   containerFechas={fechas}
+                  competencia={competencia}
+                  momento={momento}
                   containerDataList={[
+                    
+                    {
+                      key: "Descripción",
+                      value: descripcion,
+                    },
                     {
                       key: "Cupo",
                       value: cupos,
@@ -83,7 +93,7 @@ const VerCharla = (props) => {
                     {
                       key: "Duración",
                       value: duracion,
-                    }
+                    }                    
                   ]}
                   toggleAllowInscripcion={inscripcion}
                   handleRefetch={handleRefetch}

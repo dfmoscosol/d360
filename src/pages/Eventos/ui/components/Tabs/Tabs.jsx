@@ -53,11 +53,10 @@ const Tabs = ({ tabList, activeIndex }) => {
                       {tab.data.map((data, index) => (
                         <button
                           key={data.index}
-                          className={`${
-                            data.index === activeTab
+                          className={`${data.index === activeTab
                               ? "text-primary_color_1 font-medium bg-primary_gray_1 "
                               : "text-primary_gray_2 font-normal"
-                          } py-1 px-2 flex items-center gap-2 w-full text-sm hover:bg-primary_gray_1 rounded-lg transition-all duration-300`}
+                            } py-1 px-2 flex items-center gap-2 w-full text-sm hover:bg-primary_gray_1 rounded-lg transition-all duration-300`}
                           onClick={() => handleTabClick(data.index)}
                         >
                           {data.icon}
@@ -69,11 +68,10 @@ const Tabs = ({ tabList, activeIndex }) => {
                 ) : (
                   <button
                     key={tab.index}
-                    className={`${
-                      tab.index === activeTab
+                    className={`${tab.index === activeTab
                         ? "text-primary_color_1 font-medium bg-primary_gray_1 "
                         : "text-primary_gray_4 font-normal"
-                    } p-2 flex items-center gap-2 w-full text-sm hover:bg-primary_gray_1 rounded-lg transition-all duration-300`}
+                      } p-2 flex items-center gap-2 w-full text-sm hover:bg-primary_gray_1 rounded-lg transition-all duration-300`}
                     onClick={() => handleTabClick(tab.index)}
                   >
                     {tab.icon}

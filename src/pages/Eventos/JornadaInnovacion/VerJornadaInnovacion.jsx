@@ -20,6 +20,7 @@ const VerJornadaInnovacion = (props) => {
 
   const handleTabChange = (index) => {
     setActiveIndex(index);
+    handleRefetch(); // Llama a handleRefetch para asegurar que los datos se actualicen
   };
 
   let talleresInfo = [];
@@ -65,6 +66,7 @@ const VerJornadaInnovacion = (props) => {
           icon: <MdOutlineChecklistRtl size={20} />,
           content: (
             <AprobationSection
+              key={taller.id} // Agregar key único
               docentesPendientes={taller.docentes_pendientes}
               handleRefetch={handleRefetch}
             />

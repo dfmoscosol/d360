@@ -20,6 +20,9 @@ const EditarTaller = (props) => {
     nombre,
     currentSesiones,
     ponentes,
+    descripcion,
+    competencia,
+    momento,
     handleRefetch,
   } = props;
 
@@ -85,19 +88,21 @@ const EditarTaller = (props) => {
 
     if (areValidDates && areValidSesiones && areAllPonentesFilled) {
       console.log("Se puede enviar el formulario");
-      data.sesiones = sesiones
+      data.sesiones = sesiones;
+      data.competencia = listCompetencias.indexOf(selectedCompetencia)+1;
+      data.momento = listMomentos.indexOf(selectedMomento)+1;
       data.horas = Number(data.horas);
       data.cupos = Number(data.cupos);
       data.ponentes = inputs.map(input => ({
         nombre: input.value,
       }));
       console.log(data)
-       setFormData({
+      setFormData({
         id: id,
         body: data,
         tipo: "microtalleres"
       });
-      setModalOpen(true); 
+      setModalOpen(true);
     } else {
       console.log("No se puede enviar el formulario");
     }
@@ -177,13 +182,28 @@ const EditarTaller = (props) => {
    * COMBOBOX
    */
 
-  const listModalidades = ["Virtual", "Presencial"];
+  const listModalidades = ["Presencial","Virtual"];
+  const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
+  const listMomentos = ["Explorador", "Integrador", "Innovador"];
 
+  const [selectedCompetencia, setSelectedCompetencia] = useState(competencia);
+  const [isValidCompetencia, setIsValidCompetencia] = useState(true);
+  const handleSelectCompetencia = (value) => {
+    setSelectedCompetencia(value);
+    setIsValidCompetencia(true)
+  };
+
+  const [selectedMomento, setSelectedMomento] = useState(momento);
+  const [isValidMomento, setIsValidMomento] = useState(true);
+  const handleSelectMomento = (value) => {
+    setSelectedMomento(value);
+    setIsValidMomento(true)
+  };
 
   // Estado para almacenar el valor seleccionado
 
   const handleSelect = (value, fecha) => {
-    let numValue = value === "Presencial" ? 1 : value === "Virtual" ? 2 : value === "Híbrida" ? 3 : 0;
+    let numValue = listModalidades.indexOf(value)+1;
     let sesionesActualizadas = [...sesiones];
 
     // Encontrar la sesión correspondiente a la fecha
@@ -285,7 +305,7 @@ const EditarTaller = (props) => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.message || "Error al aprobar la inscripción",
+        message: error.data.error || "Error al editar el taller",
         type: "error",
       });
     }
@@ -406,6 +426,50 @@ const EditarTaller = (props) => {
               </span>
             )}
           </div>
+          {/**Descripcion */}
+          <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Descripción"} />
+            <textarea
+              value={descripcion}
+              type="text"
+              className="focus:bg-white text-primary_gray_4 first:font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+              placeholder=""
+              {...register("descripcion", { required: true })}
+            />
+            {errors.descripcion && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese una descripción válida.
+              </span>
+            )}
+          </div>
+
+            {/**Competencia */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Competencia"} />
+            <div className="w-full">
+              <ComboBox items={listCompetencias} onSelect={handleSelectCompetencia} hasBeenSelected={true}
+                selected={selectedCompetencia} />
+            </div>
+            {!isValidCompetencia && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Seleccione una opción
+              </span>
+            )}
+          </div>
+
+          {/**Momento */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Momento"} />
+            <div className="w-full">
+              <ComboBox items={listMomentos} onSelect={handleSelectMomento} hasBeenSelected={true}
+                selected={selectedMomento} />
+            </div>
+            {!isValidMomento && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Seleccione una opción
+              </span>
+            )}
+          </div>
 
           {/**Fecha */}
           <div className="col-span-6 flex flex-col gap-1">
@@ -493,7 +557,7 @@ const EditarTaller = (props) => {
                   <ComboBox
                     items={listModalidades}
                     onSelect={(value) => handleSelect(value, sesion.fecha)}
-                    selected={sesion.modalidad === 1? "Presencial" : sesion.modalidad ===  2 ? "Virtual"  : sesion.modalidad ===  3 ? "Híbrida"  : ""}
+                    selected={sesion.modalidad === 1 ? "Presencial" : sesion.modalidad === 2 ? "Virtual" : sesion.modalidad === 3 ? "Híbrida" : ""}
                   />
                 </div>
                 {errorSesiones && sesion.modalidad === "" && (

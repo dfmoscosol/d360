@@ -27,7 +27,10 @@ const EditarCharla = (props) => {
     id,
     nombre,
     ubicacion,
+    competencia,
+    momento,
     modalidad,
+    descripcion,
     handleRefetch,
   } = props;
 
@@ -98,8 +101,9 @@ const EditarCharla = (props) => {
         nombre: input.value,
         titulo_charla: input.charla
       }));
-      data.modalidad = selectedModalidad === "Presencial" ? 1 : selectedModalidad === "Virtual" ? 2 : selectedModalidad === "Híbrida" ? 3 : 0,
-        console.log(data);
+      data.modalidad = listModalidades.indexOf(selectedModalidad)+1,
+      data.competencia = listCompetencias.indexOf(selectedCompetencia)+1,
+      data.momento = listMomentos.indexOf(selectedMomento)+1,
       setFormData({
         id: id,
         body: data,
@@ -234,13 +238,23 @@ const EditarCharla = (props) => {
    */
 
   const listModalidades = ["Presencial", "Virtual"];
-
+  const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
+  const listMomentos = ["Explorador", "Integrador", "Innovador"];
 
   // Estado para almacenar el valor seleccionado
   const [selectedModalidad, setSelectedModalidad] = useState(modalidad);
+  const [selectedCompetencia, setSelectedCompetencia] = useState(competencia);
+  const [selectedMomento, setSelectedMomento] = useState(momento);
 
   const handleSelect = (value) => {
     setSelectedModalidad(value);
+  };
+
+  const handleSelectCompetencia = (value) => {
+    setSelectedCompetencia(value);
+  };
+  const handleSelectMomento = (value) => {
+    setSelectedMomento(value);
   };
 
   /**
@@ -268,7 +282,7 @@ const EditarCharla = (props) => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.message || "Error al aprobar la inscripción",
+        message: error.data.error || "Error al editar la charla",
         type: "error",
       });
     }
@@ -321,7 +335,6 @@ const EditarCharla = (props) => {
               defaultValue={nombre}
               type="text"
               className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-              placeholder="Jornada 1"
               {...register("nombre", { required: true })}
             />
             {errors.nombre && (
@@ -329,6 +342,47 @@ const EditarCharla = (props) => {
                 Ingrese un nombre válido.
               </span>
             )}
+          </div>
+          {/**Descripcion */}
+          <div className="col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Descripción"} />
+            <textarea
+              defaultValue={descripcion}
+              type="text"
+              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+              {...register("descripcion", { required: true })}
+            />
+            {errors.descripcion && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese una descripción válida.
+              </span>
+            )}
+          </div>
+
+          {/**Competencia */}
+          <div className="col-span-6 flex flex-col gap-1">
+            <FormLabel value={"Competencia"} />
+            <div className="w-full">
+              <ComboBox
+                items={listCompetencias}
+                onSelect={handleSelectCompetencia}
+                hasBeenSelected={true}
+                selected={selectedCompetencia}
+              />
+            </div>
+          </div>
+
+          {/**Momento */}
+          <div className="col-span-6 flex flex-col gap-1">
+            <FormLabel value={"Momento"} />
+            <div className="w-full">
+              <ComboBox
+                items={listMomentos}
+                onSelect={handleSelectMomento}
+                hasBeenSelected={true}
+                selected={selectedMomento}
+              />
+            </div>
           </div>
 
           {/**Fecha */}
@@ -410,11 +464,7 @@ const EditarCharla = (props) => {
                 selected={selectedModalidad}
               />
             </div>
-            {/*!isValidModalidad && (
-            <span className="text-red-600 text-sm font-light px-1">
-              Seleccione una opción
-            </span>
-            )*/}
+            
           </div>
 
           {/**Ubicación */}

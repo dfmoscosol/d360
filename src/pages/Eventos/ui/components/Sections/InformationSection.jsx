@@ -16,7 +16,8 @@ import EventoView, {
   TalleresPanel,
   PonentesPanel,
   SesionesPanel,
-  PonentesPanelMicrotalleres
+  PonentesPanelMicrotalleres,
+  CompetenciaCard
 } from "../EventoView/EventoView";
 
 import {
@@ -50,7 +51,9 @@ const InformationSection = (props) => {
     isCharla,
     isMicrotaller,
     sesiones,
-    ponentes
+    ponentes,
+    competencia,
+    momento
   } = props;
 
   /**
@@ -130,7 +133,7 @@ const InformationSection = (props) => {
       handleRefetch();
     } else if (isErrorEdit && errorEdit) {
       triggerNotification(dispatch, {
-        message: errorEdit.message || "Error al actualizar el evento",
+        message: errorEdit.data.error || "Error al actualizar el evento",
         type: "error",
       });
     }
@@ -238,6 +241,7 @@ const InformationSection = (props) => {
       </Header>
       <SectionContainer>
         <Title value={containerNombre} />
+        {isMicrotaller || isCharla ? <CompetenciaCard competencia={competencia} momento={momento}/>:<></>}
         <div className="flex flex-col gap-2">
           <Data dataList={containerDataList} />
         </div>

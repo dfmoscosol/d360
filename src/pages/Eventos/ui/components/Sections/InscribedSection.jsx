@@ -6,26 +6,18 @@ import { MdOutlineSearch, MdFileDownload } from "react-icons/md";
 import descargarArchivoExcel from "@helpers/descargarArchivoExcel";
 import { Modal, Button } from "@components";
 import PillInscritos from "../PillInscritos/PillInscritos";
-
 import EventoView, { Header, SectionContainer } from "../EventoView/EventoView";
-
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
-
 import { useEliminarInscripcionMutation } from "@redux/services/evento/eventoApi";
-
-import { useDescargarInscritosMutation } from '@redux/services/inscripcion/inscripcionApi';
-
 
 const InscribedSection = (props) => {
   const { docentesInscritos, idEvento, idTaller, handleRefetch } = props;
-  /**
-   * REDUX
-   */
+
+  // REDUX
   const dispatch = useDispatch();
   const token = useSelector((state) => state.authState.token);
-  /**
-   * PARA ELIMINAR LA INSCRIPCION
-   */
+
+  // PARA ELIMINAR LA INSCRIPCION
   const [
     eliminarInscripcion,
     {
@@ -40,67 +32,50 @@ const InscribedSection = (props) => {
   const [idDocenteAprobacion, setIdDocenteAprobacion] = useState();
   const [busqueda, setBusqueda] = useState('');
   const [docentesFiltrados, setDocentesFiltrados] = useState(docentesInscritos);
-console.log(docentesFiltrados)
-  // Función para manejar el cambio en el campo de texto
+
+  // Actualizar docentes filtrados cuando cambia la búsqueda o los docentes inscritos
+  useEffect(() => {
+    const newDocentesFiltrados = docentesInscritos.filter((docente) =>
+      docente.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      docente.correo.toLowerCase().includes(busqueda.toLowerCase())
+    );
+    setDocentesFiltrados(newDocentesFiltrados);
+  }, [busqueda, docentesInscritos]);
+
   const handleSearchChange = (event) => {
     setBusqueda(event.target.value);
-    console.log()
-    /* console.log(docentesFiltrados[0].nombre.toLowerCase())
-    console.log(event.target.value.toLowerCase())
-    console.log(docentesFiltrados[0].nombre.toLowerCase().includes(event.target.value.toLowerCase())) */
   };
-
-  // Filtrar docentes basados en la búsqueda
 
   const handleDescargarInscritos = () => {
-    descargarArchivoExcel(token, idEvento, idTaller, dispatch)
+    descargarArchivoExcel(token, idEvento, idTaller, dispatch);
   };
-
 
   const handleAprobarEliminacion = (id) => {
     setIdDocenteAprobacion(id);
     setModalOpen(true);
   };
 
-  const handleEliminarInscripcion = (id) => {
-    //console.log("denegar inscripción");
-    //console.log(id);
-    const paramsConfirm = {
-      id: idDocenteAprobacion,
-    };
-    //console.log(paramsConfirm);
-    eliminarInscripcion(paramsConfirm);
+  const handleEliminarInscripcion = () => {
+    eliminarInscripcion({ id: idDocenteAprobacion });
+    setModalOpen(false);
   };
 
   useEffect(() => {
-    console.log(busqueda)
-    let newDocentesFiltrados = docentesInscritos.filter((docente) =>
-      docente.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      docente.correo.toLowerCase().includes(busqueda.toLowerCase())
-    );
-    setDocentesFiltrados(newDocentesFiltrados)
-  }, [busqueda])
-
-  useEffect(() => {
     if (isSuccessEliminar) {
-      //console.log(responseEliminar);
       triggerNotification(dispatch, {
         message: responseEliminar.respuesta,
         type: "success",
       });
       handleRefetch();
     } else if (isErrorEliminar && errorEliminar) {
-      console.log(errorEliminar);
       triggerNotification(dispatch, {
-        message: errorEliminar.data.error || "Error al aprobar la inscripción",
+        message: errorEliminar.data.error || "Error al eliminar la inscripción",
         type: "error",
       });
     }
-  }, [isSuccessEliminar, isErrorEliminar, errorEliminar, dispatch]);
+  }, [isSuccessEliminar, isErrorEliminar, errorEliminar, dispatch, handleRefetch]);
 
-  /**
-   * PARA EL MODAL
-   */
+  // PARA EL MODAL
   const [isModalOpen, setModalOpen] = useState(false);
 
   return (
@@ -160,7 +135,6 @@ console.log(docentesFiltrados)
       </div>
 
       <SectionContainer>
-
         <div className="w-full flex items-center justify-end">
           <div className="bg-primary_gray_1 flex gap-1 py-2 px-4 rounded-2xl items-center">
             <MdOutlineSearch size={23} className="text-primary_gray_4" />
@@ -176,23 +150,19 @@ console.log(docentesFiltrados)
           <div className="flex flex-col gap-4">
             {docentesFiltrados.map((docente, index) => (
               <PillInscritos
+                key={docente.id_inscripcion} // Usar una key única
                 index={index}
                 title={docente.nombre}
                 subTitle={docente.correo}
                 observador={docente.observador}
-                key={index}
               >
-                {console.log(docente)}
                 <Button
                   value=""
                   type="error"
                   size="small"
                   icon="delete"
                   isPrimary={true}
-                  onClick={() =>
-                    handleAprobarEliminacion(docente.id_inscripcion)
-                  }
-                  //isLoading={isUpdatingEdit}
+                  onClick={() => handleAprobarEliminacion(docente.id_inscripcion)}
                   isRadial={true}
                 />
               </PillInscritos>

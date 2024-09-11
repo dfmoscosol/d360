@@ -55,11 +55,14 @@ const VerEvento = () => {
         horas={evento.horas}
         id={evento.id}
         modalidad={evento.modalidad}
+        competencia={evento.competencia}
+        momento={evento.momento}
         ubicacion={evento.ubicacion}
         duracion={evento.duracion}
         hora_inicio={evento.hora_inicio}
         nombre={evento.nombre}
         ponentes={evento.ponentes}
+        descripcion={evento.descripcion}
         handleRefetch={handleRefetch}
       />
     );
@@ -73,9 +76,12 @@ const VerEvento = () => {
         docentesPendientes={evento.docentes_pendientes}
         fechas={evento.fechas}
         horas={evento.horas}
+        competencia={evento.competencia}
+        momento={evento.momento}
         id={evento.id}
         nombre={evento.nombre}
         sesiones={evento.sesiones}
+        descripcion={evento.descripcion}
         ponentes={evento.ponentes}
         handleRefetch={handleRefetch}
       />

@@ -93,6 +93,8 @@ const Acreditacion = () => {
       });
       setModalOpen(false);
     } else if (isUploadPdfError && uploadPdfError) {
+      console.log("uploadPdfError")
+      console.log(uploadPdfError)
       triggerNotification(dispatch, {
         message: uploadPdfError?.data?.error || "Error al cargar el archivo PDF",
         type: "error",
@@ -404,7 +406,7 @@ const Acreditacion = () => {
         </div>}
         {data.length !== 0 && <SectionContainer>
           <div className="w-full flex flex-col">
-            <div className="w-full flex items-center justify-end mb-4">
+            {/* <div className="w-full flex items-center justify-end mb-4">
               <div className="bg-primary_gray_1 flex gap-1 py-2 px-4 rounded-2xl items-center">
                 <MdOutlineSearch size={23} className="text-primary_gray_4" />
                 <input
@@ -415,7 +417,7 @@ const Acreditacion = () => {
                   className="text-sm bg-primary_gray_1 border-none outline-none"
                 />
               </div>
-            </div>
+            </div> */}
             <table className="border-collapse md:table mt-2 table-auto">
               <thead className="bg-primary_gray_1">
                 <tr className="rounded-lg">

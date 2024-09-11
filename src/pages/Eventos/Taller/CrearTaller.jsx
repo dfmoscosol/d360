@@ -39,7 +39,7 @@ const CrearTaller = () => {
 
   const onSubmit = (data) => {
     let areValidDates;
-   
+
     if (sesiones.length == 0) {
       console.log("ERROR: No se ha elegido más de una fecha.");
       setValidDate(false);
@@ -49,6 +49,9 @@ const CrearTaller = () => {
       setValidDate(true);
       areValidDates = true;
     }
+
+    setIsValidCompetencia(selectedCompetencia!="")
+    setIsValidMomento(selectedMomento!="")
 
     let areValidSesiones = false
     if (sesiones.every(element => element.modalidad !== "" && element.ubicacion !== "" && element.duracion !== "" && element.hora_inicio !== "")) {
@@ -70,17 +73,19 @@ const CrearTaller = () => {
       return; // Detener la ejecución si algún campo está vacío
     }
 
-    if (isValidDate && areValidSesiones && areAllPonentesFilled) {
+    if (isValidDate && areValidSesiones && selectedCompetencia!="" && selectedMomento!="" && areAllPonentesFilled) {
       data.inscripcion = false
+      data.competencia = listCompetencias.indexOf(selectedCompetencia)+1
+      data.momento = listMomentos.indexOf(selectedMomento)+1
       data.sesiones = sesiones
       data.ponentes = inputs.map(input => ({
         nombre: input.value,
       }));
       console.log(data)
-      addEvento({
+       addEvento({
         params: data,
         tipo: "microtalleres"
-      });
+      }); 
     }
 
   };
@@ -145,9 +150,26 @@ const CrearTaller = () => {
    * PARA LAS SESIONES DINAMICAS
    */
 
-  const listModalidades = ["Virtual", "Presencial"];
+  const listModalidades = ["Presencial","Virtual"];
+  const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
+  const listMomentos = ["Explorador", "Integrador", "Innovador"];
+
+  const [selectedCompetencia, setSelectedCompetencia] = useState("");
+  const [isValidCompetencia, setIsValidCompetencia] = useState(true);
+  const handleSelectCompetencia = (value) => {
+    setSelectedCompetencia(value);
+    setIsValidCompetencia(true)
+  };
+
+  const [selectedMomento, setSelectedMomento] = useState("");
+  const [isValidMomento, setIsValidMomento] = useState(true);
+  const handleSelectMomento = (value) => {
+    setSelectedMomento(value);
+    setIsValidMomento(true)
+  };
+
   const handleSelect = (value, fecha) => {
-    let numValue = value === "Presencial" ? 1 : value === "Virtual" ? 2 : value === "Híbrida" ? 3 : 0;
+    let numValue = listModalidades.indexOf(value)+1;
     let sesionesActualizadas = [...sesiones];
 
     // Encontrar la sesión correspondiente a la fecha
@@ -292,7 +314,7 @@ const CrearTaller = () => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.message && "Error al aprobar la inscripción",
+        message: error.data.error && "Error al crear el taller",
         type: "error",
       });
     }
@@ -318,7 +340,47 @@ const CrearTaller = () => {
               </span>
             )}
           </div>
+          {/**Descripción */}
+          <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Descripción"} />
+            <textarea
+              type="text"
+              maxLength={500}
+              className="focus:bg-white text-primary_gray_4 first:font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+              placeholder=""
+              {...register("descripcion", { required: true })}
+            />
+            {errors.descripcion && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese una descripción válida.
+              </span>
+            )}
+          </div>
+          {/**Competencia */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Competencia"} />
+            <div className="w-full">
+              <ComboBox items={listCompetencias} onSelect={handleSelectCompetencia} />
+            </div>
+            {!isValidCompetencia && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Seleccione una opción
+              </span>
+            )}
+          </div>
 
+          {/**Momento */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Momentos"} />
+            <div className="w-full">
+              <ComboBox items={listMomentos} onSelect={handleSelectMomento} />
+            </div>
+            {!isValidMomento && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Seleccione una opción
+              </span>
+            )}
+          </div>
           {/**Fecha */}
           <div className="col-span-6 flex flex-col gap-1">
             <FormLabel value={"Fecha"} />

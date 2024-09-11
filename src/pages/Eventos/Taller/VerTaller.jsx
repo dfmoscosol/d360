@@ -29,6 +29,9 @@ const VerTaller = (props) => {
     nombre,
     sesiones,
     ponentes,
+    descripcion,
+    competencia,
+    momento,
     handleRefetch,
   } = props;
 
@@ -54,7 +57,13 @@ const VerTaller = (props) => {
                   routeType={'microtalleres'}
                   containerNombre={nombre}
                   containerFechas={fechas}
+                  competencia={competencia}
+                  momento={momento}
                   containerDataList={[
+                    {
+                      key: "Descripción",
+                      value: descripcion,
+                    },
                     {
                       key: "Cupo",
                       value: cupo,

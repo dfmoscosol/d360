@@ -134,6 +134,10 @@ const EditarJornadaInnovacion = (props) => {
       id_taller: taller.id,
       id: indexTaller + 1,
       value: taller.nombre,
+      descripcion: taller.descripcion,
+      competencia: taller.competencia,
+      momento: taller.momento,
+      cupos_extra: taller.cupos_extra,
       isEmpty: false,
       isEnabled: false,
       enableEdit: false,
@@ -155,6 +159,11 @@ const EditarJornadaInnovacion = (props) => {
     }
     // Agregar el taller procesado a la lista de talleres
     nuevoTaller.originalValue = {
+      value: nuevoTaller.value,
+      descripcion: nuevoTaller.descripcion,
+      competencia: nuevoTaller.competencia,
+      momento: nuevoTaller.momento,
+      cupos_extra: nuevoTaller.cupos_extra,
       sesiones: nuevoTaller.sesiones,
       ponentes: nuevoTaller.ponentes.map(ponente => ({
         nombre: ponente.nombre,
@@ -177,17 +186,63 @@ const EditarJornadaInnovacion = (props) => {
     );
   }
 
+  const handleCuposExtraChange = (id, newValue) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === id) {
+          return { ...input, cupos_extra: newValue, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  }
+
+  const handleDescriptionChange = (id, newValue) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === id) {
+          return { ...input, descripcion: newValue, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  }
+  const handleCompetenciaChange = (id, newValue) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === id) {
+          return { ...input, competencia: newValue, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  }
+  const handleMomentoChange = (id, newValue) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === id) {
+          return { ...input, momento: newValue, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  }
+
   const handleAddInput = () => {
     const newInputs = [...inputs];
     console.log(dates)
     newInputs.push({
       value: "",
+      descripcion: "",
+      competencia: "",
+      momento: "",
+      cupos_extra: "",
       isEmpty: false,
       enableEdit: true,
       isNew: true,
       sesiones: fechas.map(fecha => ({
         fecha_id: fecha.id,  // Asume que las fechas son objetos moment o similar
-        fecha: fecha.fecha,  
+        fecha: fecha.fecha,
         hora_inicio: "",
         duracion: "",
         modalidad: "",
@@ -321,7 +376,12 @@ const EditarJornadaInnovacion = (props) => {
       inputs.map((input) => {
         if (input.index === index) {
           return {
-            ...input, enableEdit: false, value: input.originalValue.nombre,
+            ...input, enableEdit: false,
+            value: input.originalValue.value,
+            descripcion: input.originalValue.descripcion,
+            competencia: input.originalValue.competencia,
+            momento: input.originalValue.momento,
+            cupos_extra: input.originalValue.cupos_extra,
             sesiones: input.originalValue.sesiones,
             ponentes: input.originalValue.ponentes
               .filter(ponente => ponente.isNew !== true)
@@ -340,7 +400,12 @@ const EditarJornadaInnovacion = (props) => {
    * PARA EDITAR EL TALLER
    */
   const handleNewTaller = (index) => {
+    console.log(inputs[index])
     const areAllInputsFilled = (inputs[index].value.trim() !== "")
+      && (inputs[index].descripcion.trim() !== "")
+      && (inputs[index].cupos_extra.trim() !== "")
+      && (inputs[index].competencia.trim() !== "")
+      && (inputs[index].momento.trim() !== "")
       && inputs[index].sesiones.every(sesion =>
         sesion.fecha_id &&
         sesion.hora_inicio.trim() !== "" &&
@@ -355,9 +420,13 @@ const EditarJornadaInnovacion = (props) => {
         id_evento: id,
         body: {
           nombre: input.value,
-          sesiones: input.sesiones.map(({ fecha, ...sesion }) => ({
+          descripcion: input.descripcion,
+          competencia: listCompetencias.indexOf(input.competencia) + 1,
+          momento: listMomentos.indexOf(input.momento) + 1,
+          cupos_extra: Number(input.cupos_extra),
+          sesiones: input.sesiones.map(({ ...sesion }) => ({
             ...sesion,
-            modalidad: sesion.modalidad === "Presencial" ? 1 : sesion.modalidad === "Virtual" ? 2 : sesion.modalidad === "Híbrida" ? 3 : 0
+            modalidad: listModalidades.indexOf(sesion.modalidad) + 1
           })),
           ponentes: input.ponentes.map((ponente) => ({ "nombre": ponente.nombre }))
         },
@@ -385,9 +454,13 @@ const EditarJornadaInnovacion = (props) => {
             id_evento: id,
             body: {
               nombre: input.value,
+              descripcion: input.descripcion,
+              competencia: listCompetencias.indexOf(input.competencia) + 1,
+              momento: listMomentos.indexOf(input.momento) + 1,
+              cupos_extra: Number(input.cupos_extra),
               sesiones: input.sesiones.map(({ fecha, fecha_id, ...sesion }) => ({
                 ...sesion,
-                modalidad: sesion.modalidad === "Presencial" ? 1 : sesion.modalidad === "Virtual" ? 2 : sesion.modalidad === "Híbrida" ? 3 : 0
+                modalidad: listModalidades.indexOf(sesion.modalidad) + 1
               })),
               ponentes: input.ponentes.map((ponente) => ({ nombre: ponente.nombre }))
             },
@@ -519,7 +592,9 @@ const EditarJornadaInnovacion = (props) => {
    * COMBOBOX
    */
 
-  const listModalidades = ["Virtual", "Presencial"];
+  const listModalidades = ["Presencial", "Virtual"];
+  const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
+  const listMomentos = ["Explorador", "Integrador", "Innovador"];
 
 
 
@@ -769,9 +844,50 @@ const EditarJornadaInnovacion = (props) => {
                             : "bg-primary_gray_1"
                             } text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full`}
                           disabled={!input.enableEdit}
-                        //{...register(`taller_${input.id}`, { required: true })}
                         />
                       </div>
+                      <div className="flex flex-col mt-1">
+                        <label className="text-sm font-medium text-primary_text_1">
+                          Descripción del Taller
+                        </label>
+                        <textarea
+                          value={input.descripcion}
+                          onChange={(e) => handleDescriptionChange(input.id, e.target.value)}
+                          maxLength={400}
+                          className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5 h-32 text-justify"
+                          disabled={!input.enableEdit}
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <label className="text-sm font-medium text-primary_text_1">
+                          Cupos Extra
+                        </label>
+                        <input
+                          type="number"
+                          value={input.cupos_extra}
+                          onChange={(e) =>
+                            handleCuposExtraChange(input.id, e.target.value)
+                          }
+                          className={` ${input.enableEdit
+                            ? "bg-white outline-none ring-1 ring-inset ring-primary_gray_5"
+                            : "bg-primary_gray_1"
+                            } text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full`}
+                          disabled={!input.enableEdit}
+                        />
+                      </div>
+                      <div className="flex flex-wrap pt-1 gap-3">
+                        <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                          <label className="text-sm font-medium text-primary_text_1">Competencia</label>
+                          <ComboBox items={listCompetencias} onSelect={(value) => handleCompetenciaChange(input.id, value)}
+                            selected={input.competencia} enableEdit={input.enableEdit} isEnabled={input.enableEdit} />
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                          <label className="text-sm font-medium text-primary_text_1">Momento</label>
+                          <ComboBox items={listMomentos} onSelect={(value) => handleMomentoChange(input.id, value)}
+                            selected={input.momento} enableEdit={input.enableEdit} isEnabled={input.enableEdit} />
+                        </div>
+                      </div>
+
                       {input.sesiones.map((sesion, index) => (<>
                         <div className="flex flex-col items-start justify-start pt-3">
                           <InfoPill

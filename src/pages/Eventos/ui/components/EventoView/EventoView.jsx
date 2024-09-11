@@ -2,6 +2,8 @@ import React from "react";
 
 import { ToggleSwitch, CarouselComponent, InfoPill } from "@components";
 import { Oval } from "react-loader-spinner";
+import {  MdComputer, MdContentPasteSearch, MdHelpOutline, MdOutlineEngineering, MdOutlineGroups, MdSchool } from 'react-icons/md'; // Importa el ícono de react-icons
+
 
 // Header subcomponent
 export const Header = ({ color, title, icon, subTitle, hasIcon, children }) => (
@@ -46,12 +48,21 @@ export const Data = ({ dataList }) => (
   <div className="flex flex-col mt-4">
     {dataList.map((data, index) => (
       <div className="grid grid-cols-4 w-full" key={index}>
-        <span className="col-span-2 md:col-span-1 text-base font-normal text-primary_gray_2">
-          {data.key}
-        </span>
-        <span className="col-span-2 text-base font-medium text-primary_text_1">
-          {data.value}
-        </span>
+        {
+          data.key == "Descripción" ?
+            <span className="col-span-4 mb-4 text-base font-normal text-primary_text_1 text-justify">
+              {data.value}
+            </span>
+            :
+            <>
+              <span className="col-span-1 text-base font-normal text-primary_gray_2">
+                {data.key}
+              </span>
+              <span className="col-span-2 text-base font-medium text-primary_text_1">
+                {data.value}
+              </span>
+            </>
+        }
       </div>
     ))}
   </div>
@@ -136,12 +147,59 @@ export const SectionContainer = ({ extra, children }) => (
   </div>
 );
 
+const CompetenciaIcon = ({ competencia }) => {
+  switch (competencia) {
+    case 'Pedagógica':
+      return <MdSchool className="h-7 w-6 text-gray-700 mr-2" />;
+    case 'Comunicativa':
+      return <MdOutlineGroups className="h-7 w-6 text-gray-700 mr-2" />;
+    case 'De Gestión':
+      return <MdOutlineEngineering className="h-7 w-6 text-gray-700 mr-2" />;
+    case 'Investigativa':
+      return <MdContentPasteSearch className="h-7 w-6 text-gray-700 mr-2" />;
+    case 'Tecnológica':
+      return <MdComputer className="h-7 w-6 text-gray-700 mr-2" />;
+    default:
+      return <MdHelpOutline className="h-7 w-6 text-gray-700 mr-2" />;
+  }
+};
+
+const getBackgroundColor = (momento) => {
+  switch (momento) {
+    case 'Explorador':
+      return 'bg-[#00b4d8]'; // Color para Explorador (#00b4d8)
+    case 'Integrador':
+      return 'bg-[#0077b6]'; // Color para Integrador (#0077b6)
+    case 'Innovador':
+      return 'bg-[#03045e]'; // Color para Innovador (#03045e)
+    default:
+      return 'bg-gray-400'; // Color de fondo por defecto
+  }
+};
+
+export const CompetenciaCard = ({ competencia, momento }) => {
+  return (
+    <div>
+      <div className="flex items-center">
+        <CompetenciaIcon competencia={competencia} />
+        <h2 className="text-md font-medium text-gray-900">Competencia {competencia}</h2>
+      </div>
+      <div className="mt-2">
+        <button className={`${getBackgroundColor(momento)} text-white text-sm px-3 py-1 rounded-full`}>
+          Momento {momento}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export const TalleresPanel = ({ extra, taller }) => (
   <div className={`${extra}`}>
     <div className="grid grid-cols-1 gap-4">
       <div className="col-span-3 md:col-span-1 bg-primary_gray_1 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-all duration-200 justify-between">
-      <TitleTaller value={taller.nombre} />
-      
+        <TitleTaller value={taller.nombre} />
+        <CompetenciaCard competencia={taller.competencia} momento={taller.momento} />
+        <p className="text-justify mt-1 mb-2">{taller.descripcion}</p>
         <div className="col-span-2 border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
           <span className="text-sm font-normal text-primary_gray_2">
             Ponentes
@@ -152,8 +210,8 @@ export const TalleresPanel = ({ extra, taller }) => (
             </span>
           ))}
         </div>
-        <CarouselComponent  taller={taller} />
-        
+        <CarouselComponent taller={taller} />
+
       </div>
     </div>
   </div>
@@ -217,9 +275,9 @@ export const PonentesPanel = ({ extra, ponente }) => (
         <span className="text-sm font-medium text-primary_gray_4">
           {ponente.titulo_charla}
         </span>
-          <span className="text-base font-medium text-primary_text_1">
-            {ponente.nombre}
-          </span>
+        <span className="text-base font-medium text-primary_text_1">
+          {ponente.nombre}
+        </span>
       </div>
     </div>
   </div>
@@ -229,9 +287,9 @@ export const PonentesPanelMicrotalleres = ({ extra, ponente }) => (
   <div className={`${extra}`}>
     <div className="grid grid-cols-1 gap-4">
       <div className="col-span-3 md:col-span-1 bg-primary_gray_1 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-all duration-200 justify-between">
-          <span className="text-base font-medium text-primary_text_1">
-            {ponente}
-          </span>
+        <span className="text-base font-medium text-primary_text_1">
+          {ponente}
+        </span>
       </div>
     </div>
   </div>

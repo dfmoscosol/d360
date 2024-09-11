@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Modal, Button } from "@components";
 import { useActualizarInscripcionMutation, useEliminarInscripcionMutation, useGetAllObservadoresQuery } from "@redux/services/evento/eventoApi";
@@ -31,6 +30,10 @@ const AprobationSection = (props) => {
   const [errorObservador, setErrorObservador] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEliminarModalOpen, setEliminarModalOpen] = useState(false);
+
+  useEffect(() => {
+    setObservadoresSelected([]);
+  }, [docentesPendientes]); // Asegurarse de limpiar el estado al cambiar docentesPendientes
 
   const handleAprobarInscripcion = (id, indexObservador) => {
     setIdDocenteAprobacion(id);
@@ -83,11 +86,11 @@ const AprobationSection = (props) => {
       handleRefetch();
     } else if (isErrorAprobar && errorAprobar) {
       triggerNotification(dispatch, {
-        message: errorAprobar.message || "Error al aprobar la inscripción",
+        message: errorAprobar.data.error || "Error al aprobar la inscripción",
         type: "error",
       });
     }
-  }, [isSuccessAprobar, isErrorAprobar, errorAprobar, dispatch]);
+  }, [isSuccessAprobar, isErrorAprobar, errorAprobar, dispatch, handleRefetch]);
 
   useEffect(() => {
     if (isSuccessEliminar) {
@@ -98,11 +101,11 @@ const AprobationSection = (props) => {
       handleRefetch();
     } else if (isErrorEliminar && errorEliminar) {
       triggerNotification(dispatch, {
-        message: errorEliminar.message || "Error al eliminar la inscripción",
+        message: errorEliminar.data.error || "Error al eliminar la inscripción",
         type: "error",
       });
     }
-  }, [isSuccessEliminar, isErrorEliminar, errorEliminar, dispatch]);
+  }, [isSuccessEliminar, isErrorEliminar, errorEliminar, dispatch, handleRefetch]);
 
   return (
     <EventoView>

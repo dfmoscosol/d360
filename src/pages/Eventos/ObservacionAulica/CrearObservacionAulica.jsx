@@ -156,7 +156,7 @@ const CrearObservacionAulica = () => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.message || "Error al aprobar la inscripción",
+        message: error.data.error || "Error al crear la observación",
         type: "error",
       });
     }

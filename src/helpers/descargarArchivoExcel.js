@@ -5,8 +5,8 @@ const descargarArchivoExcel = async (token, idEvento, idTaller, dispatch) => {
   try {
     // Determina la URL base según si `idTaller` está presente o no
     const BASE_URL = idTaller
-      ? `http://localhost:5000/eventos/${idEvento}/inscritos/${idTaller}`
-      : `http://localhost:5000/eventos/${idEvento}/inscritos`;
+      ? `https://d360api.ucuenca.edu.ec/eventos/${idEvento}/inscritos/${idTaller}`
+      : `https://d360api.ucuenca.edu.ec/eventos/${idEvento}/inscritos`;
 
     const response = await axios.get(BASE_URL, {
       responseType: "blob", // Indica que esperas una respuesta tipo 'blob'
