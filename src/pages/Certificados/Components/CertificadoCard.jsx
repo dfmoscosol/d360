@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-
-import { InfoPill, Pill, Button, Modal } from "@components";
+import { InfoPill, Button, Modal } from "@components";
 import { Link } from "react-router-dom";
-import { MdDateRange, MdFileDownload } from "react-icons/md";
-import axios from "axios";
+import { MdClass, MdDateRange, MdFileDownload, MdAccessTime, MdSchool, MdMoreTime } from "react-icons/md";
 import { useEditCertificadoMutation } from "@redux/services/certificado/certificadoApi";
 import { useDispatch } from "react-redux";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
@@ -11,13 +9,13 @@ import descargarArchivo from "@helpers/descargarArchivoService";
 import { useSelector } from "react-redux";
 
 const CertificadoCard = ({
+  horas_certificado,
+  horas_acredita,
+  institucion,
   nombreCurso,
-  urlImagen,
-  urlCurso,
   fechaCreacion,
   nombres,
   correo,
-  urlLogo,
   idCertificado,
   isApproved,
   handleRefetch,
@@ -43,7 +41,7 @@ const CertificadoCard = ({
     editCertificado({
       id: idCertificado,
       body: {
-        isapproved: true,
+        aceptada: true,
       },
     });
     setModalOpenEdit(false);
@@ -78,12 +76,12 @@ const CertificadoCard = ({
     useState(false);
 
   const handleDenegarAprobar = () => {
-    /*editCertificado({
+    editCertificado({
       id: idCertificado,
       body: {
-        isapproved: true,
+        aceptada: false,
       },
-    });*/
+    });
     setModalNoApprovedOpenEdit(false);
   };
 
@@ -132,10 +130,10 @@ const CertificadoCard = ({
 
       <Modal
         isOpen={isModalNoApprovedOpenEdit}
-        message="¿Desea eliminar el Certificado?"
+        message="¿Desea denegar el Certificado?"
         onClose={() => setModalNoApprovedOpenEdit(false)}
-        type={"error"}
-        title={"Eliminar Certificado"}
+        type={"deny"}
+        title={"Denegar Certificado"}
         showCancel={!isSuccessEdit}
       >
         {isSuccessEdit ? (
@@ -150,10 +148,10 @@ const CertificadoCard = ({
           </Link>
         ) : (
           <Button
-            value="Eliminar"
+            value="Denegar"
             type="error"
             size="medium"
-            icon="delete"
+            icon="deny"
             isPrimary={true}
             onClick={handleDenegarAprobar}
           //isLoading={isUpdatingEdit}
@@ -173,61 +171,103 @@ const CertificadoCard = ({
             </span>
           </div>
         </div>
-        <div className="mt-4 border border-primary_gray_5 p-4 rounded-lg flex flex-col md:flex-row gap-4 relative">
-          <div className="w-full md:w-64 relative flex items-center">
-            <img src={urlImagen} alt="Imagen del curso" />
-            <div className="absolute left-1 bottom-0 bg-white border rounded-xl py-1 px-2 w-20">
-              <img src={urlLogo} alt="Imagen del curso" />
-            </div>
-          </div>
-          <div className="flex flex-col items-start justify-between gap-4 ">
-            <Link to={urlCurso} target="_blank" rel="noopener noreferrer">
-              <span className="text-lg font-medium text-primary_text_1">
-                {nombreCurso}
-              </span>
-            </Link>
-            {isApproved && (
-              <InfoPill
-                type={"info"}
-                value={"Verificado"}
-                size={"small"}
-                icon={"verified"}
-                isRadial={false}
-              />
-            )}
 
-            <div className="flex  mt-2 gap-2 ">
-              <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center">
+        <div className="mt-4 border border-primary_gray_5 p-4 rounded-lg flex flex-col gap-4 relative">
+          <div className="flex flex-col items-start gap-1">
+            {/* First Row: Curso occupies full width */}
+            <div className="flex mt-1 gap-2 w-full">
+              <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center w-full">
+                <div className="p-2 bg-white rounded-lg text-primary_gray_4">
+                  <MdClass size={20} />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-primary_gray_2 text-xs">Curso</span>
+                  <span className="text-primary_text_1 font-medium text-sm">
+                    {nombreCurso}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Second Row: Institución occupies full width */}
+            <div className="flex mt-1 gap-2 w-full">
+              <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center w-full">
+                <div className="p-2 bg-white rounded-lg text-primary_gray_4">
+                  <MdSchool size={20} />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-primary_gray_2 text-xs">Ofertado por</span>
+                  <span className="text-primary_text_1 font-medium text-sm">
+                    {institucion}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Third Row: Horas del certificado and Horas que acredita */}
+            <div className="flex mt-1 gap-2 w-full">
+              <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center w-1/2">
+                <div className="p-2 bg-white rounded-lg text-primary_gray_4">
+                  <MdAccessTime size={20} />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-primary_gray_2 text-xs">Horas del certificado</span>
+                  <span className="text-primary_text_1 font-medium text-sm">
+                    {horas_certificado}
+                  </span>
+                </div>
+              </div>
+              <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center w-1/2">
+                <div className="p-2 bg-white rounded-lg text-primary_gray_4">
+                  <MdMoreTime size={20} />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-primary_gray_2 text-xs">Horas que acredita</span>
+                  <span className="text-primary_text_1 font-medium text-sm">
+                    {horas_acredita}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Fourth Row: Fecha and Download button share half width each */}
+            <div className="flex mt-1 gap-2 w-full">
+              <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center w-1/2">
                 <div className="p-2 bg-white rounded-lg text-primary_gray_4">
                   <MdDateRange size={20} />
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="text-primary_gray_2 text-xs">Creado el</span>
+                  <span className="text-primary_gray_2 text-xs">Subido el</span>
                   <span className="text-primary_text_1 font-medium text-sm">
                     {fechaCreacion}
                   </span>
                 </div>
               </div>
 
-              <button onClick={descargarCertificado}>
-                <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center">
-                  <div className="p-2 bg-white rounded-lg text-primary_gray_3">
-                    <MdFileDownload size={20} />
+              <div className="w-1/2">
+                <button onClick={descargarCertificado} className="w-full">
+                  <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center w-full">
+                    <div className="p-2 bg-white rounded-lg text-primary_gray_3">
+                      <MdFileDownload size={20} />
+                    </div>
+                    <div className="flex flex-col items-start">
+                      <span className="text-primary_gray_3 text-xs">Certificado</span>
+                      <span className="text-primary_color_1 font-medium text-sm hover:underline">
+                        Descargar
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col items-start">
-                    <span className="text-primary_gray_3 text-xs">
-                      Certificado
-                    </span>
-                    <span className="text-primary_color_1 font-medium text-sm hover:underline">
-                      Descargar
-                    </span>
-                  </div>
-                </div>
-              </button>
+                </button>
+              </div>
             </div>
+          </div>
+        </div>
 
-            {!isApproved && (
-              <div className="flex mt-2 gap-2">
+
+        <div className="flex mt-4 gap-2 ml-auto">
+          {isApproved === null ?
+            (
+              <>
                 <Button
                   type={"ucuenca"}
                   value={"Aprobar"}
@@ -248,11 +288,34 @@ const CertificadoCard = ({
                     setModalNoApprovedOpenEdit(true);
                   }}
                 />
-              </div>
+              </>
+
+            ) : (
+              <>
+                {isApproved ? (
+                  <InfoPill
+                    type={"info"}
+                    value={"Aprobado"}
+                    size={"small"}
+                    icon={"verified"}
+                    isRadial={false}
+                  />
+                ) : (
+                  <InfoPill
+                    type={"error"}
+                    value={"Rechazado"}
+                    size={"small"}
+                    icon={"close"}
+                    isRadial={false}
+                  />
+                )}
+              </>
             )}
-          </div>
         </div>
+
+
       </div>
+
     </>
   );
 };

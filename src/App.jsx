@@ -109,7 +109,7 @@ function App() {
               element: <Keywords />,
             },
             {
-              path: "pentagono/certificados",
+              path: "/certificados",
               element: <Certificados />,
             },
 

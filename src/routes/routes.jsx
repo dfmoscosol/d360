@@ -37,6 +37,12 @@ const routes = [
         name: "Acreditacion",
         icon: <PiCertificate size={20} />,
       },
+      {
+        path: PathConstants.CERTIFICADOS,
+        //element: <Eventos />,
+        name: "Certificados",
+        icon: <MdOutlineTextSnippet size={20} />,
+      },
     ],
   },
   {
@@ -47,13 +53,7 @@ const routes = [
         //element: <Eventos />,
         name: "Keywords",
         icon: <MdFormatListBulleted size={20} />,
-      },
-      {
-        path: PathConstants.CERTIFICADOS,
-        //element: <Eventos />,
-        name: "Certificados",
-        icon: <MdOutlineTextSnippet size={20} />,
-      },
+      }
     ],
   },
   //{ path: PathConstants.PAGE1, element: <Page1 />, name: "Page1", icon: <MdDashboard size={20} />, },

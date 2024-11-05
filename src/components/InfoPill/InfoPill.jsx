@@ -4,8 +4,6 @@ import {
   MdCheckCircle,
   MdClose,
   MdEditNote,
-  MdDoDisturbOn,
-  MdBackHand,
   MdEmojiPeople,
   MdDateRange,
   MdKeyboardArrowUp,
@@ -14,9 +12,11 @@ import {
   MdOutlinePersonOutline,
   MdOutlineVerified,
   MdInfo,
+  MdSettings,
 } from "react-icons/md";
 
 import { GiTeamIdea } from "react-icons/gi";
+import { TiCancel } from "react-icons/ti";
 import { AiFillLike, AiFillDislike } from "react-icons/ai";
 import { GrWorkshop } from "react-icons/gr";
 import { FaChalkboardTeacher } from "react-icons/fa";
@@ -85,6 +85,10 @@ const InfoPill = ({ type, value, size, icon, isRadial, isSquare }) => {
     iconPill = <FaChalkboardTeacher size={sizeIcon} />;
   } else if (icon === "observacion") {
     iconPill = <SiGoogleclassroom size={sizeIcon} />;
+  }else if (icon === "configuracion") {
+    iconPill = <MdSettings size={sizeIcon} />;
+  }else if (icon === "deny") {
+    iconPill = <TiCancel  size={sizeIcon} />;
   }
 
   return (

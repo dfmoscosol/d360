@@ -26,6 +26,22 @@ const Modal = ({
         isRadial={true}
       />
     );
+  }else if (type == "deny") {
+    icon = (
+      <InfoPill
+        type={"error"}
+        size={"small"}
+        icon={"deny"}
+        isRadial={true}
+      />
+    );
+  } else {
+    icon = (<InfoPill
+      type={"success"}
+      size={"small"}
+      icon={"configuracion"}
+      isRadial={true}
+    />)
   }
 
   const backdropVariants = {
@@ -77,21 +93,30 @@ const Modal = ({
               <span className="text-primary_gray_4 mt-4 text-base tracking-tight">
                 {message}
               </span>
-              <div className="mt-6 flex justify-end space-x-2">
-                {children}
-                {showCancel && (
-                  <Button
-                    value="Cancelar"
-                    type="gray"
-                    size="medium"
-                    icon="close"
-                    onClick={onClose}
-                    isPrimary={false}
-                    //isLoading={isUpdatingEdit}
-                    //isRadial={true}
-                  />
-                )}
-              </div>
+              {type === 'form' ?
+                (
+                  <div className="mt-6 flex justify-center space-x-2">
+                    {children}
+                  </div>
+                ) : (
+                  <div className="mt-6 flex justify-end space-x-2">
+                    {children}
+                    {showCancel && (
+                      <Button
+                        value="Cancelar"
+                        type="gray"
+                        size="medium"
+                        icon="close"
+                        onClick={onClose}
+                        isPrimary={false}
+                      //isLoading={isUpdatingEdit}
+                      //isRadial={true}
+                      />
+                    )}
+                  </div>
+                )
+              }
+             
             </div>
           </motion.div>
         </motion.div>

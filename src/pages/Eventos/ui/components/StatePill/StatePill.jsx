@@ -25,14 +25,14 @@ const StatePill = ({ hasState, stateValue, icon }) => {
       {/** 
       {iconPill}*/}
 
-      <span class="relative flex h-3 w-3">
+      <span className="relative flex h-3 w-3">
         <span
-          class={` absolute inline-flex h-full w-full rounded-full ${
+          className={` absolute inline-flex h-full w-full rounded-full ${
             hasState ? "bg-green-500 animate-ping" : "bg-amber-200"
           } opacity-75`}
         ></span>
         <span
-          class={`relative inline-flex rounded-full h-3 w-3 ${
+          className={`relative inline-flex rounded-full h-3 w-3 ${
             hasState ? "bg-green-400" : "bg-amber-200"
           }`}
         ></span>

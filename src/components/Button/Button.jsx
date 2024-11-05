@@ -20,10 +20,11 @@ import {
   MdOutlineCheckBox,
   MdLogin,
   MdLogout,
-  MdFileUpload 
+  MdFileUpload, 
+  MdSettings
 
 } from "react-icons/md";
-
+import { TiCancel } from "react-icons/ti";
 import { Oval } from "react-loader-spinner";
 
 const Button = ({
@@ -38,6 +39,7 @@ const Button = ({
   isPrimary,
   extra,
   buttonType,
+  height
 }) => {
   let colors = "";
   let sizeIcon = "";
@@ -142,6 +144,10 @@ const Button = ({
     iconPill = <MdFileUpload size={sizeIcon} />;
   }else if (icon === "pdf") {
     iconPill = <MdPictureAsPdf  size={sizeIcon} />;
+  }else if (icon === "settings") {
+    iconPill = <MdSettings  size={sizeIcon} />;
+  }else if (icon === "deny") {
+    iconPill = <TiCancel  size={sizeIcon} />;
   }
 
   return (
@@ -150,9 +156,7 @@ const Button = ({
       onClick={onClick}
       className={`flex gap-1 items-center justify-center hover:shadow-lg transition-all duration-300 font-medium ${
         isRadial ? "rounded-full" : "rounded-lg"
-      } ${colors} ${sizeText} ${
-        isLoading ? "animate-pulse cursor-not-allowed" : "animate-none"
-      } ${extra} ${
+      } ${colors} ${sizeText} ${height} ${extra} ${
         isDisabled
           ? "cursor-not-allowed bg-gray-100 hover:bg-gray-100 hover:shadow-none active:bg-white"
           : "animate-none"

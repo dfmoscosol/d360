@@ -160,21 +160,6 @@ const Acreditacion = () => {
     setData(newData);
   };
 
-  const handleHoursChange = (index, value) => {
-    const newData = data.map((item, i) => {
-      if (i === index) {
-        return { ...item, horas: value };
-      }
-      return item;
-    });
-    setData(newData);
-  };
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to first page on search
-  };
-
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -211,19 +196,6 @@ const Acreditacion = () => {
       return item;
     });
     setData(newData);
-  };
-
-  const handleSetHours = (index) => {
-    const item = data[index];
-    console.log(item)
-    setModalMessage("¿Desea actualizar las horas acreditadas?");
-    setModalAction(() => () => confirmSetHours(item));
-    setModalOpen(true);
-  };
-
-  const confirmSetHours = (item) => {
-    editEvento({ id: item.evento_id, body: { horas: Number(item.horas) }, tipo: "certificados" })
-    setModalOpen(false);
   };
 
   const handleFileUpload = (index) => {
@@ -291,7 +263,7 @@ const Acreditacion = () => {
       item.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const itemsPerPage = 3;
+  const itemsPerPage = 5;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedData = filteredData.slice(startIndex, endIndex);
@@ -342,12 +314,6 @@ const Acreditacion = () => {
     tipo: event.tipo // Add event type to option
   }));
 
-  events.unshift({
-    value: 0,
-    label: 'Certificados',
-    tipo: 5
-  });
-
   const workshops = selectedEvent && eventos.find(event => event.id === selectedEvent.value)?.talleres?.map(taller => ({
     value: taller.id,
     label: taller.nombre
@@ -375,7 +341,7 @@ const Acreditacion = () => {
               styles={customStyles}
             />
           )}
-          {selectedEvent && ((selectedEvent.tipo !== 4 && selectedEvent.tipo !== 1 && selectedEvent.tipo !== 5) || (selectedEvent.tipo === 1 && selectedWorkshop !== null)) &&
+          {selectedEvent && ((selectedEvent.tipo !== 4 && selectedEvent.tipo !== 1) || (selectedEvent.tipo === 1 && selectedWorkshop !== null)) &&
             <div className="mt-4 flex items-center justify-end space-x-4">
               <label className="block">
                 <input
@@ -406,18 +372,6 @@ const Acreditacion = () => {
         </div>}
         {data.length !== 0 && <SectionContainer>
           <div className="w-full flex flex-col">
-            {/* <div className="w-full flex items-center justify-end mb-4">
-              <div className="bg-primary_gray_1 flex gap-1 py-2 px-4 rounded-2xl items-center">
-                <MdOutlineSearch size={23} className="text-primary_gray_4" />
-                <input
-                  type="text"
-                  placeholder="Buscar..."
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  className="text-sm bg-primary_gray_1 border-none outline-none"
-                />
-              </div>
-            </div> */}
             <table className="border-collapse md:table mt-2 table-auto">
               <thead className="bg-primary_gray_1">
                 <tr className="rounded-lg">
@@ -430,20 +384,11 @@ const Acreditacion = () => {
                     </>
                   ) : (
                     <>
-                      {selectedEvent && selectedEvent.tipo === 5 ? (
-                        <>
-                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Archivo</th>
-                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Horas</th>
-                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Acción</th>
-                        </>
-                      ) : (
-                        <>
-                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Asistió</th>
-                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Aprobó</th>
-                          <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Comentarios</th>
-                        </>
-                      )}
+                      <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Asistió</th>
+                      <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Aprobó</th>
+                      <th className="py-2 font-medium text-sm text-primary_text_1 p-2 text-center">Comentarios</th>
                     </>
+
                   )}
                 </tr>
               </thead>
@@ -535,79 +480,39 @@ const Acreditacion = () => {
                       </>
                     ) : (
                       <>
-                        {
-                          selectedEvent && selectedEvent.tipo === 5 ? (
-                            <>
-                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center flex justify-center items-center">
-                                <Button
-                                  type="gray"
-                                  size="small"
-                                  icon="pdf"
-                                  value="Descargar"
-                                  onClick={() => handleDownload(item.id)}
-                                  isPrimary={true}
-                                />
-                              </td>
-                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
-                                <input
-                                  type="number"
-                                  value={item.horas}
-                                  onChange={(e) => handleHoursChange(startIndex + index, e.target.value)}
-                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-20 bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                                  aria-label={`Hours for ${item.name}`}
-                                />
-                              </td>
-                              { }
-                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center flex justify-center items-center">
-                                <Button
-                                  type="ucuenca"
-                                  size="small"
-                                  value="Guardar"
-                                  icon="save"
-                                  onClick={() => handleSetHours(startIndex + index)}
-                                  isPrimary={true}
-                                  className="py-2 px-4 rounded-md flex items-center space-x-2"
-                                />
-                              </td>
-                            </>
-                          ) : (
-                            <>
-                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
-                                <Switch
-                                  checked={item.attended}
-                                  onChange={() => handleToggle(startIndex + index, "attended")}
-                                  className={`${item.attended ? "bg-green-500" : "bg-gray-200"} relative inline-flex items-center h-6 rounded-full w-11`}
-                                  aria-label={`Toggle attended for ${item.name}`}
-                                >
-                                  <span
-                                    className={`${item.attended ? "translate-x-6" : "translate-x-1"} inline-block w-4 h-4 transform bg-white rounded-full`}
-                                  />
-                                </Switch>
-                              </td>
-                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
-                                <Switch
-                                  checked={item.passed}
-                                  onChange={() => handleToggle(startIndex + index, "passed")}
-                                  className={`${item.passed ? "bg-green-500" : "bg-gray-200"} relative inline-flex items-center h-6 rounded-full w-11`}
-                                  aria-label={`Toggle passed for ${item.name}`}
-                                >
-                                  <span
-                                    className={`${item.passed ? "translate-x-6" : "translate-x-1"} inline-block w-4 h-4 transform bg-white rounded-full`}
-                                  />
-                                </Switch>
-                              </td>
-                              <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
-                                <input
-                                  type="text"
-                                  value={item.comments}
-                                  onChange={(e) => handleCommentChange(startIndex + index, e.target.value)}
-                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                                  aria-label={`Comments for ${item.name}`}
-                                />
-                              </td>
-                            </>
-                          )
-                        }
+                        <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
+                          <Switch
+                            checked={item.attended}
+                            onChange={() => handleToggle(startIndex + index, "attended")}
+                            className={`${item.attended ? "bg-green-500" : "bg-gray-200"} relative inline-flex items-center h-6 rounded-full w-11`}
+                            aria-label={`Toggle attended for ${item.name}`}
+                          >
+                            <span
+                              className={`${item.attended ? "translate-x-6" : "translate-x-1"} inline-block w-4 h-4 transform bg-white rounded-full`}
+                            />
+                          </Switch>
+                        </td>
+                        <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
+                          <Switch
+                            checked={item.passed}
+                            onChange={() => handleToggle(startIndex + index, "passed")}
+                            className={`${item.passed ? "bg-green-500" : "bg-gray-200"} relative inline-flex items-center h-6 rounded-full w-11`}
+                            aria-label={`Toggle passed for ${item.name}`}
+                          >
+                            <span
+                              className={`${item.passed ? "translate-x-6" : "translate-x-1"} inline-block w-4 h-4 transform bg-white rounded-full`}
+                            />
+                          </Switch>
+                        </td>
+                        <td className="py-3 text-sm font-normal text-primary_gray_4 px-2 text-center">
+                          <input
+                            type="text"
+                            value={item.comments}
+                            onChange={(e) => handleCommentChange(startIndex + index, e.target.value)}
+                            className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                            aria-label={`Comments for ${item.name}`}
+                          />
+                        </td>
                       </>
                     )}
                   </tr>
@@ -638,7 +543,7 @@ const Acreditacion = () => {
               />
             </div>
           </div>
-          {selectedEvent && selectedEvent.tipo !== 4 && selectedEvent.tipo !== 5 && <div className="flex items-center justify-center col-span-12 gap-4 mt-4">
+          {selectedEvent && selectedEvent.tipo !== 4 && <div className="flex items-center justify-center col-span-12 gap-4 mt-4">
             <Button
               type="ucuenca"
               icon={"saveEdit"}

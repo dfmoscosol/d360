@@ -8,7 +8,7 @@ export const PathConstants = {
 
   PENTAGONO: "pentagono",
   KEYWORDS: "pentagono/keywords",
-  CERTIFICADOS: "pentagono/certificados",
+  CERTIFICADOS: "certificados",
 };
 
 export const PathNames = {

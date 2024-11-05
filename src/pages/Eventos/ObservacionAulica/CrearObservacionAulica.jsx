@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-multi-date-picker";
-import DatePanel from "react-multi-date-picker/plugins/date_panel";
-import ComboBox from "../ui/components/ComboBox/ComboBox";
-import { MdSave } from "react-icons/md";
-import { Oval } from "react-loader-spinner";
-import { Notification } from "@components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useAddEventoMutation } from "@redux/services/evento/eventoApi";
@@ -55,11 +50,6 @@ const CrearObservacionAulica = () => {
       dates.forEach((date) => {
         validDatesList.push(date.format("DD-MM-YYYY"));
       });
-    }
-
-    let isModalidadPresencial = false;
-    if (selectedModalidad === "Presencial") {
-      isModalidadPresencial = true;
     }
 
     if (areValidDates) {
@@ -124,22 +114,7 @@ const CrearObservacionAulica = () => {
     );
   }
 
-  /**
-   * COMBOBOX
-   */
-
-  const listModalidades = ["Virtual", "Presencial"];
-  const [selectedModalidad, setSelectedModalidad] = useState("");
-  const handleSelect = (value) => {
-    setSelectedModalidad(value);
-    /*if (value === "") {
-      setValidModalidad(false);
-      console.log("no válido");
-    } else {
-      setValidModalidad(true);
-      console.log("válido");
-    }*/
-  };
+  
 
   /**
    * PARA LA NOTIFICACION

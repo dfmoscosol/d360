@@ -1,8 +1,6 @@
 import React from "react";
 import { MdPerson, MdPhone, MdOutlinePersonSearch, MdSchool, MdClass, MdMenuBook, MdGroup, MdCheckCircle, MdLocationOn, MdAccessTime, MdComment, MdDateRange, MdAccessAlarms } from "react-icons/md";
 import { IoMdPodium } from "react-icons/io";
-import FormLabel from "../FormLabel/FormLabel";
-import ComboBox from "../ComboBox/ComboBox";
 
 const PillPorInscribir = ({ index, title, subTitle, children, data, observadores }) => {
   return (
@@ -96,15 +94,17 @@ const PillPorInscribir = ({ index, title, subTitle, children, data, observadores
               </div>
               <span className="ms-7 text-sm text-primary_gray_3">{data.duracion_clase} minutos</span>
             </div>
-            <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <MdComment size={20} className="text-primary_gray_4" />
-              <span className="text-sm font-medium text-primary_text_1">Comentarios:</span>
-            </div>
-            <span className="ms-7 text-sm text-primary_gray_3">{data.comentarios}</span>
+            <div className="flex flex-col md:col-span-2">
+              <div className="flex items-center gap-2">
+                <MdComment size={20} className="text-primary_gray_4" />
+                <span className="text-sm font-medium text-primary_text_1">Comentarios:</span>
+              </div>
+              <span className="ms-7 text-sm text-primary_gray_3 break-words">
+                {data.comentarios}
+              </span>
             </div>
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col mb-3">
             <div className="flex items-center gap-2">
               <MdDateRange size={20} className="text-primary_gray_4" />
               <span className="text-sm font-medium text-primary_text_1">Horarios Posibles:</span>
@@ -120,7 +120,7 @@ const PillPorInscribir = ({ index, title, subTitle, children, data, observadores
               ))}
             </div>
           </div>
-         
+
         </>
         }
         {children}
