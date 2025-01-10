@@ -5,9 +5,8 @@ export const PathConstants = {
   ACREDITACION: "acreditacion",
   PAGE1: "page1",
   PAGE2: "page2",
-
-  PENTAGONO: "pentagono",
-  KEYWORDS: "pentagono/keywords",
+  REPORTE_HORAS: "reportes/horas",
+  REPORTE_EVENTOS: "reportes/capacitaciones",
   CERTIFICADOS: "certificados",
 };
 
@@ -16,7 +15,7 @@ export const PathNames = {
   EVENTOS: "Eventos",
   VEREVENTO: "Ver Evento",
   ACREDITACION: "Acreditación",
-  PAGE1: "Página 1",
+  REPORTE_HORAS: "Horas de Formación",
   PAGE2: "Página 2",
 };
 
@@ -38,4 +37,6 @@ export const PathNamesTranslations = {
   pentagono: "Pentágono",
   keywords: "Palabras Clave",
   certificados: "Certificados",
+  horas: "Horas de Formación",
+  capacitaciones: "Reporte de Eventos"
 };

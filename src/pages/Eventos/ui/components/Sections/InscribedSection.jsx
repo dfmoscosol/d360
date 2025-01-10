@@ -82,10 +82,10 @@ const InscribedSection = (props) => {
     <EventoView>
       <Modal
         isOpen={isModalOpen}
-        message="¿Desea pasar esta inscripción a pendientes?"
+        message="¿Desea eliminar permanentemente esta inscripción?"
         onClose={() => setModalOpen(false)}
         type={"error"}
-        title={"Revertir aprobación de la inscripción"}
+        title={"Anular inscripción"}
         showCancel={!isSuccessEliminar}
       >
         {isSuccessEliminar ? (

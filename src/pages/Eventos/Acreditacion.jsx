@@ -3,7 +3,6 @@ import Select from "react-select";
 import { Switch } from "@headlessui/react";
 import EventoView, { SectionContainer, customStyles } from "../Eventos/ui/components/EventoView/EventoView";
 import { ContainerPage, Button, Loader, FetchError, Modal } from "@components";
-import { MdOutlineSearch } from "react-icons/md";
 import {
   useGetAllEventosQuery,
   useLazyGetAcreditacionesQuery,

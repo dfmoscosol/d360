@@ -7,16 +7,17 @@ import {
   MdOutlineEvent,
   MdOutlineTextSnippet,
   MdFormatListBulleted,
+  MdEventNote,
 } from "react-icons/md";
+
+import { BsClockHistory } from "react-icons/bs";
+
 import { PiCertificate } from "react-icons/pi";
 
-const Home = React.lazy(() => import("@pages"));
-const About = React.lazy(() => import("@pages"));
-const Page1 = React.lazy(() => import("@pages"));
-const Page2 = React.lazy(() => import("@pages"));
 const Eventos = React.lazy(() => import("@pages"));
 const Acreditacion = React.lazy(() => import("@pages"));
-const Keywords = React.lazy(() => import("@pages"));
+const Certificados = React.lazy(() => import("@pages"));
+const HorasFormacionReport = React.lazy(() => import("@pages"));
 
 // SOLO PARA EL SIDEBAR
 const routes = [
@@ -39,20 +40,26 @@ const routes = [
       },
       {
         path: PathConstants.CERTIFICADOS,
-        //element: <Eventos />,
+        element: <Certificados />,
         name: "Certificados",
         icon: <MdOutlineTextSnippet size={20} />,
       },
     ],
   },
   {
-    title: "PENTÁGONO",
+    title: "REPORTES",
     routes: [
       {
-        path: PathConstants.KEYWORDS,
+        path: PathConstants.REPORTE_HORAS,
+        element: <HorasFormacionReport />,
+        name: "Horas de Formación",
+        icon: <BsClockHistory size={20} />,
+      },
+      {
+        path: PathConstants.REPORTE_EVENTOS,
         //element: <Eventos />,
-        name: "Keywords",
-        icon: <MdFormatListBulleted size={20} />,
+        name: "Eventos",
+        icon: <MdEventNote  size={20} />,
       }
     ],
   },

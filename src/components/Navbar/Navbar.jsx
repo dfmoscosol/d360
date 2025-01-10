@@ -12,7 +12,7 @@ const Navbar = () => {
   const isOpen = useSelector((state) => state.sidebarState.isOpen);
 
   return (
-    <div className="flex w-full items-center pb-8 pt-12">
+    <div className="flex w-full items-center pb-5 pt-12">
       <button
         className="flex items-center justify-center text-primary_color_1 mr-2 xs:flex md:hidden"
         onClick={() => {

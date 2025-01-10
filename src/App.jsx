@@ -31,6 +31,7 @@ import {
 } from "@pages";
 
 import { PathConstants } from "@routes/pathConstants";
+import ReportesDocentes from "./pages/Reportes/HorasFormacionReport";
 
 function App() {
   // Para verificar si hay token en el local storage
@@ -110,6 +111,14 @@ function App() {
             },
             {
               path: "/certificados",
+              element: <Certificados />,
+            },
+            {
+              path: "/reportes/horas",
+              element: <ReportesDocentes />,
+            },
+            {
+              path: "/reportes/capacitaciones",
               element: <Certificados />,
             },
 

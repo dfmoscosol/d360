@@ -2,7 +2,7 @@ import React from "react";
 
 import { ToggleSwitch, CarouselComponent, InfoPill } from "@components";
 import { Oval } from "react-loader-spinner";
-import {  MdComputer, MdContentPasteSearch, MdHelpOutline, MdOutlineEngineering, MdOutlineGroups, MdSchool } from 'react-icons/md'; // Importa el ícono de react-icons
+import { MdComputer, MdContentPasteSearch, MdHelpOutline, MdOutlineEngineering, MdOutlineGroups, MdSchool } from 'react-icons/md'; // Importa el ícono de react-icons
 
 
 // Header subcomponent
@@ -240,10 +240,10 @@ export const SesionesPanel = ({ extra, sesion }) => (
           </div>
           <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
             <span className="text-sm font-normal text-primary_gray_2">
-              Ubicación
+              {sesion.modalidad == 'Virtual' ? "Enlace" : "Ubicación"}
             </span>
             <span className="text-base font-medium text-primary_text_1">
-              {sesion.ubicacion}
+              {sesion.modalidad == 'Virtual' ? <a href={sesion.ubicacion} style={{ color: '#002856', textDecoration: 'underline' }} target='_blank'>Enlace</a> : sesion.ubicacion}
             </span>
           </div>
           <div className="border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">

@@ -138,10 +138,10 @@ const AprobationSection = (props) => {
       </Modal>
       <Modal
         isOpen={isEliminarModalOpen}
-        message="¿Desea eliminar esta inscripción?"
+        message="¿Desea eliminar permanentemente esta inscripción?"
         onClose={() => setEliminarModalOpen(false)}
         type={"error"}
-        title={"Eliminar inscripción"}
+        title={"Anular inscripción"}
         showCancel={!isSuccessEliminar}
       >
         {isSuccessEliminar ? (

@@ -9,6 +9,7 @@ const Breadcrumbs = () => {
 
   // Obtener el último elemento del array
   const ultimoElemento = pathnames[pathnames.length - 1];
+  console.log(ultimoElemento)
 
   // Verificar si el último elemento está presente como clave en el diccionario
   if (!(ultimoElemento in PathNamesTranslations)) {
@@ -38,7 +39,6 @@ const Breadcrumbs = () => {
             <span key={to} className="text-lg md:text-2xl font-light">
               {PathNamesTranslations[value]}
             </span>
-            <span className="/">/</span>
           </Link>
         );
       })}

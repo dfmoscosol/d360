@@ -5,10 +5,7 @@ import { useDispatch } from "react-redux";
 import { Loader, FetchError } from "@components";
 import { useGetAllDocentesQuery } from "@redux/services/evento/eventoApi";
 import InscripcionManual from "../InscripcionManual/InscripcionManual";
-import { useAgregarInscripcionesMutation } from "@redux/services/inscripcion/inscripcionApi";
 import { Button, Modal } from "@components";
-import { Link } from "react-router-dom";
-//import { useInscribirDocenteMutation } from "@redux/services/docente/docenteApi";
 import { useInscribirDocenteMutation } from "../../../../../redux/services/evento/eventoApi";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
 

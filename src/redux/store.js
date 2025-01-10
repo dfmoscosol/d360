@@ -12,6 +12,7 @@ import { docenteApi } from "./services/docente/docenteApi";
 import { inscripcionApi } from "./services/inscripcion/inscripcionApi";
 import { certificadoApi } from "./services/certificado/certificadoApi";
 import { loginApi } from "./services/login/loginApi";
+import { reportesApi } from "./services/reportes/reportesApi";
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     [docenteApi.reducerPath]: docenteApi.reducer,
     [inscripcionApi.reducerPath]: inscripcionApi.reducer,
     [certificadoApi.reducerPath]: certificadoApi.reducer,
+    [reportesApi.reducerPath]: reportesApi.reducer,
     [loginApi.reducerPath]: loginApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -35,6 +37,7 @@ export const store = configureStore({
       inscripcionApi.middleware,
       certificadoApi.middleware,
       loginApi.middleware,
+      reportesApi.middleware
     ]),
 });
 
