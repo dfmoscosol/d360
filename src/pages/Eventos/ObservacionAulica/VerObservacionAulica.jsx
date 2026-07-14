@@ -46,6 +46,7 @@ const VerObservacionAulica = (props) => {
     id,
     nombre,
     handleRefetch,
+    acreditacion,
   } = props;
 
 
@@ -84,6 +85,7 @@ const VerObservacionAulica = (props) => {
                   //toggleAllowEntrada={allow_asistencia_entrada}
                   //toggleAllowSalida={allow_asistencia_salida}
                   toggleAllowInscripcion={inscripcion}
+                  toggleAllowAcreditacion={acreditacion}
                   handleRefetch={handleRefetch}
                 />
               ),

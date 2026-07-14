@@ -6,7 +6,7 @@ import {
   MdKeyboardArrowDown,
 } from "react-icons/md";
 
-const StatePill = ({ hasState, stateValue, icon }) => {
+const StatePill = ({ hasState, stateValue, icon, className = "" }) => {
   let iconPill = "";
   if (icon === "inscripcion") {
     iconPill = <MdEditNote size={20} />;
@@ -20,7 +20,7 @@ const StatePill = ({ hasState, stateValue, icon }) => {
     <div
       className={`p-2 rounded-lg flex items-center justify-center gap-2 border border-primary_gray_5 ${
         hasState ? "text-green-600 b-green-100" : "text-amber-600 b-amber-200"
-      } `}
+      } ${className}`}
     >
       {/** 
       {iconPill}*/}

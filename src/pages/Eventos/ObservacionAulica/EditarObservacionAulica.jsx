@@ -64,7 +64,7 @@ const EditarObservacionAulica = (props) => {
       areValidDates = true;
       dates.sort((a, b) => a - b);
       dates.forEach((date) => {
-        validDatesList.push(date.format("DD-MM-YYYY"));
+        validDatesList.push(date.format("YYYY-MM-DD"));
       });
     }
 
@@ -242,7 +242,7 @@ const EditarObservacionAulica = (props) => {
                   width: "100%",
                 }}
                 value={dates}
-                format="DD-MM-YYYY"
+                format="YYYY-MM-DD"
                 render={<CustomInput />}
               />
               {!isValidDate && (

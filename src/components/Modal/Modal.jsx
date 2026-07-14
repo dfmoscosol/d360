@@ -93,7 +93,7 @@ const Modal = ({
               <span className="text-primary_gray_4 mt-4 text-base tracking-tight">
                 {message}
               </span>
-              {type === 'form' ?
+              {type === 'form' || type === 'deny' ?
                 (
                   <div className="mt-6 flex justify-center space-x-2">
                     {children}

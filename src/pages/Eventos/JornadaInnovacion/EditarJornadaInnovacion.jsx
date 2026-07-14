@@ -103,7 +103,7 @@ const EditarJornadaInnovacion = (props) => {
       areValidDates = true;
       dates.sort((a, b) => a - b);
       dates.forEach((date) => {
-        validDatesList.push(date.format("DD-MM-YYYY"));
+        validDatesList.push(date.format("YYYY-MM-DD"));
       });
     }
     if (areValidDates) {
@@ -262,10 +262,22 @@ const EditarJornadaInnovacion = (props) => {
   const handleModalidadChange = (tallerId, sesionIndex, newValue) => {
     setInputs(inputs.map(input => {
       if (input.id === tallerId) {
-        // Actualiza la modalidad de la sesión específica
         const updatedSesiones = input.sesiones.map((sesion, index) => {
           if (index === sesionIndex) {
-            return { ...sesion, modalidad: newValue };
+            if (newValue === "Sin Sesión") {
+              return {
+                ...sesion,
+                modalidad: newValue,
+                hora_inicio: "",
+                duracion: "",
+                ubicacion: "",
+              };
+            } else {
+              return {
+                ...sesion,
+                modalidad: newValue,
+              };
+            }
           }
           return sesion;
         });
@@ -408,10 +420,12 @@ const EditarJornadaInnovacion = (props) => {
       && (inputs[index].momento.trim() !== "")
       && inputs[index].sesiones.every(sesion =>
         sesion.fecha_id &&
-        sesion.hora_inicio.trim() !== "" &&
-        sesion.duracion.trim() !== "" &&
         sesion.modalidad.trim() !== "" &&
-        sesion.ubicacion.trim() !== "")
+        (sesion.modalidad === "Sin Sesión" ||
+          (sesion.hora_inicio.trim() !== "" &&
+            sesion.duracion.trim() !== "" &&
+            sesion.ubicacion.trim() !== ""))
+      )
       && inputs[index].ponentes.every(ponente => ponente.nombre.trim() !== "");
     console.log(areAllInputsFilled)
     if (areAllInputsFilled) {
@@ -426,6 +440,9 @@ const EditarJornadaInnovacion = (props) => {
           cupos_extra: Number(input.cupos_extra),
           sesiones: input.sesiones.map(({ ...sesion }) => ({
             ...sesion,
+            hora_inicio: sesion.modalidad === "Sin Sesión" ? "00:00" : sesion.hora_inicio,
+            duracion: sesion.modalidad === "Sin Sesión" ? 0 : sesion.duracion,
+            ubicacion: sesion.modalidad === "Sin Sesión" ? "N/A" : sesion.ubicacion,
             modalidad: listModalidades.indexOf(sesion.modalidad) + 1
           })),
           ponentes: input.ponentes.map((ponente) => ({ "nombre": ponente.nombre }))
@@ -459,8 +476,10 @@ const EditarJornadaInnovacion = (props) => {
               momento: listMomentos.indexOf(input.momento) + 1,
               cupos_extra: Number(input.cupos_extra),
               sesiones: input.sesiones.map(({ fecha, fecha_id, ...sesion }) => ({
-                ...sesion,
-                modalidad: listModalidades.indexOf(sesion.modalidad) + 1
+                hora_inicio: sesion.modalidad === "Sin Sesión" ? "00:00" : sesion.hora_inicio,
+                duracion: sesion.modalidad === "Sin Sesión" ? 0 : sesion.duracion,
+                modalidad: listModalidades.indexOf(sesion.modalidad) + 1,
+                ubicacion: sesion.modalidad === "Sin Sesión" ? "N/A" : sesion.ubicacion
               })),
               ponentes: input.ponentes.map((ponente) => ({ nombre: ponente.nombre }))
             },
@@ -545,7 +564,7 @@ const EditarJornadaInnovacion = (props) => {
   const fechasDateFormat = [];
   fechas.forEach((fecha, index) => {
     const parts = fecha.fecha.split("-");
-    const formattedDate = `${parts[1]}-${parts[0]}-${parts[2]}`;
+    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // YYYY-MM-DD
     fechasDateFormat.push(new DateObject(new Date(formattedDate)));
   });
   const [dates, setDates] = useState(fechasDateFormat);
@@ -592,7 +611,7 @@ const EditarJornadaInnovacion = (props) => {
    * COMBOBOX
    */
 
-  const listModalidades = ["Presencial", "Virtual"];
+  const listModalidades = ["Presencial", "Virtual", "Sin Sesión"];
   const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
   const listMomentos = ["Explorador", "Integrador", "Innovador"];
 
@@ -888,47 +907,76 @@ const EditarJornadaInnovacion = (props) => {
                         </div>
                       </div>
 
-                      {input.sesiones.map((sesion, index) => (<>
-                        <div className="flex flex-col items-start justify-start pt-3">
-                          <InfoPill
-                            value={sesion.fecha}
-                            size="small"
-                            type="date"
-                            icon="date"
-                          />
-                        </div>
-                        <div className="flex flex-wrap pt-1 gap-3">
-                          {/* Hora, Duración, Modalidad, Ubicación */}
-                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                            <label className="text-sm font-medium text-primary_text_1">Hora</label>
-                            <input type="time"
-                              disabled={!input.enableEdit}
-                              value={sesion.hora_inicio}
-                              onChange={(e) => handleHoraInicioChange(input.id, index, e.target.value)}
-                              className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit ? "outline-none ring-1 ring-inset ring-primary_gray_5" : "bg-primary_gray_1"}`} />
+                      {input.sesiones.map((sesion, index) => (
+                        <>
+                          <div className="flex flex-col items-start justify-start pt-3">
+                            <InfoPill
+                              value={sesion.fecha}
+                              size="small"
+                              type="date"
+                              icon="date"
+                            />
                           </div>
-                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                            <label className="text-sm font-medium text-primary_text_1">Duración</label>
-                            <input type="number"
-                              value={sesion.duracion}
-                              disabled={!input.enableEdit}
-                              onChange={(e) => handleDuracionChange(input.id, index, e.target.value)}
-                              className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit ? "outline-none ring-1 ring-inset ring-primary_gray_5" : "bg-primary_gray_1"}`} placeholder="Duración en horas" />
+                          <div className="flex flex-wrap pt-1 gap-3">
+                            {/* Modalidad */}
+                            <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                              <label className="text-sm font-medium text-primary_text_1">Modalidad</label>
+                              <ComboBox
+                                items={listModalidades}
+                                onSelect={(value) => handleModalidadChange(input.id, index, value)}
+                                selected={sesion.modalidad}
+                                enableEdit={input.enableEdit}
+                                isEnabled={input.enableEdit}
+                              />
+                            </div>
+                            {/* Renderizar Hora, Duración y Ubicación solo si modalidad !== "Sin Sesión" */}
+                            {sesion.modalidad !== "Sin Sesión" && (
+                              <>
+                                <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                  <label className="text-sm font-medium text-primary_text_1">Hora</label>
+                                  <input
+                                    type="time"
+                                    disabled={!input.enableEdit}
+                                    value={sesion.hora_inicio}
+                                    onChange={(e) => handleHoraInicioChange(input.id, index, e.target.value)}
+                                    className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit
+                                        ? "outline-none ring-1 ring-inset ring-primary_gray_5"
+                                        : "bg-primary_gray_1"
+                                      }`}
+                                  />
+                                </div>
+                                <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                  <label className="text-sm font-medium text-primary_text_1">Duración</label>
+                                  <input
+                                    type="number"
+                                    value={sesion.duracion}
+                                    disabled={!input.enableEdit}
+                                    onChange={(e) => handleDuracionChange(input.id, index, e.target.value)}
+                                    className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit
+                                        ? "outline-none ring-1 ring-inset ring-primary_gray_5"
+                                        : "bg-primary_gray_1"
+                                      }`}
+                                    placeholder="Duración en horas"
+                                  />
+                                </div>
+                                <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                  <label className="text-sm font-medium text-primary_text_1">Ubicación</label>
+                                  <input
+                                    type="text"
+                                    value={sesion.ubicacion}
+                                    disabled={!input.enableEdit}
+                                    onChange={(e) => handleUbicacionChange(input.id, index, e.target.value)}
+                                    className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit
+                                        ? "outline-none ring-1 ring-inset ring-primary_gray_5"
+                                        : "bg-primary_gray_1"
+                                      }`}
+                                    placeholder="Ingrese ubicación"
+                                  />
+                                </div>
+                              </>
+                            )}
                           </div>
-                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                            <label className="text-sm font-medium text-primary_text_1">Modalidad</label>
-                            <ComboBox items={listModalidades} onSelect={(value) => handleModalidadChange(input.id, index, value)}
-                              selected={sesion.modalidad} enableEdit={input.enableEdit} isEnabled={input.enableEdit} />
-                          </div>
-                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                            <label className="text-sm font-medium text-primary_text_1">Ubicación</label>
-                            <input type="text"
-                              value={sesion.ubicacion}
-                              disabled={!input.enableEdit}
-                              onChange={(e) => handleUbicacionChange(input.id, index, e.target.value)}
-                              className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit ? "outline-none ring-1 ring-inset ring-primary_gray_5" : "bg-primary_gray_1"}`} placeholder="Ingrese ubicación" />
-                          </div>
-                        </div></>
+                        </>
                       ))}
 
                       <div className="flex items-center justify-start pt-2 gap-3">

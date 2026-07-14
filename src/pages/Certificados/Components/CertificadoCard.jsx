@@ -51,6 +51,7 @@ const CertificadoCard = ({
    * PARA EL MODAL
    */
   const [isModalOpenEdit, setModalOpenEdit] = useState(false);
+  const [comentarioRechazo, setComentarioRechazo] = useState("");
 
   useEffect(() => {
     if (isSuccessEdit) {
@@ -80,6 +81,7 @@ const CertificadoCard = ({
       id: idCertificado,
       body: {
         aceptada: false,
+        comentario: comentarioRechazo,
       },
     });
     setModalNoApprovedOpenEdit(false);
@@ -132,31 +134,39 @@ const CertificadoCard = ({
         isOpen={isModalNoApprovedOpenEdit}
         message="¿Desea denegar el Certificado?"
         onClose={() => setModalNoApprovedOpenEdit(false)}
-        type={"deny"}
-        title={"Denegar Certificado"}
-        showCancel={!isSuccessEdit}
+        type="deny"
+        title="Denegar Certificado"
+        showCancel={true} // Ahora siempre muestra Cancelar
       >
-        {isSuccessEdit ? (
-          <Link to="/eventos">
+        <div className="flex flex-col w-full">
+          <textarea
+            className="w-full h-24 p-2 border border-gray-300 rounded-md"
+            placeholder="Ingrese el motivo de la denegación..."
+            value={comentarioRechazo}
+            onChange={(e) => setComentarioRechazo(e.target.value)}
+          ></textarea>
+
+          {/* Contenedor de botones en una fila */}
+          <div className="mt-4 flex justify-end gap-2">
             <Button
-              value="Actualización exitosa"
-              type="success"
+              value="Denegar"
+              type="error"
               size="medium"
-              icon="check"
+              icon="deny"
               isPrimary={true}
+              onClick={handleDenegarAprobar}
+              isDisabled={comentarioRechazo.length === 0}
             />
-          </Link>
-        ) : (
-          <Button
-            value="Denegar"
-            type="error"
-            size="medium"
-            icon="deny"
-            isPrimary={true}
-            onClick={handleDenegarAprobar}
-          //isLoading={isUpdatingEdit}
-          />
-        )}
+            <Button
+              value="Cancelar"
+              type="gray"
+              size="medium"
+              icon="close"
+              onClick={() => setModalNoApprovedOpenEdit(false)}
+              isPrimary={false}
+            />
+          </div>
+        </div>
       </Modal>
 
       <div className="bg-white rounded-lg p-4 flex flex-col hover:shadow-lg transition-all duration-200">

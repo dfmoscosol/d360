@@ -5,7 +5,7 @@ import StatePill from "../../../ui/components/StatePill/StatePill";
 import { MdDateRange } from "react-icons/md";
 
 const ObservacionAulicaCard = (props) => {
-  const { inscripcion, fechas, id, nombre } = props;
+  const {acreditacion, inscripcion, fechas, id, nombre } = props;
 
   return (
     <div className="bg-white p-4 flex flex-col gap-4 rounded-lg hover:shadow-lg transition-all duration-300 h-full">
@@ -36,11 +36,18 @@ const ObservacionAulicaCard = (props) => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 gap-2">
+        <div className="flex gap-2 w-full">
           <StatePill
             hasState={inscripcion}
             stateValue={"Inscripción"}
             icon={"inscripcion"}
+            className="flex-1 w-full"
+          />
+          <StatePill
+            hasState={acreditacion}
+            stateValue={"Acreditación"}
+            icon={"acreditacion"}
+            className="flex-1 w-full"
           />
         </div>
       </Link>

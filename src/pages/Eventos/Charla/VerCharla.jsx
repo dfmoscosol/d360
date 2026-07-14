@@ -39,6 +39,7 @@ const VerCharla = (props) => {
     ponentes,
     descripcion,
     handleRefetch,
+    acreditacion,
   } = props;
 
 
@@ -96,6 +97,7 @@ const VerCharla = (props) => {
                     }                    
                   ]}
                   toggleAllowInscripcion={inscripcion}
+                  toggleAllowAcreditacion={acreditacion}
                   handleRefetch={handleRefetch}
                   hasTalleres={false}
                   isCharla={true}
@@ -147,4 +149,3 @@ const VerCharla = (props) => {
 };
 
 export default VerCharla;
-

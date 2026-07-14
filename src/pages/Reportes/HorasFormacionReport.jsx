@@ -4,6 +4,7 @@ import { Button, Loader } from "@components";
 import Select from "react-select";
 import { customStyles } from "../Eventos/ui/components/EventoView/EventoView";
 import { RiFileExcel2Line } from "react-icons/ri";
+import { HiCheckCircle, HiXCircle } from "react-icons/hi";
 import DetalleDocenteModal from '../Reportes/HorasDetailModal';
 import { BiLoaderCircle } from "react-icons/bi";
 
@@ -164,6 +165,7 @@ const ReportesDocentes = () => {
                                             <th className="px-4 py-3 text-left text-sm font-semibold">Correo</th>
                                             <th className="px-4 py-3 text-left text-sm font-semibold">Facultad</th>
                                             <th className="px-4 py-3 text-left text-sm font-semibold text-center">Horas de Formación</th>
+                                            <th className="px-4 py-3 text-left text-sm font-semibold">Graduado</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
@@ -185,11 +187,18 @@ const ReportesDocentes = () => {
                                                 <td className="p-2 text-sm text-gray-600 text-center">
                                                     {doc.horas_acreditadas.total}
                                                 </td>
+                                                <td className="p-2 text-sm text-center">
+                                                  {doc.docente.graduado ? (
+                                                    <HiCheckCircle className="text-green-600 mx-auto" />
+                                                  ) : (
+                                                    <HiXCircle className="text-red-500 mx-auto" />
+                                                  )}
+                                                </td>
                                             </tr>
                                         ))}
                                         {docentes.length === 0 && !isLoading && !error && (
                                             <tr>
-                                                <td colSpan={4} className="p-4 text-center text-gray-500">
+                                                <td colSpan={5} className="p-4 text-center text-gray-500">
                                                     No results found.
                                                 </td>
                                             </tr>

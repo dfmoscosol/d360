@@ -20,6 +20,7 @@ const VerTaller = (props) => {
    */
   const {
     inscripcion,
+    acreditacion,
     cupo,
     docentesInscritos,
     docentesPendientes,
@@ -74,6 +75,7 @@ const VerTaller = (props) => {
                     }
                   ]}
                   toggleAllowInscripcion={inscripcion}
+                  toggleAllowAcreditacion={acreditacion}
                   isMicrotaller={true}
                   sesiones={sesiones}
                   ponentes={ponentes}

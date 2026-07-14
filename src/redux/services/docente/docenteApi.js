@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const BASE_URL = "http://127.0.0.1:5000/";
-//const BASE_URL = "https://d360api.ucuenca.edu.ec";
+//const BASE_URL = "https://desa-k8s.ucuenca.edu.ec/ms/pentagono-d360/api/";
+const BASE_URL = "https://mdlk8s.ucuenca.edu.ec/ms/pentagono-d360/api/";
 
 export const docenteApi = createApi({
   reducerPath: "docenteApi",

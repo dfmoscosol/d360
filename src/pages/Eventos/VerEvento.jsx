@@ -35,6 +35,7 @@ const VerEvento = () => {
     return (
       <VerJornadaInnovacion
         inscripcion={evento.inscripcion}
+        acreditacion={evento.acreditacion}
         cupos={evento.cupos}
         fechas={evento.fechas}
         horas={evento.horas}
@@ -47,6 +48,7 @@ const VerEvento = () => {
   }  else if (evento.tipo === 2) {
     return (
       <VerCharla
+        acreditacion={evento.acreditacion}
         inscripcion={evento.inscripcion}
         cupos={evento.cupos}
         fechas={evento.fechas}
@@ -70,6 +72,7 @@ const VerEvento = () => {
     {console.log(evento.id)}
     return (
       <VerTaller
+        acreditacion={evento.acreditacion}
         inscripcion={evento.inscripcion}
         cupo={evento.cupos}
         docentesInscritos={evento.docentes_inscritos}
@@ -89,6 +92,7 @@ const VerEvento = () => {
   } else if (evento.tipo === 4) {
     return (
       <VerObservacionAulica
+        acreditacion={evento.acreditacion}
         inscripcion={evento.inscripcion}
         cupo={evento.cupos}
         docentesInscritos={evento.docentes_inscritos}

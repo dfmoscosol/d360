@@ -6,6 +6,7 @@ import StatePill from "../../../ui/components/StatePill/StatePill";
 
 const CharlaCard = (props) => {
   const {
+    acreditacion,
     inscripcion,
     fechas,
     id,
@@ -41,11 +42,18 @@ const CharlaCard = (props) => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 gap-2">
+        <div className="flex gap-2 w-full">
           <StatePill
             hasState={inscripcion}
             stateValue={"Inscripción"}
             icon={"inscripcion"}
+            className="flex-1 w-full"
+          />
+          <StatePill
+            hasState={acreditacion}
+            stateValue={"Acreditación"}
+            icon={"acreditacion"}
+            className="flex-1 w-full"
           />
         </div>
       </Link>

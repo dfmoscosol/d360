@@ -118,7 +118,7 @@ const EditarTaller = (props) => {
     const formattedDate = `${parts[1]}-${parts[2]}-${parts[0]}`;
     let datefinal = new DateObject(new Date(formattedDate))
     return {
-      fecha: datefinal.format("DD-MM-YYYY"),
+      fecha: datefinal.format("YYYY-MM-DD"),
       modalidad: Number(sesion.modalidad === "Presencial" ? 1 : sesion.modalidad === "Virtual" ? 2 : sesion.modalidad === "Híbrida" ? 3 : 0),
       ubicacion: sesion.ubicacion,
       hora_inicio: sesion.hora_inicio,
@@ -145,10 +145,10 @@ const EditarTaller = (props) => {
   ];
 
   function handleDateChange(value) {
-    const selectedDatesSet = new Set(value.map(date => date.format("DD-MM-YYYY")));
+    const selectedDatesSet = new Set(value.map(date => date.format("YYYY-MM-DD")));
     const filteredSessions = sesiones.filter(session => selectedDatesSet.has(session.fecha));
     let newSessions = value.map(date => ({
-      fecha: date.format("DD-MM-YYYY"),
+      fecha: date.format("YYYY-MM-DD"),
       modalidad: '',
       hora_inicio: '',
       duracion: '',
@@ -414,7 +414,7 @@ const EditarTaller = (props) => {
           <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
             <FormLabel value={"Nombre"} />
             <input
-              value={nombre}
+              defaultValue={nombre}
               type="text"
               className="focus:bg-white text-primary_gray_4 first:font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
               placeholder=""
@@ -430,7 +430,7 @@ const EditarTaller = (props) => {
           <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
             <FormLabel value={"Descripción"} />
             <textarea
-              value={descripcion}
+              defaultValue={descripcion}
               type="text"
               className="focus:bg-white text-primary_gray_4 first:font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
               placeholder=""
@@ -486,7 +486,7 @@ const EditarTaller = (props) => {
                 style={{
                   width: "100%",
                 }}
-                format="DD-MM-YYYY"
+                format="YYYY-MM-DD"
                 value={sesiones.map((sesion) => sesion.fecha)}
                 render={<CustomInput />}
               />

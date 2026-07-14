@@ -48,7 +48,7 @@ const CrearObservacionAulica = () => {
       areValidDates = true;
       dates.sort((a, b) => a - b);
       dates.forEach((date) => {
-        validDatesList.push(date.format("DD-MM-YYYY"));
+        validDatesList.push(date.format("YYYY-MM-DD"));
       });
     }
 
@@ -176,7 +176,7 @@ const CrearObservacionAulica = () => {
                 style={{
                   width: "100%",
                 }}
-                format="DD-MM-YYYY"
+                format="YYYY-MM-DD"
                 render={<CustomInput />}
               />
               {!isValidDate && (

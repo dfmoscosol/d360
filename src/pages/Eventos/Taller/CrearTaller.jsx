@@ -112,10 +112,10 @@ const CrearTaller = () => {
   ];
 
   function handleDateChange(value) {
-    const selectedDatesSet = new Set(value.map(date => date.format("DD-MM-YYYY")));
+    const selectedDatesSet = new Set(value.map(date => date.format("YYYY-MM-DD")));
     const filteredSessions = sesiones.filter(session => selectedDatesSet.has(session.fecha));
     let newSessions = value.map(date => ({
-      fecha: date.format("DD-MM-YYYY"),
+      fecha: date.format("YYYY-MM-DD"),
       modalidad: '',
       hora_inicio: '',
       duracion: '',
@@ -397,7 +397,7 @@ const CrearTaller = () => {
                 style={{
                   width: "100%",
                 }}
-                format="DD-MM-YYYY"
+                format="YYYY-MM-DD"
                 render={<CustomInput />}
               />
               {!isValidDate && (

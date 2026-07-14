@@ -11,8 +11,9 @@ const Card = (props) => {
   if (type === 1) {
     return (
       <JornadaInnovacionCard
-        inscripcion={data.inscripcion}
-        fechas={data.fechas}
+      inscripcion={data.inscripcion}
+      acreditacion={data.acreditacion}
+      fechas={data.fechas}
         id={data.id}
         nombre={data.nombre}
       />
@@ -21,6 +22,7 @@ const Card = (props) => {
     return (
       <ObservacionAulicaCard
         inscripcion={data.inscripcion}
+        acreditacion={data.acreditacion}
         fechas={data.fechas}
         id={data.id}
         nombre={data.nombre}
@@ -30,6 +32,7 @@ const Card = (props) => {
     return (
       <CharlaCard
         inscripcion={data.inscripcion}
+        acreditacion={data.acreditacion}
         fechas={data.fechas}
         id={data.id}
         nombre={data.nombre}
@@ -39,6 +42,7 @@ const Card = (props) => {
     return (
       <TallerCard
         inscripcion={data.inscripcion}
+        acreditacion={data.acreditacion}
         fechas={data.fechas}
         id={data.id}
         nombre={data.nombre}

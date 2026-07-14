@@ -44,6 +44,7 @@ const InformationSection = (props) => {
     containerDataList,
 
     toggleAllowInscripcion,
+    toggleAllowAcreditacion,
 
     handleRefetch,
     hasTalleres,
@@ -153,6 +154,15 @@ const InformationSection = (props) => {
     editEvento(dataBody);
   };
 
+  const handleAcreditacionToggle = (isActive) => {
+    const dataBody = {
+      id: id,
+      tipo: routeType,
+      body: { acreditacion: isActive },
+    };
+    editEvento(dataBody);
+  };
+
   let toggles = [];
 
   if (toggleAllowInscripcion !== undefined) {
@@ -161,6 +171,16 @@ const InformationSection = (props) => {
         isActivatorActive={toggleAllowInscripcion}
         value={"Inscripciones"}
         handleTogle={handleInscripcionTogle}
+        isLoading={isUpdatingEdit}
+      />
+    );
+  }
+  if (toggleAllowAcreditacion !== undefined) {
+    toggles.push(
+      <Activator
+        isActivatorActive={toggleAllowAcreditacion}
+        value={"Acreditación"}
+        handleTogle={handleAcreditacionToggle}
         isLoading={isUpdatingEdit}
       />
     );

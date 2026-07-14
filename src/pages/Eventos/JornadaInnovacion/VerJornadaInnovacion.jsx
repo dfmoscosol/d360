@@ -14,7 +14,7 @@ import {
 } from "react-icons/md";
 
 const VerJornadaInnovacion = (props) => {
-  const { inscripcion, cupos, fechas, horas, id, nombre, talleres, handleRefetch } = props;
+  const { inscripcion, acreditacion, cupos, fechas, horas, id, nombre, talleres, handleRefetch } = props;
 
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -47,6 +47,7 @@ const VerJornadaInnovacion = (props) => {
           { key: "Talleres", value: talleres.length },
         ]}
         toggleAllowInscripcion={inscripcion}
+        toggleAllowAcreditacion={acreditacion}
         handleRefetch={handleRefetch}
         hasTalleres={true}
         talleresList={talleres}

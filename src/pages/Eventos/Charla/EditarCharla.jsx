@@ -75,7 +75,7 @@ const EditarCharla = (props) => {
       console.log("Se ha elegido más de una fecha.");
       setValidDate(true);
       areValidDates = true;
-      validDatesList.push(dates.format("DD-MM-YYYY"));
+      validDatesList.push(dates.format("YYYY-MM-DD"));
     }
 
     const areAllPonentesFilled = inputs.every(input =>
@@ -402,7 +402,7 @@ const EditarCharla = (props) => {
                   width: "100%",
                 }}
                 value={dates}
-                format="DD-MM-YYYY"
+                format="YYYY-MM-DD"
                 render={<CustomInput />}
               />
               {!isValidDate && (

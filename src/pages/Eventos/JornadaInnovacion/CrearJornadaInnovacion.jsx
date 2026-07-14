@@ -56,10 +56,12 @@ const CrearJornadaInnovacion = () => {
       input.momento.trim() !== "" &&
       input.sesiones.every(sesion =>
         sesion.fecha_id &&
-        sesion.hora_inicio.trim() !== "" &&
-        sesion.duracion.trim() !== "" &&
         sesion.modalidad.trim() !== "" &&
-        sesion.ubicacion.trim() !== ""
+        (sesion.modalidad === "Sin Sesión" || (
+          sesion.hora_inicio.trim() !== "" &&
+          sesion.duracion.trim() !== "" &&
+          sesion.ubicacion.trim() !== ""
+        ))
       ) &&
       input.ponentes.every(ponente => ponente.value.trim() !== "")
     );
@@ -85,10 +87,10 @@ const CrearJornadaInnovacion = () => {
       momento: listMomentos.indexOf(input.momento)+1,
       sesiones: input.sesiones.map(sesion => ({
         fecha_id: sesion.fecha_id,
-        hora_inicio: sesion.hora_inicio,
-        duracion: sesion.duracion,
+        hora_inicio: sesion.modalidad === "Sin Sesión" ? "00:00" : sesion.hora_inicio,
+        duracion: sesion.modalidad === "Sin Sesión" ? 0 : sesion.duracion,
         modalidad: listModalidades.indexOf(sesion.modalidad)+1,
-        ubicacion: sesion.ubicacion
+        ubicacion: sesion.modalidad === "Sin Sesión" ? "Sin ubicación" : sesion.ubicacion
       })),
       ponentes: input.ponentes.map(ponente => ({ nombre: ponente.value }))
     }));
@@ -389,7 +391,7 @@ const CrearJornadaInnovacion = () => {
   /**
    * COMBOBOX
    */
-  const listModalidades = ["Presencial", "Virtual"];
+  const listModalidades = ["Presencial", "Virtual", "Sin Sesión"];
   const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
   const listMomentos = ["Explorador", "Integrador", "Innovador"];
 
@@ -560,33 +562,37 @@ const CrearJornadaInnovacion = () => {
                               />
                             </div>
                             <div className="flex flex-wrap gap-3">
-                              {/* Hora, Duración, Modalidad, Ubicación */}
-                              <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                                <label className="text-sm font-medium text-primary_text_1">Hora</label>
-                                <input type="time"
-                                  value={input.sesiones[index].hora_inicio}
-                                  onChange={(e) => handleHoraInicioChange(input.id, index, e.target.value)}
-                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
-                              </div>
-                              <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                                <label className="text-sm font-medium text-primary_text_1">Duración</label>
-                                <input type="number"
-                                  value={input.sesiones[index].duracion}
-                                  onChange={(e) => handleDuracionChange(input.id, index, e.target.value)}
-                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
-                              </div>
                               <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
                                 <label className="text-sm font-medium text-primary_text_1">Modalidad</label>
                                 <ComboBox items={listModalidades} onSelect={(value) => handleModalidadChange(input.id, index, value)}
                                   selectedValue={input.sesiones[index].modalidad} />
                               </div>
-                              <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                                <label className="text-sm font-medium text-primary_text_1">Ubicación</label>
-                                <input type="text"
-                                  value={input.sesiones[index].ubicacion}
-                                  onChange={(e) => handleUbicacionChange(input.id, index, e.target.value)}
-                                  className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
-                              </div>
+
+                              {input.sesiones[index].modalidad !== "Sin Sesión" && (
+                                <>
+                                  <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                    <label className="text-sm font-medium text-primary_text_1">Hora</label>
+                                    <input type="time"
+                                      value={input.sesiones[index].hora_inicio}
+                                      onChange={(e) => handleHoraInicioChange(input.id, index, e.target.value)}
+                                      className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
+                                  </div>
+                                  <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                    <label className="text-sm font-medium text-primary_text_1">Duración</label>
+                                    <input type="number"
+                                      value={input.sesiones[index].duracion}
+                                      onChange={(e) => handleDuracionChange(input.id, index, e.target.value)}
+                                      className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
+                                  </div>
+                                  <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                    <label className="text-sm font-medium text-primary_text_1">Ubicación</label>
+                                    <input type="text"
+                                      value={input.sesiones[index].ubicacion}
+                                      onChange={(e) => handleUbicacionChange(input.id, index, e.target.value)}
+                                      className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
+                                  </div>
+                                </>
+                              )}
                             </div>
                           </>
                         ))}

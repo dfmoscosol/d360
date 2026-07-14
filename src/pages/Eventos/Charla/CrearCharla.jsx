@@ -49,7 +49,7 @@ const CrearCharla = () => {
       console.log("Se ha elegido más de una fecha.");
       setValidDate(true);
       areValidDates = true;
-      validDatesList.push(dates.format("DD-MM-YYYY"));
+      validDatesList.push(dates.format("YYYY-MM-DD"));
     }
 
     setIsValidModalidad(selectedModalidad!="")
@@ -329,7 +329,7 @@ const CrearCharla = () => {
                 style={{
                   width: "100%",
                 }}
-                format="DD-MM-YYYY"
+                format="YYYY-MM-DD"
                 render={<CustomInput />}
               />
               {!isValidDate && (
