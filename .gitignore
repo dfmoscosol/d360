@@ -2,8 +2,11 @@ node_modules/
 dist/
 .env
 .env.*
+!.env.example
 .DS_Store
 *.log
 
 # Specs
 docs-spec/
+specs/
+.agents/

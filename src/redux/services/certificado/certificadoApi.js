@@ -1,20 +1,9 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-//const BASE_URL = "https://desa-k8s.ucuenca.edu.ec/ms/pentagono-d360/api/";
-const BASE_URL = "https://mdlk8s.ucuenca.edu.ec/ms/pentagono-d360/api/";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithAuth } from "../apiConfig";
 
 export const certificadoApi = createApi({
   reducerPath: "certificadoApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().authState.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithAuth,
   // tagTypes: ["Docente"],
   endpoints: (builder) => ({
     getAllCertificados: builder.query({

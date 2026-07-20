@@ -1,13 +1,9 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-//const BASE_URL = "https://desa-k8s.ucuenca.edu.ec/ms/pentagono-d360/api/";
-const BASE_URL = "https://mdlk8s.ucuenca.edu.ec/ms/pentagono-d360/api/";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryPublic } from "../apiConfig";
 
 export const loginApi = createApi({
   reducerPath: "loginApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
-  }),
+  baseQuery: baseQueryPublic,
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (body) => ({

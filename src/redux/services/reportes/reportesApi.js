@@ -1,22 +1,10 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-//const BASE_URL = "https://desa-k8s.ucuenca.edu.ec/ms/pentagono-d360/api/";
-const BASE_URL = "https://mdlk8s.ucuenca.edu.ec/ms/pentagono-d360/api/";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithAuth } from "../apiConfig";
 
 
 export const reportesApi = createApi({
   reducerPath: "reportesApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
-    prepareHeaders: (headers, { getState }) => {
-      // Si necesitas autenticación, puedes recuperarla del state
-      const token = getState().authState?.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithAuth,
   endpoints: (builder) => ({
     getDocentesHoras: builder.query({
       query: ({ busqueda, facultad, horas_min, horas_max, page = 1, per_page = 10 }) => {

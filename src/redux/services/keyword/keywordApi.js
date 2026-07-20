@@ -1,65 +1,28 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-//const BASE_URL = "https://desa-k8s.ucuenca.edu.ec/ms/pentagono-d360/api/";
-const BASE_URL = "https://mdlk8s.ucuenca.edu.ec/ms/pentagono-d360/api/";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithAuth } from "../apiConfig";
 
 export const keywordApi = createApi({
   reducerPath: "keywordApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().authState.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
-  tagTypes: ["getAll", "getCapacitacion"],
+  baseQuery: baseQueryWithAuth,
+  tagTypes: ["getAll"],
   endpoints: (builder) => ({
-    /*getCapacitacion: builder.query({
-      query: (params) => `/capacitacion/${params.value}`,
-      providesTags: ["getCapacitacion"],
-    }),*/
-    /*addEvento: builder.mutation({
-      query: (params) => ({
-        url: `/crear_capacitacion`,
-        method: "POST",
-        body: params,
-      }),
-      invalidatesTags: ["getAll"],
-    }),*/
     updateKeyword: builder.mutation({
       query: (params) => ({
         url: `/actualizar_termino/${params.competencia}/${params.id}`,
         method: "PUT",
         body: params.body,
       }),
-      //invalidatesTags: ["getCapacitacion", "getAll"],
     }),
     deleteKeyword: builder.mutation({
       query: (params) => ({
         url: `/eliminar_termino/${params.competencia}/${params.id}`,
         method: "DELETE",
       }),
-      //invalidatesTags: ["getCapacitacion", "getAll"],
     }),
     getAllKeywords: builder.query({
       query: (params) => `/terminos/${params.value}`,
       providesTags: ["getAll"],
     }),
-
-    /*getCapacitacion: builder.query({
-      query: (params) => `/capacitacion/${params.value}`,
-      providesTags: ["getCapacitacion"],
-    }),*/
-    /*deleteTaller: builder.mutation({
-      query: (params) => ({
-        url: `/eliminar_taller/${params.id}`,
-        method: "DELETE",
-      }),
-      //invalidatesTags: ["getAll"],
-    }),*/
   }),
 });
 

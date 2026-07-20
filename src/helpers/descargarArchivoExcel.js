@@ -1,21 +1,15 @@
 import axios from "axios";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
+import { BASE_URL } from "@redux/services/apiConfig";
 
 const descargarArchivoExcel = async (token, idEvento, idTaller, dispatch) => {
   try {
     // Determina la URL base según si `idTaller` está presente o no
+    const url = idTaller
+      ? `${BASE_URL}eventos/${idEvento}/inscritos/${idTaller}`
+      : `${BASE_URL}eventos/${idEvento}/inscritos`;
 
-       const BASE_URL = idTaller
-      ? `https://mdlk8s.ucuenca.edu.ec/ms/pentagono-d360/api/eventos/${idEvento}/inscritos/${idTaller}`
-      : `https://mdlk8s.ucuenca.edu.ec/ms/pentagono-d360/api/eventos/${idEvento}/inscritos`;
-
-   /*const BASE_URL = idTaller
-      ? `https://desa-k8s.ucuenca.edu.ec/ms/pentagono-d360/api/eventos/${idEvento}/inscritos/${idTaller}`
-      : `https://desa-k8s.ucuenca.edu.ec/ms/pentagono-d360/api/eventos/${idEvento}/inscritos`;*/
-
-      
-
-    const response = await axios.get(BASE_URL, {
+    const response = await axios.get(url, {
       responseType: "blob", // Indica que esperas una respuesta tipo 'blob'
       headers: { Authorization: `Bearer ${token}` }, // Asume autenticación mediante token
     });
@@ -31,17 +25,17 @@ const descargarArchivoExcel = async (token, idEvento, idTaller, dispatch) => {
       }
     }
 
-    const url = window.URL.createObjectURL(
+    const blobUrl = window.URL.createObjectURL(
       new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
     );
 
     const link = document.createElement('a');
-    link.href = url;
+    link.href = blobUrl;
     link.setAttribute('download', filename); // Usar el nombre del archivo obtenido
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    window.URL.revokeObjectURL(blobUrl);
   } catch (error) {
     triggerNotification(dispatch, {
       message: "Error al descargar el archivo. Por favor, inténtalo de nuevo.",
