@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
+import MultiSelectComboBox from "../ui/components/MultiSelectComboBox/MultiSelectComboBox";
+import { useGetCompetenciasQuery } from "@redux/services/competencia/competenciaApi";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useEditEventoMutation } from "@redux/services/evento/eventoApi";
@@ -27,7 +29,7 @@ const EditarCharla = (props) => {
     id,
     nombre,
     ubicacion,
-    competencia,
+    competencias,
     momento,
     modalidad,
     descripcion,
@@ -102,7 +104,7 @@ const EditarCharla = (props) => {
         titulo_charla: input.charla
       }));
       data.modalidad = listModalidades.indexOf(selectedModalidad)+1,
-      data.competencia = listCompetencias.indexOf(selectedCompetencia)+1,
+      data.competencias = selectedCompetencias.map(c => c.id),
       data.momento = listMomentos.indexOf(selectedMomento)+1,
       setFormData({
         id: id,
@@ -238,20 +240,23 @@ const EditarCharla = (props) => {
    */
 
   const listModalidades = ["Presencial", "Virtual"];
-  const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
   const listMomentos = ["Explorador", "Integrador", "Innovador"];
+
+  const { data: competenciasList = [] } = useGetCompetenciasQuery();
 
   // Estado para almacenar el valor seleccionado
   const [selectedModalidad, setSelectedModalidad] = useState(modalidad);
-  const [selectedCompetencia, setSelectedCompetencia] = useState(competencia);
+  const [selectedCompetencias, setSelectedCompetencias] = useState(
+    Array.isArray(competencias) ? competencias : []
+  );
   const [selectedMomento, setSelectedMomento] = useState(momento);
 
   const handleSelect = (value) => {
     setSelectedModalidad(value);
   };
 
-  const handleSelectCompetencia = (value) => {
-    setSelectedCompetencia(value);
+  const handleSelectCompetencia = (items) => {
+    setSelectedCompetencias(items);
   };
   const handleSelectMomento = (value) => {
     setSelectedMomento(value);
@@ -361,13 +366,12 @@ const EditarCharla = (props) => {
 
           {/**Competencia */}
           <div className="col-span-6 flex flex-col gap-1">
-            <FormLabel value={"Competencia"} />
+            <FormLabel value={"Competencias"} />
             <div className="w-full">
-              <ComboBox
-                items={listCompetencias}
-                onSelect={handleSelectCompetencia}
-                hasBeenSelected={true}
-                selected={selectedCompetencia}
+              <MultiSelectComboBox
+                items={competenciasList}
+                selectedItems={selectedCompetencias}
+                onSelectionChange={handleSelectCompetencia}
               />
             </div>
           </div>

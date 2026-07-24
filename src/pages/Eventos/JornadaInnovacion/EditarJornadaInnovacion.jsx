@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
+import MultiSelectComboBox from "../ui/components/MultiSelectComboBox/MultiSelectComboBox";
+import { useGetCompetenciasQuery } from "@redux/services/competencia/competenciaApi";
 import { Link, useNavigate } from "react-router-dom";
 import { ContainerPage, InfoPill } from "@components";
 import ContainerForm from "../ui/components/ContainerForm/ContainerForm";
@@ -135,7 +137,7 @@ const EditarJornadaInnovacion = (props) => {
       id: indexTaller + 1,
       value: taller.nombre,
       descripcion: taller.descripcion,
-      competencia: taller.competencia,
+      competencias: Array.isArray(taller.competencias) ? taller.competencias : [],
       momento: taller.momento,
       cupos_extra: taller.cupos_extra,
       isEmpty: false,
@@ -161,7 +163,7 @@ const EditarJornadaInnovacion = (props) => {
     nuevoTaller.originalValue = {
       value: nuevoTaller.value,
       descripcion: nuevoTaller.descripcion,
-      competencia: nuevoTaller.competencia,
+      competencias: nuevoTaller.competencias,
       momento: nuevoTaller.momento,
       cupos_extra: nuevoTaller.cupos_extra,
       sesiones: nuevoTaller.sesiones,
@@ -207,11 +209,11 @@ const EditarJornadaInnovacion = (props) => {
       })
     );
   }
-  const handleCompetenciaChange = (id, newValue) => {
+  const handleCompetenciaChange = (id, items) => {
     setInputs(
       inputs.map((input) => {
         if (input.id === id) {
-          return { ...input, competencia: newValue, isEmpty: false };
+          return { ...input, competencias: items, isEmpty: false };
         }
         return input;
       })
@@ -234,7 +236,7 @@ const EditarJornadaInnovacion = (props) => {
     newInputs.push({
       value: "",
       descripcion: "",
-      competencia: "",
+      competencias: [],
       momento: "",
       cupos_extra: "",
       isEmpty: false,
@@ -392,6 +394,7 @@ const EditarJornadaInnovacion = (props) => {
             value: input.originalValue.value,
             descripcion: input.originalValue.descripcion,
             competencia: input.originalValue.competencia,
+            competencias: input.originalValue.competencias || [],
             momento: input.originalValue.momento,
             cupos_extra: input.originalValue.cupos_extra,
             sesiones: input.originalValue.sesiones,
@@ -416,7 +419,7 @@ const EditarJornadaInnovacion = (props) => {
     const areAllInputsFilled = (inputs[index].value.trim() !== "")
       && (inputs[index].descripcion.trim() !== "")
       && (inputs[index].cupos_extra.trim() !== "")
-      && (inputs[index].competencia.trim() !== "")
+      && (inputs[index].competencias.length > 0)
       && (inputs[index].momento.trim() !== "")
       && inputs[index].sesiones.every(sesion =>
         sesion.fecha_id &&
@@ -435,7 +438,7 @@ const EditarJornadaInnovacion = (props) => {
         body: {
           nombre: input.value,
           descripcion: input.descripcion,
-          competencia: listCompetencias.indexOf(input.competencia) + 1,
+          competencias: input.competencias.map(c => c.id),
           momento: listMomentos.indexOf(input.momento) + 1,
           cupos_extra: Number(input.cupos_extra),
           sesiones: input.sesiones.map(({ ...sesion }) => ({
@@ -472,7 +475,7 @@ const EditarJornadaInnovacion = (props) => {
             body: {
               nombre: input.value,
               descripcion: input.descripcion,
-              competencia: listCompetencias.indexOf(input.competencia) + 1,
+              competencias: input.competencias.map(c => c.id),
               momento: listMomentos.indexOf(input.momento) + 1,
               cupos_extra: Number(input.cupos_extra),
               sesiones: input.sesiones.map(({ fecha, fecha_id, ...sesion }) => ({
@@ -612,8 +615,9 @@ const EditarJornadaInnovacion = (props) => {
    */
 
   const listModalidades = ["Presencial", "Virtual", "Sin Sesión"];
-  const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
   const listMomentos = ["Explorador", "Integrador", "Innovador"];
+
+  const { data: competenciasList = [] } = useGetCompetenciasQuery();
 
 
 
@@ -896,9 +900,13 @@ const EditarJornadaInnovacion = (props) => {
                       </div>
                       <div className="flex flex-wrap pt-1 gap-3">
                         <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                          <label className="text-sm font-medium text-primary_text_1">Competencia</label>
-                          <ComboBox items={listCompetencias} onSelect={(value) => handleCompetenciaChange(input.id, value)}
-                            selected={input.competencia} enableEdit={input.enableEdit} isEnabled={input.enableEdit} />
+                          <label className="text-sm font-medium text-primary_text_1">Competencias</label>
+                          <MultiSelectComboBox
+                            items={competenciasList}
+                            selectedItems={input.competencias}
+                            onSelectionChange={(items) => handleCompetenciaChange(input.id, items)}
+                            isEnabled={input.enableEdit}
+                          />
                         </div>
                         <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
                           <label className="text-sm font-medium text-primary_text_1">Momento</label>

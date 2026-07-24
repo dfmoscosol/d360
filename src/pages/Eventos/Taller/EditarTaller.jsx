@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
+import MultiSelectComboBox from "../ui/components/MultiSelectComboBox/MultiSelectComboBox";
+import { useGetCompetenciasQuery } from "@redux/services/competencia/competenciaApi";
 import FormLabel from "../ui/components/FormLabel/FormLabel";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,7 +23,7 @@ const EditarTaller = (props) => {
     currentSesiones,
     ponentes,
     descripcion,
-    competencia,
+    competencias,
     momento,
     handleRefetch,
   } = props;
@@ -89,7 +91,7 @@ const EditarTaller = (props) => {
     if (areValidDates && areValidSesiones && areAllPonentesFilled) {
       console.log("Se puede enviar el formulario");
       data.sesiones = sesiones;
-      data.competencia = listCompetencias.indexOf(selectedCompetencia)+1;
+      data.competencias = selectedCompetencias.map(c => c.id);
       data.momento = listMomentos.indexOf(selectedMomento)+1;
       data.horas = Number(data.horas);
       data.cupos = Number(data.cupos);
@@ -183,14 +185,17 @@ const EditarTaller = (props) => {
    */
 
   const listModalidades = ["Presencial","Virtual"];
-  const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
   const listMomentos = ["Explorador", "Integrador", "Innovador"];
 
-  const [selectedCompetencia, setSelectedCompetencia] = useState(competencia);
+  const { data: competenciasList = [] } = useGetCompetenciasQuery();
+
+  const [selectedCompetencias, setSelectedCompetencias] = useState(
+    Array.isArray(competencias) ? competencias : []
+  );
   const [isValidCompetencia, setIsValidCompetencia] = useState(true);
-  const handleSelectCompetencia = (value) => {
-    setSelectedCompetencia(value);
-    setIsValidCompetencia(true)
+  const handleSelectCompetencia = (items) => {
+    setSelectedCompetencias(items);
+    setIsValidCompetencia(items.length > 0);
   };
 
   const [selectedMomento, setSelectedMomento] = useState(momento);
@@ -445,14 +450,17 @@ const EditarTaller = (props) => {
 
             {/**Competencia */}
           <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Competencia"} />
+            <FormLabel value={"Competencias"} />
             <div className="w-full">
-              <ComboBox items={listCompetencias} onSelect={handleSelectCompetencia} hasBeenSelected={true}
-                selected={selectedCompetencia} />
+              <MultiSelectComboBox
+                items={competenciasList}
+                selectedItems={selectedCompetencias}
+                onSelectionChange={handleSelectCompetencia}
+              />
             </div>
             {!isValidCompetencia && (
               <span className="text-red-600 text-sm font-light px-1">
-                Seleccione una opción
+                Seleccione al menos una competencia
               </span>
             )}
           </div>

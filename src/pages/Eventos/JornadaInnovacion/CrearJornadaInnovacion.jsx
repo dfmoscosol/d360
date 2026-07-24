@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import DatePicker from "react-multi-date-picker";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
+import MultiSelectComboBox from "../ui/components/MultiSelectComboBox/MultiSelectComboBox";
+import { useGetCompetenciasQuery } from "@redux/services/competencia/competenciaApi";
 import { useAddEventoMutation } from "@redux/services/evento/eventoApi";
 import { Button } from "@components";
 import { useNavigate } from "react-router-dom";
@@ -52,7 +54,7 @@ const CrearJornadaInnovacion = () => {
     const areAllInputsFilled = inputs.every(input =>
       input.value.trim() !== "" &&
       input.descripcion.trim() !== "" &&
-      input.competencia.trim() !== "" &&
+      input.competencias.length > 0 &&
       input.momento.trim() !== "" &&
       input.sesiones.every(sesion =>
         sesion.fecha_id &&
@@ -70,7 +72,7 @@ const CrearJornadaInnovacion = () => {
       console.log("ERROR: Todos los campos deben estar completos.");
       setInputs(inputs => inputs.map(input => ({
         ...input,
-        isEmpty: input.value.trim() === "" || input.descripcion.trim() === "" || input.competencia.trim() === "" || input.momento.trim() === "" || input.sesiones.some(sesion =>
+        isEmpty: input.value.trim() === "" || input.descripcion.trim() === "" || input.competencias.length === 0 || input.momento.trim() === "" || input.sesiones.some(sesion =>
           !sesion.fecha_id || sesion.hora_inicio.trim() === "" ||
           sesion.duracion.trim() === "" || sesion.modalidad.trim() === "" ||
           sesion.ubicacion.trim() === ""
@@ -83,7 +85,7 @@ const CrearJornadaInnovacion = () => {
     const validInputsList = inputs.map(input => ({
       nombre: input.value,
       descripcion: input.descripcion,
-      competencia: listCompetencias.indexOf(input.competencia)+1,
+      competencias: input.competencias.map(c => c.id),
       momento: listMomentos.indexOf(input.momento)+1,
       sesiones: input.sesiones.map(sesion => ({
         fecha_id: sesion.fecha_id,
@@ -122,7 +124,7 @@ const CrearJornadaInnovacion = () => {
       ponentes: [{ id: 1, value: "", hasAddButton: true, hasRemoveButton: false, }],
       value: "",
       descripcion: "",
-      competencia:"",
+      competencias: [],
       momento:"",
       isEmpty: false,
     },
@@ -150,11 +152,11 @@ const CrearJornadaInnovacion = () => {
     );
   };
 
-  const handleCompetenciaChange = (id, newValue) => {
+  const handleCompetenciaChange = (id, items) => {
     setInputs(
       inputs.map((input) => {
         if (input.id === id) {
-          return { ...input, competencia: newValue, isEmpty: false };
+          return { ...input, competencias: items, isEmpty: false };
         }
         return input;
       })
@@ -392,8 +394,9 @@ const CrearJornadaInnovacion = () => {
    * COMBOBOX
    */
   const listModalidades = ["Presencial", "Virtual", "Sin Sesión"];
-  const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
   const listMomentos = ["Explorador", "Integrador", "Innovador"];
+
+  const { data: competenciasList = [] } = useGetCompetenciasQuery();
 
 
   /**
@@ -540,8 +543,11 @@ const CrearJornadaInnovacion = () => {
                         <div className="flex flex-wrap gap-3">
 
                           <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                            <label className="text-sm font-medium text-primary_text_1">Competencia</label>
-                            <ComboBox items={listCompetencias} onSelect={(value) => handleCompetenciaChange(input.id, value)}
+                            <label className="text-sm font-medium text-primary_text_1">Competencias</label>
+                            <MultiSelectComboBox
+                              items={competenciasList}
+                              selectedItems={input.competencias}
+                              onSelectionChange={(items) => handleCompetenciaChange(input.id, items)}
                             />
                           </div>
                           <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">

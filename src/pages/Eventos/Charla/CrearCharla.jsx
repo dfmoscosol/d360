@@ -12,6 +12,8 @@ import { ContainerPage } from "@components";
 import ContainerForm from "../ui/components/ContainerForm/ContainerForm";
 import FormLabel from "../ui/components/FormLabel/FormLabel";
 import ComboBox from "../ui/components/ComboBox/ComboBox";
+import MultiSelectComboBox from "../ui/components/MultiSelectComboBox/MultiSelectComboBox";
+import { useGetCompetenciasQuery } from "@redux/services/competencia/competenciaApi";
 
 const CrearCharla = () => {
   /**
@@ -53,7 +55,7 @@ const CrearCharla = () => {
     }
 
     setIsValidModalidad(selectedModalidad!="")
-    setIsValidCompetencia(selectedCompetencia!="")
+    setIsValidCompetencia(selectedCompetencias.length > 0)
     setIsValidMomento(selectedMomento!="")
     
     const areAllPonentesFilled = inputs.every(input =>
@@ -70,12 +72,12 @@ const CrearCharla = () => {
       return; // Detener la ejecución si algún campo está vacío
     }
 
-    if (areValidDates && selectedCompetencia!="" && selectedModalidad!="" && selectedMomento!="" && areAllPonentesFilled) {
+    if (areValidDates && selectedCompetencias.length > 0 && selectedModalidad!="" && selectedMomento!="" && areAllPonentesFilled) {
       console.log("Se puede enviar el formulario");
       data.fechas = validDatesList;
       data.inscripcion = false;
       data.modalidad = listModalidades.indexOf(selectedModalidad)+1,
-      data.competencia = listCompetencias.indexOf(selectedCompetencia)+1,
+      data.competencias = selectedCompetencias.map(c => c.id),
       data.momento = listMomentos.indexOf(selectedMomento)+1,
         data.ponentes = inputs.map(input => ({
           nombre: input.value,
@@ -143,8 +145,9 @@ const CrearCharla = () => {
    * COMBOBOX
    */
   const listModalidades = ["Presencial", "Virtual"];
-  const listCompetencias = ["Tecnológica", "Pedagógica", "Comunicativa", "De Gestión", "Investigativa"];
   const listMomentos = ["Explorador", "Integrador", "Innovador"];
+
+  const { data: competenciasList = [] } = useGetCompetenciasQuery();
 
   const [selectedModalidad, setSelectedModalidad] = useState("");
   const [isValidModalidad, setIsValidModalidad] = useState(true);
@@ -153,11 +156,11 @@ const CrearCharla = () => {
     setIsValidModalidad(true)
   };
 
-  const [selectedCompetencia, setSelectedCompetencia] = useState("");
+  const [selectedCompetencias, setSelectedCompetencias] = useState([]);
   const [isValidCompetencia, setIsValidCompetencia] = useState(true);
-  const handleSelectCompetencia = (value) => {
-    setSelectedCompetencia(value);
-    setIsValidCompetencia(true)
+  const handleSelectCompetencia = (items) => {
+    setSelectedCompetencias(items);
+    setIsValidCompetencia(items.length > 0);
   };
 
   const [selectedMomento, setSelectedMomento] = useState("");
@@ -289,13 +292,17 @@ const CrearCharla = () => {
 
           {/**Competencia */}
           <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Competencia"} />
+            <FormLabel value={"Competencias"} />
             <div className="w-full">
-              <ComboBox items={listCompetencias} onSelect={handleSelectCompetencia} />
+              <MultiSelectComboBox
+                items={competenciasList}
+                selectedItems={selectedCompetencias}
+                onSelectionChange={handleSelectCompetencia}
+              />
             </div>
             {!isValidCompetencia && (
               <span className="text-red-600 text-sm font-light px-1">
-                Seleccione una opción
+                Seleccione al menos una competencia
               </span>
             )}
           </div>
