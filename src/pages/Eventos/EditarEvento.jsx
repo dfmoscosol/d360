@@ -58,7 +58,7 @@ const EditarEvento = () => {
         id={evento.id}
         nombre={evento.nombre}
         modalidad={evento.modalidad}
-        competencia={evento.competencia}
+        competencias={evento.competencias}
         momento={evento.momento}
         ponentes={evento.ponentes}
         descripcion={evento.descripcion}
@@ -87,7 +87,7 @@ const EditarEvento = () => {
         ponentes={evento.ponentes}
         currentSesiones={evento.sesiones}
         descripcion={evento.descripcion}
-        competencia={evento.competencia}
+        competencias={evento.competencias}
         momento={evento.momento}
         handleRefetch={handleRefetch}
       />

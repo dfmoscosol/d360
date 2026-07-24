@@ -53,7 +53,7 @@ const InformationSection = (props) => {
     isMicrotaller,
     sesiones,
     ponentes,
-    competencia,
+    competencias,
     momento
   } = props;
 
@@ -261,7 +261,7 @@ const InformationSection = (props) => {
       </Header>
       <SectionContainer>
         <Title value={containerNombre} />
-        {isMicrotaller || isCharla ? <CompetenciaCard competencia={competencia} momento={momento}/>:<></>}
+        {isMicrotaller || isCharla ? <CompetenciaCard competencias={competencias} momento={momento}/>:<></>}
         <div className="flex flex-col gap-2">
           <Data dataList={containerDataList} />
         </div>

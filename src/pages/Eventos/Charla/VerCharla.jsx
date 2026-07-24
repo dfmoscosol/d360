@@ -32,7 +32,7 @@ const VerCharla = (props) => {
     nombre,
     ubicacion,
     modalidad,
-    competencia,
+    competencias,
     momento,
     duracion,
     hora_inicio,
@@ -63,7 +63,7 @@ const VerCharla = (props) => {
                   routeType={'charlas'}
                   containerNombre={nombre}
                   containerFechas={fechas}
-                  competencia={competencia}
+                  competencias={competencias}
                   momento={momento}
                   containerDataList={[
                     

@@ -177,12 +177,16 @@ const getBackgroundColor = (momento) => {
   }
 };
 
-export const CompetenciaCard = ({ competencia, momento }) => {
+export const CompetenciaCard = ({ competencias = [], momento }) => {
   return (
     <div>
-      <div className="flex items-center">
-        <CompetenciaIcon competencia={competencia} />
-        <h2 className="text-md font-medium text-gray-900">Competencia {competencia}</h2>
+      <div className="flex flex-col gap-2">
+        {competencias.map((comp, idx) => (
+          <div key={idx} className="flex items-center">
+            <CompetenciaIcon competencia={comp.nombre} />
+            <h2 className="text-md font-medium text-gray-900">Competencia {comp.nombre}</h2>
+          </div>
+        ))}
       </div>
       <div className="mt-2">
         <button className={`${getBackgroundColor(momento)} text-white text-sm px-3 py-1 rounded-full`}>
@@ -198,7 +202,7 @@ export const TalleresPanel = ({ extra, taller }) => (
     <div className="grid grid-cols-1 gap-4">
       <div className="col-span-3 md:col-span-1 bg-primary_gray_1 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-all duration-200 justify-between">
         <TitleTaller value={taller.nombre} />
-        <CompetenciaCard competencia={taller.competencia} momento={taller.momento} />
+        <CompetenciaCard competencias={taller.competencias} momento={taller.momento} />
         <p className="text-justify mt-1 mb-2">{taller.descripcion}</p>
         <div className="col-span-2 border border-primary_gray_5 rounded-lg py-2 px-4 flex flex-col gap-0">
           <span className="text-sm font-normal text-primary_gray_2">

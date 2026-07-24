@@ -57,7 +57,7 @@ const VerEvento = () => {
         horas={evento.horas}
         id={evento.id}
         modalidad={evento.modalidad}
-        competencia={evento.competencia}
+        competencias={evento.competencias}
         momento={evento.momento}
         ubicacion={evento.ubicacion}
         duracion={evento.duracion}
@@ -79,7 +79,7 @@ const VerEvento = () => {
         docentesPendientes={evento.docentes_pendientes}
         fechas={evento.fechas}
         horas={evento.horas}
-        competencia={evento.competencia}
+        competencias={evento.competencias}
         momento={evento.momento}
         id={evento.id}
         nombre={evento.nombre}
