@@ -139,10 +139,26 @@ export const eventoApi = createApi({
         method: 'GET',
         responseHandler: (response) => response.blob(),
       }),
-    })
+    }),
+    validarInscripcionMasiva: builder.mutation({
+      query: ({ eventoId, tallerId, file }) => {
+        const formData = new FormData();
+        formData.append('evento_id', eventoId);
+        if (tallerId) {
+          formData.append('taller_id', tallerId);
+        }
+        formData.append('file', file);
+        return {
+          url: '/eventos/inscripcion/validar-masiva',
+          method: 'POST',
+          body: formData,
+        };
+      },
+    }),
     
   }),
 });
+
 
 export const {
   useLazyDownloadPdfQuery,
@@ -165,4 +181,6 @@ export const {
   useEditObservadoresMutation,
   useDeleteObservadoresMutation,
   useEliminarInscripcionMutation,
+  useValidarInscripcionMasivaMutation,
 } = eventoApi;
+

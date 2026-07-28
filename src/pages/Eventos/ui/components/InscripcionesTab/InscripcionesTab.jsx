@@ -8,6 +8,8 @@ import InscripcionManual from "../InscripcionManual/InscripcionManual";
 import { Button, Modal } from "@components";
 import { useInscribirDocenteMutation } from "../../../../../redux/services/evento/eventoApi";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
+import CargaMasivaModal from "../CargaMasiva/CargaMasivaModal";
+import { MdCloudUpload } from "react-icons/md";
 
 const InscripcionesTab = ({ id, handleRefetch, idTaller, docentesInscritos }) => {
   /**
@@ -62,6 +64,15 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller, docentesInscritos }) =>
    * PARA EL MODAL DELETE
    */
   const [isModalOpen, setModalOpen] = useState(false);
+
+  /**
+   * PARA EL MODAL DE CARGA MASIVA
+   */
+  const [isCargaMasivaOpen, setCargaMasivaOpen] = useState(false);
+
+  const handleValidosAdded = (uids) => {
+    setSelectedRows((prev) => [...new Set([...prev, ...uids])]);
+  };
 
   if (isLoading || isFetching) return <Loader />;
 
@@ -136,6 +147,14 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller, docentesInscritos }) =>
 
   return (
     <div className="">
+      <CargaMasivaModal
+        isOpen={isCargaMasivaOpen}
+        onClose={() => setCargaMasivaOpen(false)}
+        eventoId={id}
+        tallerId={idTaller}
+        onValidosAdded={handleValidosAdded}
+      />
+
       <Modal
         //isOpen={true}
         isOpen={isModalOpen}
@@ -166,6 +185,17 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller, docentesInscritos }) =>
           />
         )}
       </Modal>
+
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-sm font-medium text-primary_gray_2">Selecciona docentes de la lista</span>
+        <button
+          onClick={() => setCargaMasivaOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary_color_1 text-primary_color_1 text-xs font-semibold hover:bg-blue-50 transition-all duration-150"
+        >
+          <MdCloudUpload size={16} />
+          Carga Masiva
+        </button>
+      </div>
 
       <DataTable
         initialData={docentesNoInscritos}
