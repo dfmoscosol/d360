@@ -272,7 +272,7 @@ const CargaMasivaModal = ({ isOpen, onClose, eventoId, tallerId, onValidosAdded 
               disabled={(report?.uids_validos?.length ?? 0) === 0}
               className="px-5 py-2 rounded-lg text-sm font-semibold text-white bg-primary_color_1 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
             >
-              Añadir {report?.uids_validos?.length ?? 0} válido(s) al carrito
+              Añadir {report?.uids_validos?.length ?? 0} válido(s) para inscribir
             </button>
           </div>
         )}

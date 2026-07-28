@@ -187,7 +187,6 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller, docentesInscritos }) =>
       </Modal>
 
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-medium text-primary_gray_2">Selecciona docentes de la lista</span>
         <button
           onClick={() => setCargaMasivaOpen(true)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary_color_1 text-primary_color_1 text-xs font-semibold hover:bg-blue-50 transition-all duration-150"
@@ -195,6 +194,7 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller, docentesInscritos }) =>
           <MdCloudUpload size={16} />
           Carga Masiva
         </button>
+        <span className="text-sm font-medium text-primary_gray_2">Selecciona docentes de la lista</span>
       </div>
 
       <DataTable
