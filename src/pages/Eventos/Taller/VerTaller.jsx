@@ -33,6 +33,7 @@ const VerTaller = (props) => {
     descripcion,
     competencias,
     momento,
+    microcredencial,
     handleRefetch,
   } = props;
 
@@ -60,6 +61,7 @@ const VerTaller = (props) => {
                   containerFechas={fechas}
                   competencias={competencias}
                   momento={momento}
+                  microcredencial={microcredencial}
                   containerDataList={[
                     {
                       key: "Descripción",

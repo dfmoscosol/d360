@@ -53,7 +53,7 @@ const CrearTaller = () => {
     }
 
     setIsValidCompetencia(selectedCompetencias.length > 0)
-    setIsValidMomento(selectedMomento!="")
+    setIsValidMomento(selectedMomento != "")
 
     let areValidSesiones = false
     if (sesiones.every(element => element.modalidad !== "" && element.ubicacion !== "" && element.duracion !== "" && element.hora_inicio !== "")) {
@@ -75,19 +75,19 @@ const CrearTaller = () => {
       return; // Detener la ejecución si algún campo está vacío
     }
 
-    if (isValidDate && areValidSesiones && selectedCompetencias.length > 0 && selectedMomento!="" && areAllPonentesFilled) {
+    if (isValidDate && areValidSesiones && selectedCompetencias.length > 0 && selectedMomento != "" && areAllPonentesFilled) {
       data.inscripcion = false
       data.competencias = selectedCompetencias.map(c => c.id)
-      data.momento = listMomentos.indexOf(selectedMomento)+1
+      data.momento = listMomentos.indexOf(selectedMomento) + 1
       data.sesiones = sesiones
       data.ponentes = inputs.map(input => ({
         nombre: input.value,
       }));
       console.log(data)
-       addEvento({
+      addEvento({
         params: data,
         tipo: "microtalleres"
-      }); 
+      });
     }
 
   };
@@ -152,7 +152,7 @@ const CrearTaller = () => {
    * PARA LAS SESIONES DINAMICAS
    */
 
-  const listModalidades = ["Presencial","Virtual"];
+  const listModalidades = ["Presencial", "Virtual"];
   const listMomentos = ["Explorador", "Integrador", "Innovador"];
 
   const { data: competenciasList = [] } = useGetCompetenciasQuery();
@@ -172,7 +172,7 @@ const CrearTaller = () => {
   };
 
   const handleSelect = (value, fecha) => {
-    let numValue = listModalidades.indexOf(value)+1;
+    let numValue = listModalidades.indexOf(value) + 1;
     let sesionesActualizadas = [...sesiones];
 
     // Encontrar la sesión correspondiente a la fecha
@@ -387,6 +387,17 @@ const CrearTaller = () => {
                 Seleccione una opción
               </span>
             )}
+          </div>
+          {/**Microcredencial */}
+          <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Microcredencial (Opcional)"} />
+            <input
+              type="text"
+              maxLength={100}
+              placeholder="Microcredencial"
+              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+              {...register("microcredencial")}
+            />
           </div>
           {/**Fecha */}
           <div className="col-span-6 flex flex-col gap-1">

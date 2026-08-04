@@ -33,6 +33,7 @@ const EditarCharla = (props) => {
     momento,
     modalidad,
     descripcion,
+    microcredencial,
     handleRefetch,
   } = props;
 
@@ -103,14 +104,14 @@ const EditarCharla = (props) => {
         nombre: input.value,
         titulo_charla: input.charla
       }));
-      data.modalidad = listModalidades.indexOf(selectedModalidad)+1,
-      data.competencias = selectedCompetencias.map(c => c.id),
-      data.momento = listMomentos.indexOf(selectedMomento)+1,
-      setFormData({
-        id: id,
-        body: data,
-        tipo: "charlas"
-      });
+      data.modalidad = listModalidades.indexOf(selectedModalidad) + 1,
+        data.competencias = selectedCompetencias.map(c => c.id),
+        data.momento = listMomentos.indexOf(selectedMomento) + 1,
+        setFormData({
+          id: id,
+          body: data,
+          tipo: "charlas"
+        });
       setModalOpen(true);
     } else {
       console.log("No se puede enviar el formulario");
@@ -389,6 +390,19 @@ const EditarCharla = (props) => {
             </div>
           </div>
 
+          {/**Microcredencial */}
+          <div className="col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Microcredencial (Opcional)"} />
+            <input
+              type="text"
+              maxLength={100}
+              defaultValue={microcredencial || ""}
+              placeholder="Microcredencial"
+              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+              {...register("microcredencial")}
+            />
+          </div>
+
           {/**Fecha */}
           <div className="col-span-6 flex flex-col gap-1">
             <FormLabel value={"Fecha"} />
@@ -468,7 +482,7 @@ const EditarCharla = (props) => {
                 selected={selectedModalidad}
               />
             </div>
-            
+
           </div>
 
           {/**Ubicación */}

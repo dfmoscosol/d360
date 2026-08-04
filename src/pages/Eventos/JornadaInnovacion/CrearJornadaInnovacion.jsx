@@ -86,12 +86,13 @@ const CrearJornadaInnovacion = () => {
       nombre: input.value,
       descripcion: input.descripcion,
       competencias: input.competencias.map(c => c.id),
-      momento: listMomentos.indexOf(input.momento)+1,
+      momento: listMomentos.indexOf(input.momento) + 1,
+      microcredencial: input.microcredencial || null,
       sesiones: input.sesiones.map(sesion => ({
         fecha_id: sesion.fecha_id,
         hora_inicio: sesion.modalidad === "Sin Sesión" ? "00:00" : sesion.hora_inicio,
         duracion: sesion.modalidad === "Sin Sesión" ? 0 : sesion.duracion,
-        modalidad: listModalidades.indexOf(sesion.modalidad)+1,
+        modalidad: listModalidades.indexOf(sesion.modalidad) + 1,
         ubicacion: sesion.modalidad === "Sin Sesión" ? "Sin ubicación" : sesion.ubicacion
       })),
       ponentes: input.ponentes.map(ponente => ({ nombre: ponente.value }))
@@ -107,7 +108,7 @@ const CrearJornadaInnovacion = () => {
     addEvento({
       params: data,
       tipo: "jornadas"
-    }); 
+    });
 
     console.log("Formulario enviado");
   };
@@ -125,7 +126,8 @@ const CrearJornadaInnovacion = () => {
       value: "",
       descripcion: "",
       competencias: [],
-      momento:"",
+      momento: "",
+      microcredencial: "",
       isEmpty: false,
     },
   ]);
@@ -168,6 +170,17 @@ const CrearJornadaInnovacion = () => {
       inputs.map((input) => {
         if (input.id === id) {
           return { ...input, momento: newValue, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  };
+
+  const handleMicrocredencialChange = (id, newValue) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === id) {
+          return { ...input, microcredencial: newValue };
         }
         return input;
       })
@@ -555,6 +568,17 @@ const CrearJornadaInnovacion = () => {
                             <ComboBox items={listMomentos} onSelect={(value) => handleMomentoChange(input.id, value)}
                             />
                           </div>
+                        </div>
+                        <div className="flex flex-col">
+                          <label className="text-sm font-medium text-primary_text_1">Microcredencial (Opcional)</label>
+                          <input
+                            type="text"
+                            maxLength={100}
+                            placeholder="Microcredencial"
+                            value={input.microcredencial}
+                            onChange={(e) => handleMicrocredencialChange(input.id, e.target.value)}
+                            className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                          />
                         </div>
 
                         {input.sesiones.map((sesion, index) => (

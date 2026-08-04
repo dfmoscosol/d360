@@ -65,6 +65,7 @@ const VerEvento = () => {
         nombre={evento.nombre}
         ponentes={evento.ponentes}
         descripcion={evento.descripcion}
+        microcredencial={evento.microcredencial}
         handleRefetch={handleRefetch}
       />
     );
@@ -86,6 +87,7 @@ const VerEvento = () => {
         sesiones={evento.sesiones}
         descripcion={evento.descripcion}
         ponentes={evento.ponentes}
+        microcredencial={evento.microcredencial}
         handleRefetch={handleRefetch}
       />
     );

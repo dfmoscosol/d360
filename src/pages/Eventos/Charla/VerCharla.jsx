@@ -40,6 +40,7 @@ const VerCharla = (props) => {
     descripcion,
     handleRefetch,
     acreditacion,
+    microcredencial,
   } = props;
 
 
@@ -65,6 +66,7 @@ const VerCharla = (props) => {
                   containerFechas={fechas}
                   competencias={competencias}
                   momento={momento}
+                  microcredencial={microcredencial}
                   containerDataList={[
                     
                     {

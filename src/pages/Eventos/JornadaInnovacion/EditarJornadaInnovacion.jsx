@@ -139,6 +139,7 @@ const EditarJornadaInnovacion = (props) => {
       descripcion: taller.descripcion,
       competencias: Array.isArray(taller.competencias) ? taller.competencias : [],
       momento: taller.momento,
+      microcredencial: taller.microcredencial,
       cupos_extra: taller.cupos_extra,
       isEmpty: false,
       isEnabled: false,
@@ -165,6 +166,7 @@ const EditarJornadaInnovacion = (props) => {
       descripcion: nuevoTaller.descripcion,
       competencias: nuevoTaller.competencias,
       momento: nuevoTaller.momento,
+      microcredencial: nuevoTaller.microcredencial,
       cupos_extra: nuevoTaller.cupos_extra,
       sesiones: nuevoTaller.sesiones,
       ponentes: nuevoTaller.ponentes.map(ponente => ({
@@ -230,6 +232,17 @@ const EditarJornadaInnovacion = (props) => {
     );
   }
 
+  const handleMicrocredencialChange = (id, newValue) => {
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === id) {
+          return { ...input, microcredencial: newValue, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  }
+
   const handleAddInput = () => {
     const newInputs = [...inputs];
     console.log(dates)
@@ -238,6 +251,7 @@ const EditarJornadaInnovacion = (props) => {
       descripcion: "",
       competencias: [],
       momento: "",
+      microcredencial: "",
       cupos_extra: "",
       isEmpty: false,
       enableEdit: true,
@@ -440,6 +454,7 @@ const EditarJornadaInnovacion = (props) => {
           descripcion: input.descripcion,
           competencias: input.competencias.map(c => c.id),
           momento: listMomentos.indexOf(input.momento) + 1,
+          microcredencial: input.microcredencial || null,
           cupos_extra: Number(input.cupos_extra),
           sesiones: input.sesiones.map(({ ...sesion }) => ({
             ...sesion,
@@ -477,6 +492,7 @@ const EditarJornadaInnovacion = (props) => {
               descripcion: input.descripcion,
               competencias: input.competencias.map(c => c.id),
               momento: listMomentos.indexOf(input.momento) + 1,
+              microcredencial: input.microcredencial || null,
               cupos_extra: Number(input.cupos_extra),
               sesiones: input.sesiones.map(({ fecha, fecha_id, ...sesion }) => ({
                 hora_inicio: sesion.modalidad === "Sin Sesión" ? "00:00" : sesion.hora_inicio,
@@ -913,6 +929,21 @@ const EditarJornadaInnovacion = (props) => {
                           <ComboBox items={listMomentos} onSelect={(value) => handleMomentoChange(input.id, value)}
                             selected={input.momento} enableEdit={input.enableEdit} isEnabled={input.enableEdit} />
                         </div>
+                      </div>
+                      <div className="flex flex-col pt-3">
+                        <label className="text-sm font-medium text-primary_text_1">Microcredencial (Opcional)</label>
+                        <input
+                          type="text"
+                          maxLength={100}
+                          placeholder="Microcredencial"
+                          value={input.microcredencial || ""}
+                          onChange={(e) => handleMicrocredencialChange(input.id, e.target.value)}
+                          className={` ${input.enableEdit
+                            ? "bg-white outline-none ring-1 ring-inset ring-primary_gray_5"
+                            : "bg-primary_gray_1"
+                            } text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full`}
+                          disabled={!input.enableEdit}
+                        />
                       </div>
 
                       {input.sesiones.map((sesion, index) => (

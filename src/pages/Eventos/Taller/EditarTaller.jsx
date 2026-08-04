@@ -25,6 +25,7 @@ const EditarTaller = (props) => {
     descripcion,
     competencias,
     momento,
+    microcredencial,
     handleRefetch,
   } = props;
 
@@ -92,7 +93,7 @@ const EditarTaller = (props) => {
       console.log("Se puede enviar el formulario");
       data.sesiones = sesiones;
       data.competencias = selectedCompetencias.map(c => c.id);
-      data.momento = listMomentos.indexOf(selectedMomento)+1;
+      data.momento = listMomentos.indexOf(selectedMomento) + 1;
       data.horas = Number(data.horas);
       data.cupos = Number(data.cupos);
       data.ponentes = inputs.map(input => ({
@@ -184,7 +185,7 @@ const EditarTaller = (props) => {
    * COMBOBOX
    */
 
-  const listModalidades = ["Presencial","Virtual"];
+  const listModalidades = ["Presencial", "Virtual"];
   const listMomentos = ["Explorador", "Integrador", "Innovador"];
 
   const { data: competenciasList = [] } = useGetCompetenciasQuery();
@@ -208,7 +209,7 @@ const EditarTaller = (props) => {
   // Estado para almacenar el valor seleccionado
 
   const handleSelect = (value, fecha) => {
-    let numValue = listModalidades.indexOf(value)+1;
+    let numValue = listModalidades.indexOf(value) + 1;
     let sesionesActualizadas = [...sesiones];
 
     // Encontrar la sesión correspondiente a la fecha
@@ -448,7 +449,7 @@ const EditarTaller = (props) => {
             )}
           </div>
 
-            {/**Competencia */}
+          {/**Competencia */}
           <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
             <FormLabel value={"Competencias"} />
             <div className="w-full">
@@ -477,6 +478,19 @@ const EditarTaller = (props) => {
                 Seleccione una opción
               </span>
             )}
+          </div>
+
+          {/**Microcredencial */}
+          <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Microcredencial (Opcional)"} />
+            <input
+              type="text"
+              maxLength={100}
+              defaultValue={microcredencial || ""}
+              placeholder="Microcredencial"
+              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+              {...register("microcredencial")}
+            />
           </div>
 
           {/**Fecha */}

@@ -54,10 +54,10 @@ const CrearCharla = () => {
       validDatesList.push(dates.format("YYYY-MM-DD"));
     }
 
-    setIsValidModalidad(selectedModalidad!="")
+    setIsValidModalidad(selectedModalidad != "")
     setIsValidCompetencia(selectedCompetencias.length > 0)
-    setIsValidMomento(selectedMomento!="")
-    
+    setIsValidMomento(selectedMomento != "")
+
     const areAllPonentesFilled = inputs.every(input =>
       input.value.trim() !== "" &&
       input.charla.trim() !== ""
@@ -72,13 +72,13 @@ const CrearCharla = () => {
       return; // Detener la ejecución si algún campo está vacío
     }
 
-    if (areValidDates && selectedCompetencias.length > 0 && selectedModalidad!="" && selectedMomento!="" && areAllPonentesFilled) {
+    if (areValidDates && selectedCompetencias.length > 0 && selectedModalidad != "" && selectedMomento != "" && areAllPonentesFilled) {
       console.log("Se puede enviar el formulario");
       data.fechas = validDatesList;
       data.inscripcion = false;
-      data.modalidad = listModalidades.indexOf(selectedModalidad)+1,
-      data.competencias = selectedCompetencias.map(c => c.id),
-      data.momento = listMomentos.indexOf(selectedMomento)+1,
+      data.modalidad = listModalidades.indexOf(selectedModalidad) + 1,
+        data.competencias = selectedCompetencias.map(c => c.id),
+        data.momento = listMomentos.indexOf(selectedMomento) + 1,
         data.ponentes = inputs.map(input => ({
           nombre: input.value,
           titulo_charla: input.charla
@@ -88,7 +88,7 @@ const CrearCharla = () => {
       addEvento({
         params: data,
         tipo: "charlas"
-      }); 
+      });
       console.log("Enviado");
     } else {
       console.log("No se puede enviar el formulario");
@@ -140,7 +140,7 @@ const CrearCharla = () => {
     );
   }
 
- 
+
   /**
    * COMBOBOX
    */
@@ -318,6 +318,18 @@ const CrearCharla = () => {
                 Seleccione una opción
               </span>
             )}
+          </div>
+
+          {/**Microcredencial */}
+          <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Microcredencial (Opcional)"} />
+            <input
+              type="text"
+              maxLength={100}
+              placeholder="Microcredencial"
+              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+              {...register("microcredencial")}
+            />
           </div>
 
           {/**Fecha */}

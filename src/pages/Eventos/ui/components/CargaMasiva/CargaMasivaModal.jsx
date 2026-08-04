@@ -16,20 +16,20 @@ function parseCsvText(text) {
   const separator = lines[0].includes(";") ? ";" : ",";
   const rows = lines.map((line) => line.split(separator).map((c) => c.trim()));
 
-  const invalidRow = rows.find((r) => r.length !== 2);
+  const invalidRow = rows.find((r) => r.length !== 1);
   if (invalidRow) {
-    return { error: "El archivo debe tener exactamente 2 columnas (Nombre, Correo)." };
+    return { error: "El archivo debe tener exactamente 1 sola columna (Correo electrónico)." };
   }
 
   let dataRows = rows;
 
-  // Detectar encabezado: si la 2da celda de la 1ra fila NO es un correo válido, es encabezado
-  if (!EMAIL_REGEX.test(rows[0][1])) {
-    const secondHeader = rows[0][1].toLowerCase().replace(/\s/g, "");
-    const isKnownEmailHeader = CORREO_HEADERS.some((h) => h.replace(/\s/g, "") === secondHeader);
+  // Detectar encabezado: si la primera celda NO es un correo válido, es encabezado
+  if (!EMAIL_REGEX.test(rows[0][0])) {
+    const headerStr = rows[0][0].toLowerCase().replace(/\s/g, "");
+    const isKnownEmailHeader = CORREO_HEADERS.some((h) => h.replace(/\s/g, "") === headerStr);
     if (!isKnownEmailHeader) {
       return {
-        error: `La segunda columna debe ser el correo electrónico. Se encontró: "${rows[0][1]}".`,
+        error: `El encabezado debe ser un correo o una etiqueta válida de correo. Se encontró: "${rows[0][0]}".`,
       };
     }
     dataRows = rows.slice(1);
@@ -37,14 +37,14 @@ function parseCsvText(text) {
 
   if (dataRows.length === 0) return { error: "El archivo no contiene datos (solo encabezado)." };
 
-  const invalidEmails = dataRows.filter((r) => !EMAIL_REGEX.test(r[1]));
+  const invalidEmails = dataRows.filter((r) => !EMAIL_REGEX.test(r[0]));
   if (invalidEmails.length > 0) {
     return {
-      error: `Correos con formato inválido: ${invalidEmails.map((r) => r[1]).slice(0, 3).join(", ")}${invalidEmails.length > 3 ? "..." : ""}`,
+      error: `Correos con formato inválido: ${invalidEmails.map((r) => r[0]).slice(0, 3).join(", ")}${invalidEmails.length > 3 ? "..." : ""}`,
     };
   }
 
-  return { rows: dataRows.map((r) => ({ nombre: r[0], correo: r[1] })) };
+  return { rows: dataRows.map((r) => ({ correo: r[0] })) };
 }
 
 const BADGE_CONFIG = {
@@ -195,7 +195,7 @@ const CargaMasivaModal = ({ isOpen, onClose, eventoId, tallerId, onValidosAdded 
           {/* Hint de formato */}
           {!report && !parseError && (
             <p className="text-xs text-primary_gray_2 text-center">
-              Debe tener 2 columnas: <span className="font-medium text-primary_text_1">Nombre</span> y <span className="font-medium text-primary_text_1">Correo</span>. Los encabezados son opcionales.
+              Debe tener <span className="font-medium text-primary_text_1">1 sola columna</span> con el Correo electrónico. El encabezado es opcional.
             </p>
           )}
 

@@ -62,6 +62,7 @@ const EditarEvento = () => {
         momento={evento.momento}
         ponentes={evento.ponentes}
         descripcion={evento.descripcion}
+        microcredencial={evento.microcredencial}
         handleRefetch={handleRefetch}
       />
     );
@@ -89,6 +90,7 @@ const EditarEvento = () => {
         descripcion={evento.descripcion}
         competencias={evento.competencias}
         momento={evento.momento}
+        microcredencial={evento.microcredencial}
         handleRefetch={handleRefetch}
       />
     );
