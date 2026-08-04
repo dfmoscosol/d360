@@ -495,6 +495,7 @@ const EditarJornadaInnovacion = (props) => {
               microcredencial: input.microcredencial || null,
               cupos_extra: Number(input.cupos_extra),
               sesiones: input.sesiones.map(({ fecha, fecha_id, ...sesion }) => ({
+                id: sesion.id,
                 hora_inicio: sesion.modalidad === "Sin Sesión" ? "00:00" : sesion.hora_inicio,
                 duracion: sesion.modalidad === "Sin Sesión" ? 0 : sesion.duracion,
                 modalidad: listModalidades.indexOf(sesion.modalidad) + 1,
