@@ -230,7 +230,7 @@ const CrearJornadaInnovacion = () => {
       if (input.id === tallerId) {
         const oldSesion = input.sesiones.find(s => s.fecha_id === oldFechaId);
         const newSesion = input.sesiones.find(s => s.fecha_id === newFechaId);
-        
+
         if (oldSesion && newSesion) {
           const updatedNewSesion = {
             ...newSesion,
@@ -239,7 +239,7 @@ const CrearJornadaInnovacion = () => {
             duracion: oldSesion.duracion,
             ubicacion: oldSesion.ubicacion
           };
-          
+
           const updatedOldSesion = {
             ...oldSesion,
             modalidad: "Sin Sesión",
@@ -247,7 +247,7 @@ const CrearJornadaInnovacion = () => {
             duracion: "",
             ubicacion: ""
           };
-          
+
           return {
             ...input,
             sesiones: input.sesiones.map(s => {
@@ -431,6 +431,32 @@ const CrearJornadaInnovacion = () => {
   ];
 
   function handleDateChange(value) {
+    const newDatesFormatted = value.map(d => d.format("YYYY-MM-DD"));
+    const oldDatesFormatted = dates.map(d => d.format("YYYY-MM-DD"));
+
+    const removedDates = oldDatesFormatted.filter(d => !newDatesFormatted.includes(d));
+
+    if (removedDates.length > 0) {
+      let hasConflict = false;
+      for (const input of inputs) {
+        for (const sesion of input.sesiones) {
+          if (sesion.modalidad !== "Sin Sesión" && removedDates.includes(sesion.fecha_id)) {
+            hasConflict = true;
+            break;
+          }
+        }
+        if (hasConflict) break;
+      }
+
+      if (hasConflict) {
+        triggerNotification(dispatch, {
+          message: "No puedes eliminar una fecha que tiene un taller asignado.",
+          type: "error"
+        });
+        return;
+      }
+    }
+
     // Actualizar la lista de fechas
     setDates(value);
     setValidDate(value.length > 0);
@@ -661,13 +687,13 @@ const CrearJornadaInnovacion = () => {
                         {(() => {
                           const activeSesiones = input.sesiones.filter(s => s.modalidad !== "Sin Sesión");
                           const inactiveSesiones = input.sesiones.filter(s => s.modalidad === "Sin Sesión");
-                          
+
                           return (
                             <div className="flex flex-col gap-4 w-full">
                               {activeSesiones.map((sesion, activeIndex) => {
                                 const originalIndex = input.sesiones.findIndex(s => s.fecha_id === sesion.fecha_id);
                                 const availableDates = [sesion.fecha_id, ...inactiveSesiones.map(s => s.fecha_id)].sort();
-                                
+
                                 return (
                                   <div key={sesion.fecha_id} className="flex flex-col gap-3 p-4 bg-primary_gray_1 rounded-lg border border-gray-200 relative">
                                     {activeSesiones.length > 1 && (
@@ -682,10 +708,10 @@ const CrearJornadaInnovacion = () => {
                                         </svg>
                                       </button>
                                     )}
-                                    <div className="flex flex-col items-start justify-start w-1/3 pr-8">
+                                    <div className="flex flex-col items-start justify-start w-full">
                                       <label className="text-sm font-medium text-primary_text_1 mb-1">Fecha</label>
-                                      <ComboBox 
-                                        items={availableDates} 
+                                      <ComboBox
+                                        items={availableDates}
                                         onSelect={(value) => { if (value !== sesion.fecha_id) handleDateSwap(input.id, sesion.fecha_id, value); }}
                                         selected={sesion.fecha_id}
                                       />
@@ -693,10 +719,10 @@ const CrearJornadaInnovacion = () => {
                                     <div className="flex flex-wrap gap-3">
                                       <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
                                         <label className="text-sm font-medium text-primary_text_1">Modalidad</label>
-                                        <ComboBox 
-                                          items={listModalidades} 
+                                        <ComboBox
+                                          items={listModalidades}
                                           onSelect={(value) => handleModalidadChange(input.id, originalIndex, value)}
-                                          selected={sesion.modalidad} 
+                                          selected={sesion.modalidad}
                                         />
                                       </div>
                                       <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
@@ -724,7 +750,7 @@ const CrearJornadaInnovacion = () => {
                                   </div>
                                 );
                               })}
-                              
+
                               {inactiveSesiones.length > 0 && (
                                 <div className="flex justify-start">
                                   <button

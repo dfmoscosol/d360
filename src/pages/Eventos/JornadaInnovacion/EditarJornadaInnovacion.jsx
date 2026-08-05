@@ -280,7 +280,7 @@ const EditarJornadaInnovacion = (props) => {
       if (input.id === tallerId) {
         const oldSesion = input.sesiones.find(s => s.fecha === oldFechaStr);
         const newSesion = input.sesiones.find(s => s.fecha === newFechaStr);
-        
+
         if (oldSesion && newSesion) {
           const updatedNewSesion = {
             ...newSesion,
@@ -289,7 +289,7 @@ const EditarJornadaInnovacion = (props) => {
             duracion: oldSesion.duracion,
             ubicacion: oldSesion.ubicacion
           };
-          
+
           const updatedOldSesion = {
             ...oldSesion,
             modalidad: "Sin Sesión",
@@ -297,7 +297,7 @@ const EditarJornadaInnovacion = (props) => {
             duracion: "",
             ubicacion: ""
           };
-          
+
           return {
             ...input,
             sesiones: input.sesiones.map(s => {
@@ -661,8 +661,10 @@ const EditarJornadaInnovacion = (props) => {
   const fechasDateFormat = [];
   fechas.forEach((fecha, index) => {
     const parts = fecha.fecha.split("-");
-    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // YYYY-MM-DD
-    fechasDateFormat.push(new DateObject(new Date(formattedDate)));
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const year = parseInt(parts[2], 10);
+    fechasDateFormat.push(new DateObject(new Date(year, month, day)));
   });
   const [dates, setDates] = useState(fechasDateFormat);
   const weekDays = ["D", "L", "M", "M", "J", "V", "S"];
@@ -682,9 +684,37 @@ const EditarJornadaInnovacion = (props) => {
   ];
 
   function handleDateChange(value) {
+    const newDatesFormatted = value.map(d => d.format("YYYY-MM-DD"));
+    const oldDatesFormatted = dates.map(d => d.format("YYYY-MM-DD"));
+
+    const removedDates = oldDatesFormatted.filter(d => !newDatesFormatted.includes(d));
+
+    if (removedDates.length > 0) {
+      let hasConflict = false;
+      for (const input of inputs) {
+        for (const sesion of input.sesiones) {
+          if (sesion.modalidad !== "Sin Sesión" && removedDates.includes(sesion.fecha)) {
+            hasConflict = true;
+            break;
+          }
+        }
+        if (hasConflict) break;
+      }
+
+      if (hasConflict) {
+        triggerNotification(dispatch, {
+          message: "No puedes eliminar una fecha que tiene un taller asignado.",
+          type: "error"
+        });
+        return;
+      }
+    }
+
     setDates(value);
     if (value.length > 0) {
       setValidDate(true);
+    } else {
+      setValidDate(false);
     }
   }
 
@@ -1024,106 +1054,106 @@ const EditarJornadaInnovacion = (props) => {
                         />
                       </div>
 
-                        {(() => {
-                          const activeSesiones = input.sesiones.filter(s => s.modalidad !== "Sin Sesión");
-                          const inactiveSesiones = input.sesiones.filter(s => s.modalidad === "Sin Sesión");
-                          
-                          return (
-                            <div className="flex flex-col gap-4 w-full pt-3">
-                              {activeSesiones.map((sesion, activeIndex) => {
-                                const originalIndex = input.sesiones.findIndex(s => s.fecha === sesion.fecha);
-                                const availableDates = [sesion.fecha, ...inactiveSesiones.map(s => s.fecha)].sort();
-                                
-                                return (
-                                  <div key={sesion.fecha} className="flex flex-col gap-3 p-4 bg-primary_gray_1 rounded-lg border border-gray-200 relative">
-                                    {input.enableEdit && activeSesiones.length > 1 && (
-                                      <button
-                                        type="button"
-                                        onClick={() => handleRemoveSession(input.id, sesion.fecha)}
-                                        className="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-white rounded-full p-1 shadow-sm"
-                                        title="Eliminar sesión"
-                                      >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                                        </svg>
-                                      </button>
-                                    )}
-                                    <div className="flex flex-col items-start justify-start w-1/3 pr-8">
-                                      <label className="text-sm font-medium text-primary_text_1 mb-1">Fecha</label>
-                                      <ComboBox 
-                                        items={availableDates} 
-                                        onSelect={(value) => { if (value !== sesion.fecha) handleDateSwap(input.id, sesion.fecha, value); }}
-                                        selected={sesion.fecha}
+                      {(() => {
+                        const activeSesiones = input.sesiones.filter(s => s.modalidad !== "Sin Sesión");
+                        const inactiveSesiones = input.sesiones.filter(s => s.modalidad === "Sin Sesión");
+
+                        return (
+                          <div className="flex flex-col gap-4 w-full pt-3">
+                            {activeSesiones.map((sesion, activeIndex) => {
+                              const originalIndex = input.sesiones.findIndex(s => s.fecha === sesion.fecha);
+                              const availableDates = [sesion.fecha, ...inactiveSesiones.map(s => s.fecha)].sort();
+
+                              return (
+                                <div key={sesion.fecha} className="flex flex-col gap-3 p-4 bg-primary_gray_1 rounded-lg border border-gray-200 relative">
+                                  {input.enableEdit && activeSesiones.length > 1 && (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveSession(input.id, sesion.fecha)}
+                                      className="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-white rounded-full p-1 shadow-sm"
+                                      title="Eliminar sesión"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                      </svg>
+                                    </button>
+                                  )}
+                                  <div className="flex flex-col items-start justify-start w-full">
+                                    <label className="text-sm font-medium text-primary_text_1 mb-1">Fecha</label>
+                                    <ComboBox
+                                      items={availableDates}
+                                      onSelect={(value) => { if (value !== sesion.fecha) handleDateSwap(input.id, sesion.fecha, value); }}
+                                      selected={sesion.fecha}
+                                      enableEdit={input.enableEdit}
+                                      isEnabled={input.enableEdit}
+                                    />
+                                  </div>
+                                  <div className="flex flex-wrap gap-3">
+                                    <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                      <label className="text-sm font-medium text-primary_text_1">Modalidad</label>
+                                      <ComboBox
+                                        items={listModalidades}
+                                        onSelect={(value) => handleModalidadChange(input.id, originalIndex, value)}
+                                        selected={sesion.modalidad}
                                         enableEdit={input.enableEdit}
                                         isEnabled={input.enableEdit}
                                       />
                                     </div>
-                                    <div className="flex flex-wrap gap-3">
-                                      <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                                        <label className="text-sm font-medium text-primary_text_1">Modalidad</label>
-                                        <ComboBox 
-                                          items={listModalidades} 
-                                          onSelect={(value) => handleModalidadChange(input.id, originalIndex, value)}
-                                          selected={sesion.modalidad} 
-                                          enableEdit={input.enableEdit}
-                                          isEnabled={input.enableEdit}
-                                        />
-                                      </div>
-                                      <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                                        <label className="text-sm font-medium text-primary_text_1">Hora</label>
-                                        <input type="time"
-                                          disabled={!input.enableEdit}
-                                          value={sesion.hora_inicio}
-                                          onChange={(e) => handleHoraInicioChange(input.id, originalIndex, e.target.value)}
-                                          className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit
-                                            ? "bg-white outline-none ring-1 ring-inset ring-primary_gray_5"
-                                            : "bg-primary_gray_1"
+                                    <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                      <label className="text-sm font-medium text-primary_text_1">Hora</label>
+                                      <input type="time"
+                                        disabled={!input.enableEdit}
+                                        value={sesion.hora_inicio}
+                                        onChange={(e) => handleHoraInicioChange(input.id, originalIndex, e.target.value)}
+                                        className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit
+                                          ? "bg-white outline-none ring-1 ring-inset ring-primary_gray_5"
+                                          : "bg-primary_gray_1"
                                           }`} />
-                                      </div>
-                                      <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                                        <label className="text-sm font-medium text-primary_text_1">Duración</label>
-                                        <input type="number"
-                                          disabled={!input.enableEdit}
-                                          value={sesion.duracion}
-                                          onChange={(e) => handleDuracionChange(input.id, originalIndex, e.target.value)}
-                                          className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit
-                                            ? "bg-white outline-none ring-1 ring-inset ring-primary_gray_5"
-                                            : "bg-primary_gray_1"
+                                    </div>
+                                    <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                      <label className="text-sm font-medium text-primary_text_1">Duración</label>
+                                      <input type="number"
+                                        disabled={!input.enableEdit}
+                                        value={sesion.duracion}
+                                        onChange={(e) => handleDuracionChange(input.id, originalIndex, e.target.value)}
+                                        className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit
+                                          ? "bg-white outline-none ring-1 ring-inset ring-primary_gray_5"
+                                          : "bg-primary_gray_1"
                                           }`} />
-                                      </div>
-                                      <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
-                                        <label className="text-sm font-medium text-primary_text_1">Ubicación</label>
-                                        <input type="text"
-                                          disabled={!input.enableEdit}
-                                          value={sesion.ubicacion}
-                                          onChange={(e) => handleUbicacionChange(input.id, originalIndex, e.target.value)}
-                                          className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit
-                                            ? "bg-white outline-none ring-1 ring-inset ring-primary_gray_5"
-                                            : "bg-primary_gray_1"
+                                    </div>
+                                    <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                                      <label className="text-sm font-medium text-primary_text_1">Ubicación</label>
+                                      <input type="text"
+                                        disabled={!input.enableEdit}
+                                        value={sesion.ubicacion}
+                                        onChange={(e) => handleUbicacionChange(input.id, originalIndex, e.target.value)}
+                                        className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit
+                                          ? "bg-white outline-none ring-1 ring-inset ring-primary_gray_5"
+                                          : "bg-primary_gray_1"
                                           }`} />
-                                      </div>
                                     </div>
                                   </div>
-                                );
-                              })}
-                              
-                              {input.enableEdit && inactiveSesiones.length > 0 && (
-                                <div className="flex justify-start">
-                                  <button
-                                    type="button"
-                                    onClick={() => handleAddSession(input.id)}
-                                    className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 bg-blue-50 px-3 py-2 rounded-lg border border-blue-100"
-                                  >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>Agregar Fecha</span>
-                                  </button>
                                 </div>
-                              )}
-                            </div>
-                          );
-                        })()}
+                              );
+                            })}
+
+                            {input.enableEdit && inactiveSesiones.length > 0 && (
+                              <div className="flex justify-start">
+                                <button
+                                  type="button"
+                                  onClick={() => handleAddSession(input.id)}
+                                  className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 bg-blue-50 px-3 py-2 rounded-lg border border-blue-100"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                                  </svg>
+                                  <span>Agregar Fecha</span>
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       <div className="flex items-center justify-start pt-2 gap-3">
                         <label className="text-sm font-medium text-primary_text_1">Ponentes</label>

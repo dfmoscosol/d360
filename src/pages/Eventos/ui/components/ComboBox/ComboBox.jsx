@@ -47,7 +47,7 @@ const ComboBox = ({ items, indexGeneral,onSelect, selected = "", isEnabled = tru
       <div className={`flex items-center rounded-lg text-sm w-full relative cursor-pointer ${!isEnabled ? 'cursor-not-allowed' : ''}`}>
         <input
           type="text"
-          className={`cursor-pointer focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${
+          className={`cursor-pointer focus:bg-white text-primary_gray_4 font-light p-2 pr-10 rounded-lg text-sm w-full ${
             enableEdit ? "outline-none ring-1 ring-inset ring-primary_gray_5" : "bg-primary_gray_1"
           }`}
           value={selectedItem}
@@ -59,7 +59,7 @@ const ComboBox = ({ items, indexGeneral,onSelect, selected = "", isEnabled = tru
         />
         <MdExpandMore
           size={30}
-          className={`absolute right-0 text-primary_color_1 ${!isEnabled ? 'opacity-50' : ''}`}
+          className={`absolute right-1 text-primary_color_1 ${!isEnabled ? 'opacity-50' : ''}`}
           onClick={toggleComboBox}
         />
       </div>
