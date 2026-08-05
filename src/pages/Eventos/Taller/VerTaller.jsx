@@ -2,7 +2,6 @@ import React from "react";
 
 import EventoView from "../ui/components/EventoView/EventoView";
 import InformationSection from "../ui/components/Sections/InformationSection";
-import AprobationSection from "../ui/components/Sections/AprobationSection";
 import InscribedSection from "../ui/components/Sections/InscribedSection";
 import EnrollSection from "../ui/components/Sections/EnrollSection";
 import { ContainerPage } from "@components";
@@ -86,20 +85,9 @@ const VerTaller = (props) => {
               ),
             },
             {
-              title: `Aprobar (${docentesPendientes.length})`,
-              icon: <MdOutlineChecklistRtl size={20} />,
-              index: 1,
-              content: (
-                <AprobationSection
-                  docentesPendientes={docentesPendientes}
-                  handleRefetch={handleRefetch}
-                />
-              ),
-            },
-            {
               title: `Inscritos (${docentesInscritos.length})`,
               icon: <MdCheckBox size={20} />,
-              index: 2,
+              index: 1,
               content: (
                 <InscribedSection
                   docentesInscritos={docentesInscritos}
@@ -111,7 +99,7 @@ const VerTaller = (props) => {
             {
               title: "Inscribir",
               icon: <MdPersonAddAlt1 size={20} />,
-              index: 3,
+              index: 2,
               content: (
                 <EnrollSection
                   idEvento={id}

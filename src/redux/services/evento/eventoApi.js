@@ -73,13 +73,7 @@ export const eventoApi = createApi({
       //providesTags: ["getDocetesParaInscripcion"],
       //invalidatesTags: ["getEvento", "Docente"],
     }),
-    actualizarInscripcion: builder.mutation({
-      query: (params) => ({
-        url: `/eventos/inscripcion/estado/${params.id}`,
-        method: "PATCH",
-        body: params.body,
-      }),
-    }),
+
     eliminarInscripcion: builder.mutation({
       query: (params) => ({
         url: `/eventos/inscripcion/${params.id}`,
@@ -177,7 +171,6 @@ export const {
   useGetAllDocentesQuery,
   useGetAllObservadoresQuery,
   useAgregarObservadoresMutation,
-  useActualizarInscripcionMutation,
   useEditObservadoresMutation,
   useDeleteObservadoresMutation,
   useEliminarInscripcionMutation,

@@ -4,7 +4,6 @@ import EventoView from "../ui/components/EventoView/EventoView";
 import InformationSection from "../ui/components/Sections/InformationSection";
 import { ContainerPage } from "@components";
 import Tabs from "../ui/components/Tabs/Tabs";
-import AprobationSection from "../ui/components/Sections/AprobationSection";
 import InscribedSection from "../ui/components/Sections/InscribedSection";
 import EnrollSection from "../ui/components/Sections/EnrollSection";
 import {
@@ -63,18 +62,6 @@ const VerJornadaInnovacion = (props) => {
       data: [
         {
           index: contIndex + 1,
-          title: `Aprobar (${taller.docentes_pendientes.length})`,
-          icon: <MdOutlineChecklistRtl size={20} />,
-          content: (
-            <AprobationSection
-              key={taller.id} // Agregar key único
-              docentesPendientes={taller.docentes_pendientes}
-              handleRefetch={handleRefetch}
-            />
-          ),
-        },
-        {
-          index: contIndex + 2,
           title: `Inscritos (${taller.docentes_inscritos.length})`,
           icon: <MdCheckBox size={20} />,
           content: (
@@ -87,7 +74,7 @@ const VerJornadaInnovacion = (props) => {
           ),
         },
         {
-          index: contIndex + 3,
+          index: contIndex + 2,
           title: "Inscribir",
           icon: <MdPersonAddAlt1 size={20} />,
           content: (
@@ -101,7 +88,7 @@ const VerJornadaInnovacion = (props) => {
         },
       ],
     });
-    contIndex += 3;
+    contIndex += 2;
   });
 
   return (

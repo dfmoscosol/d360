@@ -19,7 +19,6 @@ import { SiGoogleclassroom } from "react-icons/si";
 
 import EventoView from "../ui/components/EventoView/EventoView";
 import InformationSection from "../ui/components/Sections/InformationSection";
-import AprobationSection from "../ui/components/Sections/AprobationSection";
 import InscribedSection from "../ui/components/Sections/InscribedSection";
 import EnrollSection from "../ui/components/Sections/EnrollSection";
 import { ContainerPage } from "@components";
@@ -102,22 +101,9 @@ const VerObservacionAulica = (props) => {
             },
             {
               hasTitle: false,
-              title: `Aprobar (${docentesPendientes.length})`,
-              icon: <MdOutlineChecklistRtl size={20} />,
-              index: 2,
-              content: (
-                <AprobationSection
-                  docentesPendientes={docentesPendientes}
-                  observacion={true}
-                  handleRefetch={handleRefetch}
-                />
-              ),
-            },
-            {
-              hasTitle: false,
               title: `Inscritos (${docentesInscritos.length})`,
               icon: <MdCheckBox size={20} />,
-              index: 3,
+              index: 2,
               content: (
                 <InscribedSection
                   docentesInscritos={docentesInscritos}
