@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { Switch } from "@headlessui/react";
+import { MdOutlineSearch } from "react-icons/md";
 import EventoView, { SectionContainer, customStyles } from "../Eventos/ui/components/EventoView/EventoView";
 import { ContainerPage, Button, Loader, FetchError, Modal } from "@components";
 import {
@@ -32,6 +33,9 @@ const Acreditacion = () => {
   const [file, setFile] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterAttended, setFilterAttended] = useState("all");
+  const [filterPassed, setFilterPassed] = useState("all");
+  const [itemsPerPageState, setItemsPerPageState] = useState(5);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -256,17 +260,23 @@ const Acreditacion = () => {
     }
   };
 
-  const filteredData = data.filter(
-    (item) =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = data.filter((item) => {
+    const searchMatch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        item.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const attendedMatch = filterAttended === "all" ? true :
+                          filterAttended === "yes" ? item.attended === true :
+                          item.attended === false;
+    const passedMatch = filterPassed === "all" ? true :
+                        filterPassed === "yes" ? item.passed === true :
+                        item.passed === false;
+    return searchMatch && attendedMatch && passedMatch;
+  });
 
-  const itemsPerPage = 5;
+  const itemsPerPage = itemsPerPageState === "all" ? (filteredData.length > 0 ? filteredData.length : 1) : itemsPerPageState;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedData = filteredData.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
 
   const handlePrevPage = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
@@ -274,6 +284,12 @@ const Acreditacion = () => {
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  const handleItemsPerPageChange = (e) => {
+    const val = e.target.value === "all" ? "all" : parseInt(e.target.value, 10);
+    setItemsPerPageState(val);
+    setCurrentPage(1);
   };
 
   const handleEventChange = (selectedOption) => {
@@ -371,6 +387,45 @@ const Acreditacion = () => {
         </div>}
         {data.length !== 0 && <SectionContainer>
           <div className="w-full flex flex-col">
+            <div className="flex flex-col md:flex-row w-full justify-between items-center mb-4 space-y-4 md:space-y-0">
+              <div className="flex w-full md:w-2/3 space-x-4">
+                {selectedEvent && selectedEvent.tipo !== 4 && (
+                  <>
+                    <select
+                      className="block w-full md:w-auto p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-primary_gray_5 focus:border-primary_gray_5 outline-none"
+                      value={filterAttended}
+                      onChange={(e) => setFilterAttended(e.target.value)}
+                    >
+                      <option value="all">Asistencia (Todos)</option>
+                      <option value="yes">Asistieron</option>
+                      <option value="no">No asistieron</option>
+                    </select>
+                    <select
+                      className="block w-full md:w-auto p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-primary_gray_5 focus:border-primary_gray_5 outline-none"
+                      value={filterPassed}
+                      onChange={(e) => setFilterPassed(e.target.value)}
+                    >
+                      <option value="all">Aprobación (Todos)</option>
+                      <option value="yes">Aprobaron</option>
+                      <option value="no">No aprobaron</option>
+                    </select>
+                  </>
+                )}
+              </div>
+              
+              <div className="relative w-full md:w-1/3">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <MdOutlineSearch className="w-5 h-5 text-gray-500" />
+                </div>
+                <input
+                  type="text"
+                  className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-primary_gray_5 focus:border-primary_gray_5 outline-none"
+                  placeholder="Buscar por nombre o correo..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
             <table className="border-collapse md:table mt-2 table-auto">
               <thead className="bg-primary_gray_1">
                 <tr className="rounded-lg">
@@ -518,7 +573,7 @@ const Acreditacion = () => {
                 ))}
               </tbody>
             </table>
-            <div className="flex justify-between items-center bg-primary_gray_1 rounded-lg p-2">
+            <div className="flex justify-between items-center bg-primary_gray_1 rounded-lg p-2 mt-2">
               <Button
                 value="Anterior"
                 type="gray"
@@ -528,9 +583,21 @@ const Acreditacion = () => {
                 extra="px-2"
                 isDisabled={currentPage === 1}
               />
-              <span className="text-sm font-medium text-primary_text_1">
-                Página {currentPage} de {totalPages}
-              </span>
+              <div className="flex items-center space-x-4">
+                <span className="text-sm font-medium text-primary_text_1">
+                  Página {currentPage} de {totalPages}
+                </span>
+                <select
+                  className="p-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-primary_gray_5 focus:border-primary_gray_5 outline-none"
+                  value={itemsPerPageState}
+                  onChange={handleItemsPerPageChange}
+                >
+                  <option value={5}>5 / pág.</option>
+                  <option value={10}>10 / pág.</option>
+                  <option value={20}>20 / pág.</option>
+                  <option value="all">Todos</option>
+                </select>
+              </div>
               <Button
                 value="Siguiente"
                 type="gray"

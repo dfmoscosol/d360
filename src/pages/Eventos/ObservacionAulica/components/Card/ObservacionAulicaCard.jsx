@@ -2,24 +2,23 @@ import React from "react";
 
 import { Link } from "react-router-dom";
 import StatePill from "../../../ui/components/StatePill/StatePill";
+import EventTypeBadge from "../../../ui/components/EventTypeBadge/EventTypeBadge";
 import { MdDateRange } from "react-icons/md";
 
 const ObservacionAulicaCard = (props) => {
   const {acreditacion, inscripcion, fechas, id, nombre } = props;
 
   return (
-    <div className="bg-white p-4 flex flex-col gap-4 rounded-lg hover:shadow-lg transition-all duration-300 h-full">
+    <div className="bg-white p-4 flex flex-col gap-4 rounded-lg hover:shadow-lg transition-all duration-300 h-full border-l-4 hover:scale-[1.02] cursor-pointer" style={{ borderLeftColor: '#cccccc' }}>
       <Link
         to={`verEvento/${id}`}
         className="flex flex-col gap-4 w-full justify-between h-full"
       >
-        <div className="flex flex-col w-full">
-          <span className="text-lg font-medium text-primary_text_1 truncate tracking-tight leading-tight">
+        <div className="flex flex-col items-start gap-2 w-full">
+          <span className="text-lg font-medium text-primary_text_1 line-clamp-2 tracking-tight leading-tight">
             {nombre}
           </span>
-          <span className="text-xs font-light text-primary_gray_2">
-            Observación Áulica
-          </span>
+          <EventTypeBadge type={4} typeName="Observación Áulica" />
         </div>
 
         <div className="flex gap-2">

@@ -8,7 +8,7 @@ const Certificados = () => {
   const { data, refetch, error, isLoading, isFetching, isError } =
     useGetAllCertificadosQuery();
 
-  if (isLoading || isFetching) return <Loader />;
+  if (isLoading) return <Loader />;
 
   if (isError) return <FetchError error={error} />;
 

@@ -5,6 +5,7 @@ import { baseQueryWithAuth } from "../apiConfig";
 export const reportesApi = createApi({
   reducerPath: "reportesApi",
   baseQuery: baseQueryWithAuth,
+  tagTypes: ["DocentesHoras"],
   endpoints: (builder) => ({
     getDocentesHoras: builder.query({
       query: ({ busqueda, facultad, horas_min, horas_max, page = 1, per_page = 10 }) => {
@@ -18,6 +19,7 @@ export const reportesApi = createApi({
 
         return `/reportes/horas?${params.toString()}`;
       },
+      providesTags: ["DocentesHoras"],
     }),
 
     getAllFacultades: builder.query({
@@ -49,8 +51,36 @@ export const reportesApi = createApi({
         };
       },
     }),
+
+    updateDocenteGraduado: builder.mutation({
+      query: ({ uid_firebase, graduado }) => ({
+        url: `/docentes/${uid_firebase}`,
+        method: "PATCH",
+        body: { graduado },
+      }),
+      invalidatesTags: ["DocentesHoras"],
+    }),
+
+    cargaMasivaGraduados: builder.mutation({
+      query: (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        return {
+          url: "/reportes/horas/carga-masiva",
+          method: "POST",
+          body: formData,
+        };
+      },
+      invalidatesTags: ["DocentesHoras"],
+    }),
   }),
 });
 
-export const { useGetDocentesHorasQuery, useGetAllFacultadesQuery,useGetDocenteReportMutation, useGetDocentesHorasExcelMutation } = reportesApi;
-
+export const {
+  useGetDocentesHorasQuery,
+  useGetAllFacultadesQuery,
+  useGetDocenteReportMutation,
+  useGetDocentesHorasExcelMutation,
+  useUpdateDocenteGraduadoMutation,
+  useCargaMasivaGraduadosMutation,
+} = reportesApi;

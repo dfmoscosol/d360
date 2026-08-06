@@ -3,6 +3,7 @@ import { ContainerPage, Modal, Loader, Button } from "@components";
 import CertificadoCard from "./Components/CertificadoCard";
 import FilterSelect from "../Eventos/ui/components/FilterSelect/FilterSelect";
 import FormLabel from "../Eventos/ui/components/FormLabel/FormLabel";
+import { MdOutlineSearch } from "react-icons/md";
 import {
   useGetAllParametersQuery,
   useUpdateParametersMutation,
@@ -14,6 +15,7 @@ import ContainerFormModal from "../Eventos/ui/components/ContainerFormModal/Cont
 const VerCertificados = ({ certificados, handleRefetch }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterValue, setFilterValue] = useState("Todos");
+  const [searchTerm, setSearchTerm] = useState("");
   const [horas_programa, setHorasPrograma] = useState("");
   const [porcentaje_programa, setPorcentajePrograma] = useState("");
   const [porcentaje_certificado, setPorcentajeCertificado] = useState("");
@@ -31,18 +33,35 @@ const VerCertificados = ({ certificados, handleRefetch }) => {
   // Define the filter options
   const filterOptions = ["Todos", "Aprobados", "Pendientes", "Rechazados"];
 
-  // Filter the certificados based on filterValue
+  // Filter the certificados based on filterValue and searchTerm
   const filteredCertificados = certificados.filter((certificado) => {
-    if (filterValue === "Todos") {
-      return true;
-    } else if (filterValue === "Aprobados") {
-      return certificado.aceptada === true;
+    let matchFilter = true;
+    if (filterValue === "Aprobados") {
+      matchFilter = certificado.aceptada === true;
     } else if (filterValue === "Pendientes") {
-      return certificado.aceptada === null;
+      matchFilter = certificado.aceptada === null;
     } else if (filterValue === "Rechazados") {
-      return certificado.aceptada === false;
+      matchFilter = certificado.aceptada === false;
     }
-    return true;
+
+    let matchSearch = true;
+    if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
+      matchSearch = (certificado.nombres && certificado.nombres.toLowerCase().includes(lowerSearch)) ||
+                    (certificado.correo && certificado.correo.toLowerCase().includes(lowerSearch));
+    }
+
+    return matchFilter && matchSearch;
+  }).sort((a, b) => {
+    // Prioridad a pendientes (aceptada === null)
+    if (a.aceptada === null && b.aceptada !== null) return -1;
+    if (a.aceptada !== null && b.aceptada === null) return 1;
+
+    // Luego por fecha (los más recientes primero)
+    if (a.fecha_creacion && b.fecha_creacion) {
+      return new Date(b.fecha_creacion) - new Date(a.fecha_creacion);
+    }
+    return 0;
   });
 
   const handleOpenModal = () => {
@@ -149,28 +168,45 @@ const VerCertificados = ({ certificados, handleRefetch }) => {
   return (
     <ContainerPage>
       {/* Filter UI */}
-      <div className="mb-4 flex justify-end w-full">
-        <div className="w-40">
-          <Button
-           type="gray"
-           icon={"settings"}
-           onClick={() => handleOpenModal()}
-           value={"Configuración"}
-           size={"medium"}
-           isLoading={isUpdating}
-           isPrimary={true}
-           height='h-10'
+      <div className="mb-4 flex flex-col md:flex-row justify-between w-full gap-4">
+        {/* Search */}
+        <div className="relative w-full md:w-1/3">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <MdOutlineSearch className="w-5 h-5 text-gray-500" />
+          </div>
+          <input
+            type="text"
+            className="block w-full p-2 pl-10 h-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-primary_gray_5 focus:border-primary_gray_5 outline-none"
+            placeholder="Buscar por nombre o correo..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="w-40">
-          <FilterSelect
-            items={filterOptions}
-            selected={filterValue}
-            onSelect={(item) => setFilterValue(item)}
-            isEnabled={true}
-            enableEdit={false}
-            height='h-10'
-          />
+
+        {/* Buttons */}
+        <div className="flex gap-4">
+          <div className="w-40">
+            <Button
+             type="gray"
+             icon={"settings"}
+             onClick={() => handleOpenModal()}
+             value={"Configuración"}
+             size={"medium"}
+             isLoading={isUpdating}
+             isPrimary={true}
+             height='h-10'
+            />
+          </div>
+          <div className="w-40">
+            <FilterSelect
+              items={filterOptions}
+              selected={filterValue}
+              onSelect={(item) => setFilterValue(item)}
+              isEnabled={true}
+              enableEdit={false}
+              height='h-10'
+            />
+          </div>
         </div>
       </div>
 

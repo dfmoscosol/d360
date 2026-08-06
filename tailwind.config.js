@@ -21,6 +21,12 @@ export default {
         primary_gray_4: "#6f6f6e",
         primary_gray_5: "#E1E1E1", //claro
 
+        // Colores para tipos de evento
+        evento_jornada: "#001F66",
+        evento_charla: "#a60000",
+        evento_microtaller: "#4d4d4d",
+        evento_observacion: "#cccccc",
+
         /*
 
         primary_gray_1: "#f8f9fb",

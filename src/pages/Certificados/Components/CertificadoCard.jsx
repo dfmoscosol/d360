@@ -107,27 +107,15 @@ const CertificadoCard = ({
         title={"Aprobar Certificado"}
         showCancel={!isSuccessEdit}
       >
-        {isSuccessEdit ? (
-          <Link to="/eventos">
-            <Button
-              value="Actualización exitosa"
-              type="success"
-              size="medium"
-              icon="check"
-              isPrimary={true}
-            />
-          </Link>
-        ) : (
-          <Button
-            value="Aprobar"
-            type="success"
-            size="medium"
-            icon="check"
-            isPrimary={true}
-            onClick={handleConfirmarAprobar}
-            isLoading={isUpdatingEdit}
-          />
-        )}
+        <Button
+          value="Aprobar"
+          type="success"
+          size="medium"
+          icon="check"
+          isPrimary={true}
+          onClick={handleConfirmarAprobar}
+          isLoading={isUpdatingEdit}
+        />
       </Modal>
 
       <Modal

@@ -5,7 +5,9 @@ import Select from "react-select";
 import { customStyles } from "../Eventos/ui/components/EventoView/EventoView";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { HiCheckCircle, HiXCircle } from "react-icons/hi";
+import { MdCloudUpload } from "react-icons/md";
 import DetalleDocenteModal from '../Reportes/HorasDetailModal';
+import CargaMasivaGraduadosModal from './CargaMasivaGraduadosModal';
 import { BiLoaderCircle } from "react-icons/bi";
 
 const ReportesDocentes = () => {
@@ -16,6 +18,7 @@ const ReportesDocentes = () => {
 
     // Estado para la modal
     const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const [isCargaMasivaOpen, setIsCargaMasivaOpen] = React.useState(false);
     const [docenteDetalle, setDocenteDetalle] = React.useState(null);
 
     // Paginación (opcional)
@@ -129,20 +132,31 @@ const ReportesDocentes = () => {
                     />
                 </div>
 
-                {/* Botón Exportar */}
-                <button
-                    onClick={handleExportExcel}
-                    disabled={isDownloadingExcel}
-                    className={`flex items-center space-x-2 border border-gray-300 bg-white rounded-lg px-4 py-2 
-                ${isDownloadingExcel ? "cursor-not-allowed opacity-50" : "hover:bg-gray-100"}`}
-                >
-                    {isDownloadingExcel ? (
-                        <BiLoaderCircle  className="animate-spin text-gray-700" />
-                    ) : (
-                        <RiFileExcel2Line />
-                    )}
-                    <span className="text-gray-700">{isDownloadingExcel ? "Descargando..." : "Descargar"}</span>
-                </button>
+                {/* Botones de acción */}
+                <div className="flex items-center space-x-2 w-full md:w-auto">
+                    <button
+                        onClick={() => setIsCargaMasivaOpen(true)}
+                        className="flex items-center space-x-2 border border-gray-300 bg-white rounded-lg px-4 py-2 hover:bg-gray-100"
+                    >
+                        <MdCloudUpload className="text-gray-700" />
+                        <span className="text-gray-700">Carga Masiva</span>
+                    </button>
+                    
+                    {/* Botón Exportar */}
+                    <button
+                        onClick={handleExportExcel}
+                        disabled={isDownloadingExcel}
+                        className={`flex items-center space-x-2 border border-gray-300 bg-white rounded-lg px-4 py-2 
+                    ${isDownloadingExcel ? "cursor-not-allowed opacity-50" : "hover:bg-gray-100"}`}
+                    >
+                        {isDownloadingExcel ? (
+                            <BiLoaderCircle  className="animate-spin text-gray-700" />
+                        ) : (
+                            <RiFileExcel2Line />
+                        )}
+                        <span className="text-gray-700">{isDownloadingExcel ? "Descargando..." : "Descargar"}</span>
+                    </button>
+                </div>
             </div>
 
             {/* Tabla de resultados */}
@@ -239,6 +253,11 @@ const ReportesDocentes = () => {
                 onClose={() => setIsModalOpen(false)}
                 isLoading={isLoadingDetalle}
                 data={docenteDetalle}
+            />
+            
+            <CargaMasivaGraduadosModal
+                isOpen={isCargaMasivaOpen}
+                onClose={() => setIsCargaMasivaOpen(false)}
             />
         </div>
     );

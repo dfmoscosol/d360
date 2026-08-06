@@ -3,6 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { MdDateRange } from "react-icons/md";
 import StatePill from "../../../ui/components/StatePill/StatePill";
+import EventTypeBadge from "../../../ui/components/EventTypeBadge/EventTypeBadge";
 
 const CharlaCard = (props) => {
   const {
@@ -14,18 +15,16 @@ const CharlaCard = (props) => {
   } = props;
 
   return (
-    <div className="bg-white p-4 flex flex-col gap-4 rounded-lg hover:shadow-lg transition-all duration-300 h-full">
+    <div className="bg-white p-4 flex flex-col gap-4 rounded-lg hover:shadow-lg transition-all duration-300 h-full border-l-4 hover:scale-[1.02] cursor-pointer" style={{ borderLeftColor: '#a60000' }}>
       <Link
         to={`verEvento/${id}`}
         className="flex flex-col gap-4 w-full justify-between h-full"
       >
-        <div className="flex flex-col w-full">
-          <span className="text-lg font-medium text-primary_text_1 truncate tracking-tigh leading-tight">
+        <div className="flex flex-col items-start gap-2 w-full">
+          <span className="text-lg font-medium text-primary_text_1 line-clamp-2 tracking-tight leading-tight">
             {nombre}
           </span>
-          <span className="text-xs font-light text-primary_gray_2">
-            Charla
-          </span>
+          <EventTypeBadge type={2} typeName="Charla" />
         </div>
 
         <div className="flex gap-2">
