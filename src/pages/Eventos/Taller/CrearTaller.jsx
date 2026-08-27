@@ -75,9 +75,9 @@ const CrearTaller = () => {
       return; // Detener la ejecución si algún campo está vacío
     }
 
-    if (isValidDate && areValidSesiones && selectedCompetencias.length > 0 && selectedMomento != "" && areAllPonentesFilled) {
+    if (isValidDate && areValidSesiones && selectedCompetencias.length > 0 && sumaPorcentajes === 100 && selectedMomento != "" && areAllPonentesFilled) {
       data.inscripcion = false
-      data.competencias = selectedCompetencias.map(c => c.id)
+      data.competencias = selectedCompetencias.map(c => ({ id: c.id, porcentaje: Number(c.porcentaje || 0) }))
       data.momento = listMomentos.indexOf(selectedMomento) + 1
       data.sesiones = sesiones
       data.ponentes = inputs.map(input => ({
@@ -159,10 +159,20 @@ const CrearTaller = () => {
 
   const [selectedCompetencias, setSelectedCompetencias] = useState([]);
   const [isValidCompetencia, setIsValidCompetencia] = useState(true);
+
   const handleSelectCompetencia = (items) => {
-    setSelectedCompetencias(items);
-    setIsValidCompetencia(items.length > 0);
+    const newItems = items.map(item => {
+      const existing = selectedCompetencias.find(c => c.id === item.id);
+      return existing ? existing : { ...item, porcentaje: 0 };
+    });
+    setSelectedCompetencias(newItems);
+    setIsValidCompetencia(newItems.length > 0);
   };
+
+  const handlePorcentajeChange = (id, value) => {
+    setSelectedCompetencias(prev => prev.map(c => c.id === id ? { ...c, porcentaje: Number(value) } : c));
+  };
+  const sumaPorcentajes = selectedCompetencias.reduce((sum, c) => sum + Number(c.porcentaje || 0), 0);
 
   const [selectedMomento, setSelectedMomento] = useState("");
   const [isValidMomento, setIsValidMomento] = useState(true);
@@ -373,6 +383,31 @@ const CrearTaller = () => {
               <span className="text-red-600 text-sm font-light px-1">
                 Seleccione al menos una competencia
               </span>
+            )}
+            {selectedCompetencias.length > 0 && (
+              <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-primary_text_1">Asignar porcentajes</span>
+                  <span className={`text-sm font-bold ${sumaPorcentajes === 100 ? 'text-green-600' : 'text-red-600'}`}>
+                    Total: {sumaPorcentajes}%
+                  </span>
+                </div>
+                {selectedCompetencias.map(comp => (
+                  <div key={comp.id} className="flex justify-between items-center gap-2">
+                    <span className="text-sm text-primary_text_1">{comp.nombre}</span>
+                    <div className="flex items-center gap-1">
+                      <input 
+                        type="number" 
+                        value={comp.porcentaje === 0 ? '' : comp.porcentaje} 
+                        onChange={(e) => handlePorcentajeChange(comp.id, e.target.value)}
+                        className="w-20 focus:bg-white text-primary_gray_4 p-1 rounded text-sm bg-white outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                        min={0} max={100}
+                      />
+                      <span className="text-sm text-primary_gray_4">%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
 
@@ -629,6 +664,7 @@ const CrearTaller = () => {
               value={"Guardar"}
               size={"medium"}
               isLoading={isUpdating}
+              isDisabled={selectedCompetencias.length > 0 && sumaPorcentajes !== 100}
               isPrimary={true}
             />
           </div>

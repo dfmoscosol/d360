@@ -95,7 +95,7 @@ const EditarCharla = (props) => {
       return; // Detener la ejecución si algún campo está vacío
     }
 
-    if (areValidDates && areAllPonentesFilled) {
+    if (areValidDates && selectedCompetencias.length > 0 && sumaPorcentajes === 100 && areAllPonentesFilled) {
       console.log("Se puede enviar el formulario");
       data.fechas = validDatesList;
       data.horas = Number(data.horas);
@@ -105,7 +105,7 @@ const EditarCharla = (props) => {
         titulo_charla: input.charla
       }));
       data.modalidad = listModalidades.indexOf(selectedModalidad) + 1,
-        data.competencias = selectedCompetencias.map(c => c.id),
+        data.competencias = selectedCompetencias.map(c => ({ id: c.id, porcentaje: Number(c.porcentaje || 0) })),
         data.momento = listMomentos.indexOf(selectedMomento) + 1,
         setFormData({
           id: id,
@@ -257,8 +257,16 @@ const EditarCharla = (props) => {
   };
 
   const handleSelectCompetencia = (items) => {
-    setSelectedCompetencias(items);
+    const newItems = items.map(item => {
+      const existing = selectedCompetencias.find(c => c.id === item.id);
+      return existing ? existing : { ...item, porcentaje: 0 };
+    });
+    setSelectedCompetencias(newItems);
   };
+  const handlePorcentajeChange = (id, value) => {
+    setSelectedCompetencias(prev => prev.map(c => c.id === id ? { ...c, porcentaje: Number(value) } : c));
+  };
+  const sumaPorcentajes = selectedCompetencias.reduce((sum, c) => sum + Number(c.porcentaje || 0), 0);
   const handleSelectMomento = (value) => {
     setSelectedMomento(value);
   };
@@ -375,6 +383,31 @@ const EditarCharla = (props) => {
                 onSelectionChange={handleSelectCompetencia}
               />
             </div>
+            {selectedCompetencias.length > 0 && (
+              <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-primary_text_1">Asignar porcentajes</span>
+                  <span className={`text-sm font-bold ${sumaPorcentajes === 100 ? 'text-green-600' : 'text-red-600'}`}>
+                    Total: {sumaPorcentajes}%
+                  </span>
+                </div>
+                {selectedCompetencias.map(comp => (
+                  <div key={comp.id} className="flex justify-between items-center gap-2">
+                    <span className="text-sm text-primary_text_1">{comp.nombre}</span>
+                    <div className="flex items-center gap-1">
+                      <input 
+                        type="number" 
+                        value={comp.porcentaje === 0 ? '' : comp.porcentaje} 
+                        onChange={(e) => handlePorcentajeChange(comp.id, e.target.value)}
+                        className="w-20 focus:bg-white text-primary_gray_4 p-1 rounded text-sm bg-white outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                        min={0} max={100}
+                      />
+                      <span className="text-sm text-primary_gray_4">%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/**Momento */}
@@ -631,6 +664,7 @@ const EditarCharla = (props) => {
               value={"Guardar"}
               size={"medium"}
               isLoading={isUpdating}
+              isDisabled={selectedCompetencias.length === 0 || sumaPorcentajes !== 100}
               isPrimary={true}
             />
           </div>
