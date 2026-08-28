@@ -50,6 +50,7 @@ const EditarTaller = (props) => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
 
@@ -89,10 +90,10 @@ const EditarTaller = (props) => {
       return; // Detener la ejecución si algún campo está vacío
     }
 
-    if (areValidDates && areValidSesiones && selectedCompetencias.length > 0 && sumaPorcentajes === 100 && areAllPonentesFilled) {
+    if (areValidDates && areValidSesiones && selectedCompetencias.length > 0 && isTotalValid && areAllPonentesFilled) {
       console.log("Se puede enviar el formulario");
       data.sesiones = sesiones;
-      data.competencias = selectedCompetencias.map(c => ({ id: c.id, porcentaje: Number(c.porcentaje || 0) }));
+      data.competencias = selectedCompetencias.map(c => ({ id: c.id, horas: Number(c.horas || 0) }));
       data.momento = listMomentos.indexOf(selectedMomento) + 1;
       data.horas = Number(data.horas);
       data.cupos = Number(data.cupos);
@@ -197,15 +198,20 @@ const EditarTaller = (props) => {
   const handleSelectCompetencia = (items) => {
     const newItems = items.map(item => {
       const existing = selectedCompetencias.find(c => c.id === item.id);
-      return existing ? existing : { ...item, porcentaje: 0 };
+      return existing ? existing : { ...item, horas: 0 };
     });
     setSelectedCompetencias(newItems);
     setIsValidCompetencia(newItems.length > 0);
   };
-  const handlePorcentajeChange = (id, value) => {
-    setSelectedCompetencias(prev => prev.map(c => c.id === id ? { ...c, porcentaje: Number(value) } : c));
+  const handleHorasChange = (id, value) => {
+    const intValue = value.replace(/[^0-9]/g, '');
+    setSelectedCompetencias(prev => prev.map(c => c.id === id ? { ...c, horas: Number(intValue) } : c));
   };
-  const sumaPorcentajes = selectedCompetencias.reduce((sum, c) => sum + Number(c.porcentaje || 0), 0);
+  
+  const horasTotales = Number(watch("horas") || horas || 0);
+  const sumaHoras = selectedCompetencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
+  const hasInvalidHoras = selectedCompetencias.some(c => Number(c.horas || 0) <= 0);
+  const isTotalValid = sumaHoras === horasTotales && !hasInvalidHoras && horasTotales > 0;
 
   const [selectedMomento, setSelectedMomento] = useState(momento);
   const [isValidMomento, setIsValidMomento] = useState(true);
@@ -475,9 +481,9 @@ const EditarTaller = (props) => {
             {selectedCompetencias.length > 0 && (
               <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg">
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium text-primary_text_1">Asignar porcentajes</span>
-                  <span className={`text-sm font-bold ${sumaPorcentajes === 100 ? 'text-green-600' : 'text-red-600'}`}>
-                    Total: {sumaPorcentajes}%
+                  <span className="text-sm font-medium text-primary_text_1">Asignar horas</span>
+                  <span className={`text-sm font-bold ${isTotalValid ? 'text-green-600' : 'text-red-600'}`}>
+                    Total: {sumaHoras} / {horasTotales} hrs
                   </span>
                 </div>
                 {selectedCompetencias.map(comp => (
@@ -486,15 +492,30 @@ const EditarTaller = (props) => {
                     <div className="flex items-center gap-1">
                       <input 
                         type="number" 
-                        value={comp.porcentaje === 0 ? '' : comp.porcentaje} 
-                        onChange={(e) => handlePorcentajeChange(comp.id, e.target.value)}
+                        value={comp.horas === 0 ? '' : comp.horas} 
+                        onChange={(e) => handleHorasChange(comp.id, e.target.value)}
+                        onKeyDown={(e) => {
+                          if (['.', ',', '-', 'e', 'E'].includes(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
                         className="w-20 focus:bg-white text-primary_gray_4 p-1 rounded text-sm bg-white outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                        min={0} max={100}
+                        min={0} max={horasTotales || 100}
+                        step={1}
                       />
-                      <span className="text-sm text-primary_gray_4">%</span>
+                      <span className="text-sm text-primary_gray_4">hrs</span>
                     </div>
                   </div>
                 ))}
+                {hasInvalidHoras && (
+                  <span className="text-red-600 text-xs mt-1 font-light">Asigne un valor mayor a 0 a todas las competencias.</span>
+                )}
+                {!isTotalValid && !hasInvalidHoras && horasTotales > 0 && (
+                  <span className="text-red-600 text-xs mt-1 font-light">Llevas {sumaHoras} de {horasTotales} horas asignadas. La suma debe ser exacta.</span>
+                )}
+                {horasTotales === 0 && (
+                  <span className="text-red-600 text-xs mt-1 font-light">Primero debe ingresar las Horas totales del evento.</span>
+                )}
               </div>
             )}
           </div>
@@ -757,7 +778,7 @@ const EditarTaller = (props) => {
               value={"Guardar"}
               size={"medium"}
               isLoading={isUpdating}
-              isDisabled={selectedCompetencias.length === 0 || sumaPorcentajes !== 100}
+              isDisabled={selectedCompetencias.length === 0 || !isTotalValid}
               isPrimary={true}
             />
           </div>

@@ -35,8 +35,11 @@ const CrearJornadaInnovacion = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
+  
+  const horasTotales = Number(watch("horas") || 0);
 
   const onSubmit = (data) => {
     console.log(inputs);
@@ -55,6 +58,8 @@ const CrearJornadaInnovacion = () => {
       input.value.trim() !== "" &&
       input.descripcion.trim() !== "" &&
       input.competencias.length > 0 &&
+      input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0) === horasTotales &&
+      !input.competencias.some(c => Number(c.horas || 0) <= 0) &&
       input.momento.trim() !== "" &&
       input.sesiones.every(sesion =>
         sesion.fecha_id &&
@@ -72,7 +77,10 @@ const CrearJornadaInnovacion = () => {
       console.log("ERROR: Todos los campos deben estar completos.");
       setInputs(inputs => inputs.map(input => ({
         ...input,
-        isEmpty: input.value.trim() === "" || input.descripcion.trim() === "" || input.competencias.length === 0 || input.momento.trim() === "" || input.sesiones.some(sesion =>
+        isEmpty: input.value.trim() === "" || input.descripcion.trim() === "" || input.competencias.length === 0 || 
+                 input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0) !== horasTotales || 
+                 input.competencias.some(c => Number(c.horas || 0) <= 0) || 
+                 input.momento.trim() === "" || input.sesiones.some(sesion =>
           !sesion.fecha_id || sesion.hora_inicio.trim() === "" ||
           sesion.duracion.trim() === "" || sesion.modalidad.trim() === "" ||
           sesion.ubicacion.trim() === ""
@@ -85,7 +93,7 @@ const CrearJornadaInnovacion = () => {
     const validInputsList = inputs.map(input => ({
       nombre: input.value,
       descripcion: input.descripcion,
-      competencias: input.competencias.map(c => c.id),
+      competencias: input.competencias.map(c => ({ id: c.id, horas: Number(c.horas || 0) })),
       momento: listMomentos.indexOf(input.momento) + 1,
       microcredencial: input.microcredencial || null,
       sesiones: input.sesiones.map(sesion => ({
@@ -158,7 +166,26 @@ const CrearJornadaInnovacion = () => {
     setInputs(
       inputs.map((input) => {
         if (input.id === id) {
-          return { ...input, competencias: items, isEmpty: false };
+          const newItems = items.map(item => {
+            const existing = input.competencias.find(c => c.id === item.id);
+            return existing ? existing : { ...item, horas: 0 };
+          });
+          return { ...input, competencias: newItems, isEmpty: false };
+        }
+        return input;
+      })
+    );
+  };
+
+  const handleCompetenciaHorasChange = (tallerId, compId, value) => {
+    const intValue = value.replace(/[^0-9]/g, '');
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === tallerId) {
+          const updatedCompetencias = input.competencias.map(c => 
+            c.id === compId ? { ...c, horas: Number(intValue) } : c
+          );
+          return { ...input, competencias: updatedCompetencias };
         }
         return input;
       })
@@ -536,6 +563,13 @@ const CrearJornadaInnovacion = () => {
     }
   }, [isSuccess, isError, error, dispatch]);
 
+  const isAnyTallerInvalid = inputs.some(input => {
+    if (input.competencias.length === 0) return true;
+    const suma = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
+    const hasZero = input.competencias.some(c => Number(c.horas || 0) <= 0);
+    return suma !== horasTotales || hasZero;
+  });
+
   return (
     <ContainerPage>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -658,13 +692,59 @@ const CrearJornadaInnovacion = () => {
                         </div>
                         <div className="flex flex-wrap gap-3">
 
-                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)] w-full">
                             <label className="text-sm font-medium text-primary_text_1">Competencias</label>
                             <MultiSelectComboBox
                               items={competenciasList}
                               selectedItems={input.competencias}
                               onSelectionChange={(items) => handleCompetenciaChange(input.id, items)}
                             />
+                            {input.competencias.length > 0 && (() => {
+                              const sumaHoras = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
+                              const hasInvalidHoras = input.competencias.some(c => Number(c.horas || 0) <= 0);
+                              const isTotalValid = sumaHoras === horasTotales && !hasInvalidHoras && horasTotales > 0;
+                              
+                              return (
+                                <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg w-full">
+                                  <div className="flex justify-between items-center mb-1">
+                                    <span className="text-sm font-medium text-primary_text_1">Asignar horas</span>
+                                    <span className={`text-sm font-bold ${isTotalValid ? 'text-green-600' : 'text-red-600'}`}>
+                                      Total: {sumaHoras} / {horasTotales} hrs
+                                    </span>
+                                  </div>
+                                  {input.competencias.map(comp => (
+                                    <div key={comp.id} className="flex justify-between items-center gap-2">
+                                      <span className="text-sm text-primary_text_1">{comp.nombre}</span>
+                                      <div className="flex items-center gap-1">
+                                        <input 
+                                          type="number" 
+                                          value={comp.horas === 0 ? '' : comp.horas} 
+                                          onChange={(e) => handleCompetenciaHorasChange(input.id, comp.id, e.target.value)}
+                                          onKeyDown={(e) => {
+                                            if (['.', ',', '-', 'e', 'E'].includes(e.key)) {
+                                              e.preventDefault();
+                                            }
+                                          }}
+                                          className="w-20 focus:bg-white text-primary_gray_4 p-1 rounded text-sm bg-white outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                                          min={0} max={horasTotales || 100}
+                                          step={1}
+                                        />
+                                        <span className="text-sm text-primary_gray_4">hrs</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  {hasInvalidHoras && (
+                                    <span className="text-red-600 text-xs mt-1 font-light">Asigne un valor mayor a 0 a todas las competencias.</span>
+                                  )}
+                                  {!isTotalValid && !hasInvalidHoras && horasTotales > 0 && (
+                                    <span className="text-red-600 text-xs mt-1 font-light">Llevas {sumaHoras} de {horasTotales} horas asignadas. La suma debe ser exacta.</span>
+                                  )}
+                                  {horasTotales === 0 && (
+                                    <span className="text-red-600 text-xs mt-1 font-light">Primero debe ingresar las Horas totales de la jornada.</span>
+                                  )}
+                                </div>
+                              );
+                            })()}
                           </div>
                           <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
                             <label className="text-sm font-medium text-primary_text_1">Momento</label>
@@ -871,6 +951,7 @@ const CrearJornadaInnovacion = () => {
               value={"Guardar"}
               size={"medium"}
               isLoading={isUpdating}
+              isDisabled={isAnyTallerInvalid || horasTotales === 0}
               isPrimary={true}
             />
           </div>

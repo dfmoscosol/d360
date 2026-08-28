@@ -84,8 +84,11 @@ const EditarJornadaInnovacion = (props) => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
+  
+  const horasTotales = Number(watch("horas") || horas || 0);
 
   // PARA GUARDAR LA DATA DEL FORMULARIO
   const [formData, setFormData] = useState(null);
@@ -215,12 +218,31 @@ const EditarJornadaInnovacion = (props) => {
     setInputs(
       inputs.map((input) => {
         if (input.id === id) {
-          return { ...input, competencias: items, isEmpty: false };
+          const newItems = items.map(item => {
+            const existing = input.competencias.find(c => c.id === item.id);
+            return existing ? existing : { ...item, horas: 0 };
+          });
+          return { ...input, competencias: newItems, isEmpty: false };
         }
         return input;
       })
     );
   }
+
+  const handleCompetenciaHorasChange = (tallerId, compId, value) => {
+    const intValue = value.replace(/[^0-9]/g, '');
+    setInputs(
+      inputs.map((input) => {
+        if (input.id === tallerId) {
+          const updatedCompetencias = input.competencias.map(c => 
+            c.id === compId ? { ...c, horas: Number(intValue) } : c
+          );
+          return { ...input, competencias: updatedCompetencias };
+        }
+        return input;
+      })
+    );
+  };
   const handleMomentoChange = (id, newValue) => {
     setInputs(
       inputs.map((input) => {
@@ -511,6 +533,8 @@ const EditarJornadaInnovacion = (props) => {
       && (inputs[index].descripcion.trim() !== "")
       && (inputs[index].cupos_extra.trim() !== "")
       && (inputs[index].competencias.length > 0)
+      && (inputs[index].competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0) === horasTotales)
+      && (!inputs[index].competencias.some(c => Number(c.horas || 0) <= 0))
       && (inputs[index].momento.trim() !== "")
       && inputs[index].sesiones.every(sesion =>
         sesion.fecha_id &&
@@ -529,7 +553,7 @@ const EditarJornadaInnovacion = (props) => {
         body: {
           nombre: input.value,
           descripcion: input.descripcion,
-          competencias: input.competencias.map(c => c.id),
+          competencias: input.competencias.map(c => ({ id: c.id, horas: Number(c.horas || 0) })),
           momento: listMomentos.indexOf(input.momento) + 1,
           microcredencial: input.microcredencial || null,
           cupos_extra: Number(input.cupos_extra),
@@ -567,7 +591,7 @@ const EditarJornadaInnovacion = (props) => {
             body: {
               nombre: input.value,
               descripcion: input.descripcion,
-              competencias: input.competencias.map(c => c.id),
+              competencias: input.competencias.map(c => ({ id: c.id, horas: Number(c.horas || 0) })),
               momento: listMomentos.indexOf(input.momento) + 1,
               microcredencial: input.microcredencial || null,
               cupos_extra: Number(input.cupos_extra),
@@ -847,7 +871,17 @@ const EditarJornadaInnovacion = (props) => {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <ContainerForm>
-            {/**Nombre */}
+            {(() => {
+              const isAnyTallerInvalid = inputs.some(input => {
+                if (input.competencias.length === 0) return true;
+                const suma = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
+                const hasZero = input.competencias.some(c => Number(c.horas || 0) <= 0);
+                return suma !== horasTotales || hasZero;
+              });
+              
+              return (
+                <>
+                  {/**Nombre */}
             <div className="col-span-12 flex flex-col gap-1">
               <FormLabel value={"Nombre"} />
               <input
@@ -953,6 +987,7 @@ const EditarJornadaInnovacion = (props) => {
                 value={"Guardar"}
                 size={"medium"}
                 isLoading={isUpdating}
+                isDisabled={isAnyTallerInvalid || horasTotales === 0}
                 isPrimary={true}
               />
             </div>
@@ -1023,7 +1058,7 @@ const EditarJornadaInnovacion = (props) => {
                         />
                       </div>
                       <div className="flex flex-wrap pt-1 gap-3">
-                        <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                        <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)] w-full">
                           <label className="text-sm font-medium text-primary_text_1">Competencias</label>
                           <MultiSelectComboBox
                             items={competenciasList}
@@ -1031,6 +1066,53 @@ const EditarJornadaInnovacion = (props) => {
                             onSelectionChange={(items) => handleCompetenciaChange(input.id, items)}
                             isEnabled={input.enableEdit}
                           />
+                          {input.competencias.length > 0 && (() => {
+                            const sumaHoras = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
+                            const hasInvalidHoras = input.competencias.some(c => Number(c.horas || 0) <= 0);
+                            const isTotalValid = sumaHoras === horasTotales && !hasInvalidHoras && horasTotales > 0;
+                            
+                            return (
+                              <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg w-full">
+                                <div className="flex justify-between items-center mb-1">
+                                  <span className="text-sm font-medium text-primary_text_1">Asignar horas</span>
+                                  <span className={`text-sm font-bold ${isTotalValid ? 'text-green-600' : 'text-red-600'}`}>
+                                    Total: {sumaHoras} / {horasTotales} hrs
+                                  </span>
+                                </div>
+                                {input.competencias.map(comp => (
+                                  <div key={comp.id} className="flex justify-between items-center gap-2">
+                                    <span className="text-sm text-primary_text_1">{comp.nombre}</span>
+                                    <div className="flex items-center gap-1">
+                                      <input 
+                                        type="number" 
+                                        value={comp.horas === 0 && input.enableEdit ? '' : comp.horas} 
+                                        onChange={(e) => handleCompetenciaHorasChange(input.id, comp.id, e.target.value)}
+                                        onKeyDown={(e) => {
+                                          if (['.', ',', '-', 'e', 'E'].includes(e.key)) {
+                                            e.preventDefault();
+                                          }
+                                        }}
+                                        className={`w-20 focus:bg-white text-primary_gray_4 p-1 rounded text-sm outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5 ${input.enableEdit ? 'bg-white' : 'bg-primary_gray_1'}`}
+                                        min={0} max={horasTotales || 100}
+                                        step={1}
+                                        disabled={!input.enableEdit}
+                                      />
+                                      <span className="text-sm text-primary_gray_4">hrs</span>
+                                    </div>
+                                  </div>
+                                ))}
+                                {input.enableEdit && hasInvalidHoras && (
+                                  <span className="text-red-600 text-xs mt-1 font-light">Asigne un valor mayor a 0 a todas las competencias.</span>
+                                )}
+                                {input.enableEdit && !isTotalValid && !hasInvalidHoras && horasTotales > 0 && (
+                                  <span className="text-red-600 text-xs mt-1 font-light">Llevas {sumaHoras} de {horasTotales} horas asignadas. La suma debe ser exacta.</span>
+                                )}
+                                {input.enableEdit && horasTotales === 0 && (
+                                  <span className="text-red-600 text-xs mt-1 font-light">Primero debe ingresar las Horas totales de la jornada.</span>
+                                )}
+                              </div>
+                            );
+                          })()}
                         </div>
                         <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
                           <label className="text-sm font-medium text-primary_text_1">Momento</label>
@@ -1178,6 +1260,7 @@ const EditarJornadaInnovacion = (props) => {
                             className={`focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full ${input.enableEdit ? "outline-none ring-1 ring-inset ring-primary_gray_5" : "bg-primary_gray_1"}`}
                             disabled={!input.enableEdit}
                           />
+                          {/* button was accidentally placed here */}
                           {input.enableEdit && (
                             <Button
                               type="error"
@@ -1232,16 +1315,23 @@ const EditarJornadaInnovacion = (props) => {
                             onClick={() => input.isNew ? handleRemoveInput() : handleCancelEdit(index)}
                           />
 
-                          <Button
-                            value="Guardar"
-                            type="ucuenca"
-                            size="small"
-                            icon="check"
-                            isPrimary={true}
-                            buttonType={"button"}
-                            onClick={() => input.isNew ? handleNewTaller(index) : handleSaveEdit(index)}
-                            isLoading={isUpdatingTaller}
-                          />
+                          {(() => {
+                            const sumaHoras = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
+                            const isHorasInvalid = sumaHoras !== horasTotales || input.competencias.some(c => Number(c.horas || 0) <= 0);
+                            return (
+                              <Button
+                                value="Guardar"
+                                type="ucuenca"
+                                size="small"
+                                icon="check"
+                                isPrimary={true}
+                                buttonType={"button"}
+                                onClick={() => input.isNew ? handleNewTaller(index) : handleSaveEdit(index)}
+                                isLoading={isUpdatingTaller}
+                                isDisabled={isHorasInvalid}
+                              />
+                            );
+                          })()}
                         </div>
                       )}
                     </div>
@@ -1257,6 +1347,9 @@ const EditarJornadaInnovacion = (props) => {
             <div className="col-span-12 text-primary_gray_5">
               <hr />
             </div>
+          </>
+          );
+          })()}
           </ContainerForm>
         </form>
       </div>
