@@ -521,8 +521,8 @@ const CrearCharla = () => {
             <FormLabel value={"Ponentes"} />
             <div className="flex flex-col gap-3">
               {inputs.map((input) => (
-                <>
-                  <div key={input.id} className="flex flex-row justify-between items-center">
+                <React.Fragment key={input.id}>
+                  <div className="flex flex-row justify-between items-center">
                     <div className="bg-white rounded-lg p-3 border-[1px] flex-grow">
                       <div className="flex flex-col gap-4">
                         <div className="flex flex-col">
@@ -582,7 +582,7 @@ const CrearCharla = () => {
                       Complete todos los campos para el Ponente
                     </span>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </div>
           </div>

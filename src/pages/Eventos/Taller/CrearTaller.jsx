@@ -522,7 +522,7 @@ const CrearTaller = () => {
             )}
           </div>
           {sesiones.map((sesion, index) => (
-            <>
+            <React.Fragment key={sesion.fecha}>
               <div className="col-span-12 flex flex-col gap-1 items-start justify-start">
                 <InfoPill
                   value={sesion.fecha}
@@ -604,15 +604,15 @@ const CrearTaller = () => {
                   </span>
                 )}
               </div>
-            </>
+            </React.Fragment>
           ))}
 
           <div className="flex flex-col col-span-12 gap-1">
             <FormLabel value={"Ponentes"} />
             <div className="flex flex-col gap-3">
               {inputs.map((input) => (
-                <>
-                  <div key={input.id} className="flex flex-row justify-between items-center">
+                <React.Fragment key={input.id}>
+                  <div className="flex flex-row justify-between items-center">
                     <div className="bg-white rounded-lg p-3 border-[1px] flex-grow">
                       <div className="flex flex-col gap-4">
                         <div className="flex flex-col">
@@ -658,7 +658,7 @@ const CrearTaller = () => {
                       Complete todos los campos para el Ponente
                     </span>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </div>
           </div>

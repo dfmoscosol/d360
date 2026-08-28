@@ -191,14 +191,21 @@ const EditarTaller = (props) => {
 
   const { data: competenciasList = [] } = useGetCompetenciasQuery();
 
-  const [selectedCompetencias, setSelectedCompetencias] = useState(
-    Array.isArray(competencias) ? competencias : []
-  );
+  const [selectedCompetencias, setSelectedCompetencias] = useState(() => {
+    if (Array.isArray(competencias)) {
+      return competencias.map(c => ({
+        ...c,
+        id: Number(c.id || c.competencia_id || c.id_competencia),
+        horas: Number(c.horas || 0)
+      }));
+    }
+    return [];
+  });
   const [isValidCompetencia, setIsValidCompetencia] = useState(true);
   const handleSelectCompetencia = (items) => {
     const newItems = items.map(item => {
-      const existing = selectedCompetencias.find(c => c.id === item.id);
-      return existing ? existing : { ...item, horas: 0 };
+      const existing = selectedCompetencias.find(c => c.id === Number(item.id));
+      return existing ? existing : { ...item, id: Number(item.id), horas: 0 };
     });
     setSelectedCompetencias(newItems);
     setIsValidCompetencia(newItems.length > 0);

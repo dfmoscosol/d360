@@ -41,6 +41,7 @@ const CrearJornadaInnovacion = () => {
   
   const horasTotales = Number(watch("horas") || 0);
 
+
   const onSubmit = (data) => {
     console.log(inputs);
     if (dates.length === 0) {
@@ -58,7 +59,6 @@ const CrearJornadaInnovacion = () => {
       input.value.trim() !== "" &&
       input.descripcion.trim() !== "" &&
       input.competencias.length > 0 &&
-      input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0) === horasTotales &&
       !input.competencias.some(c => Number(c.horas || 0) <= 0) &&
       input.momento.trim() !== "" &&
       input.sesiones.every(sesion =>
@@ -73,12 +73,11 @@ const CrearJornadaInnovacion = () => {
       input.ponentes.every(ponente => ponente.value.trim() !== "")
     );
 
-    if (!areAllInputsFilled) {
+    if (!areAllInputsFilled || !isGlobalTotalValid) {
       console.log("ERROR: Todos los campos deben estar completos.");
       setInputs(inputs => inputs.map(input => ({
         ...input,
         isEmpty: input.value.trim() === "" || input.descripcion.trim() === "" || input.competencias.length === 0 || 
-                 input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0) !== horasTotales || 
                  input.competencias.some(c => Number(c.horas || 0) <= 0) || 
                  input.momento.trim() === "" || input.sesiones.some(sesion =>
           !sesion.fecha_id || sesion.hora_inicio.trim() === "" ||
@@ -139,6 +138,16 @@ const CrearJornadaInnovacion = () => {
       isEmpty: false,
     },
   ]);
+
+  // Sumatoria global de horas de competencias en TODOS los talleres
+  const sumaHorasGlobal = inputs.reduce((total, input) => {
+    if (!input.competencias || input.competencias.length === 0) return total;
+    return total + input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
+  }, 0);
+  const hasAnyInvalidHoras = inputs.some(input => 
+    input.competencias && input.competencias.length > 0 && input.competencias.some(c => Number(c.horas || 0) <= 0)
+  );
+  const isGlobalTotalValid = sumaHorasGlobal === horasTotales && !hasAnyInvalidHoras && horasTotales > 0;
 
   const handleInputChange = (id, newValue) => {
     setInputs(
@@ -224,7 +233,7 @@ const CrearJornadaInnovacion = () => {
       hasAddButton: true,
       hasRemoveButton: true,
       sesiones: dates.map((date, index) => ({
-        fecha_id: date.format("YYYY-MM-DD"),  // Asume que las fechas son objetos moment o similar
+        fecha_id: date.format("YYYY-MM-DD"),
         hora_inicio: "",
         duracion: "",
         modalidad: index === 0 ? "Presencial" : "Sin Sesión",
@@ -232,6 +241,10 @@ const CrearJornadaInnovacion = () => {
       })),
       ponentes: [{ id: 1, value: "", hasAddButton: true, hasRemoveButton: false, }],
       value: "",
+      descripcion: "",
+      competencias: [],
+      momento: "",
+      microcredencial: "",
       isEmpty: false,
     });
     setInputs(newInputs);
@@ -564,11 +577,10 @@ const CrearJornadaInnovacion = () => {
   }, [isSuccess, isError, error, dispatch]);
 
   const isAnyTallerInvalid = inputs.some(input => {
-    if (input.competencias.length === 0) return true;
-    const suma = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
+    if (!input.competencias || input.competencias.length === 0) return true;
     const hasZero = input.competencias.some(c => Number(c.horas || 0) <= 0);
-    return suma !== horasTotales || hasZero;
-  });
+    return hasZero;
+  }) || !isGlobalTotalValid;
 
   return (
     <ContainerPage>
@@ -664,8 +676,8 @@ const CrearJornadaInnovacion = () => {
             <FormLabel value={"Talleres"} />
             <div className="flex flex-col gap-3">
               {inputs.map((input) => (
-                <>
-                  <div key={input.id} className="flex flex-row justify-between items-center">
+                <React.Fragment key={input.id}>
+                  <div className="flex flex-row justify-between items-center">
                     <div className="bg-white rounded-lg p-3 border-[1px] flex-grow">
                       <div className="flex flex-col gap-4">
                         <div className="flex flex-col">
@@ -699,17 +711,16 @@ const CrearJornadaInnovacion = () => {
                               selectedItems={input.competencias}
                               onSelectionChange={(items) => handleCompetenciaChange(input.id, items)}
                             />
-                            {input.competencias.length > 0 && (() => {
-                              const sumaHoras = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
-                              const hasInvalidHoras = input.competencias.some(c => Number(c.horas || 0) <= 0);
-                              const isTotalValid = sumaHoras === horasTotales && !hasInvalidHoras && horasTotales > 0;
+                            {input.competencias && input.competencias.length > 0 && (() => {
+                              const sumaHorasTaller = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
+                              const hasInvalidHorasTaller = input.competencias.some(c => Number(c.horas || 0) <= 0);
                               
                               return (
                                 <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg w-full">
                                   <div className="flex justify-between items-center mb-1">
                                     <span className="text-sm font-medium text-primary_text_1">Asignar horas</span>
-                                    <span className={`text-sm font-bold ${isTotalValid ? 'text-green-600' : 'text-red-600'}`}>
-                                      Total: {sumaHoras} / {horasTotales} hrs
+                                    <span className="text-xs text-primary_gray_4">
+                                      Este taller: {sumaHorasTaller} hrs
                                     </span>
                                   </div>
                                   {input.competencias.map(comp => (
@@ -733,11 +744,8 @@ const CrearJornadaInnovacion = () => {
                                       </div>
                                     </div>
                                   ))}
-                                  {hasInvalidHoras && (
+                                  {hasInvalidHorasTaller && (
                                     <span className="text-red-600 text-xs mt-1 font-light">Asigne un valor mayor a 0 a todas las competencias.</span>
-                                  )}
-                                  {!isTotalValid && !hasInvalidHoras && horasTotales > 0 && (
-                                    <span className="text-red-600 text-xs mt-1 font-light">Llevas {sumaHoras} de {horasTotales} horas asignadas. La suma debe ser exacta.</span>
                                   )}
                                   {horasTotales === 0 && (
                                     <span className="text-red-600 text-xs mt-1 font-light">Primero debe ingresar las Horas totales de la jornada.</span>
@@ -923,9 +931,23 @@ const CrearJornadaInnovacion = () => {
                       Complete todos los campos del Taller
                     </span>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </div>
+            {/* Resumen global de horas de competencias en la jornada */}
+            {horasTotales > 0 && inputs.some(input => input.competencias && input.competencias.length > 0) && (
+              <div className={`mt-2 p-3 rounded-lg border ${isGlobalTotalValid ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-primary_text_1">Total horas asignadas (todos los talleres)</span>
+                  <span className={`text-sm font-bold ${isGlobalTotalValid ? 'text-green-600' : 'text-red-600'}`}>
+                    {sumaHorasGlobal} / {horasTotales} hrs
+                  </span>
+                </div>
+                {!isGlobalTotalValid && !hasAnyInvalidHoras && (
+                  <span className="text-red-600 text-xs mt-1 font-light">La suma de horas de competencias de todos los talleres debe ser exactamente {horasTotales}.</span>
+                )}
+              </div>
+            )}
           </div>}
 
 

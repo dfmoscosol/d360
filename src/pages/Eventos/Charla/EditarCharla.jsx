@@ -248,9 +248,16 @@ const EditarCharla = (props) => {
 
   // Estado para almacenar el valor seleccionado
   const [selectedModalidad, setSelectedModalidad] = useState(modalidad);
-  const [selectedCompetencias, setSelectedCompetencias] = useState(
-    Array.isArray(competencias) ? competencias : []
-  );
+  const [selectedCompetencias, setSelectedCompetencias] = useState(() => {
+    if (Array.isArray(competencias)) {
+      return competencias.map(c => ({
+        ...c,
+        id: Number(c.id || c.competencia_id || c.id_competencia),
+        horas: Number(c.horas || 0)
+      }));
+    }
+    return [];
+  });
   const [selectedMomento, setSelectedMomento] = useState(momento);
 
   const handleSelect = (value) => {
@@ -259,8 +266,8 @@ const EditarCharla = (props) => {
 
   const handleSelectCompetencia = (items) => {
     const newItems = items.map(item => {
-      const existing = selectedCompetencias.find(c => c.id === item.id);
-      return existing ? existing : { ...item, horas: 0 };
+      const existing = selectedCompetencias.find(c => c.id === Number(item.id));
+      return existing ? existing : { ...item, id: Number(item.id), horas: 0 };
     });
     setSelectedCompetencias(newItems);
   };
