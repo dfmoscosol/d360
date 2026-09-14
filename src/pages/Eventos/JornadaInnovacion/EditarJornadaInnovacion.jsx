@@ -186,15 +186,14 @@ const EditarJornadaInnovacion = (props) => {
 
   const [inputs, setInputs] = useState(allTalleresList);
 
-  // Sumatoria global de horas de competencias en TODOS los talleres
-  const sumaHorasGlobal = inputs.reduce((total, input) => {
-    if (!input.competencias || input.competencias.length === 0) return total;
-    return total + input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
-  }, 0);
-  const hasAnyInvalidHoras = inputs.some(input => 
-    input.competencias && input.competencias.length > 0 && input.competencias.some(c => Number(c.horas || 0) <= 0)
-  );
-  const isGlobalTotalValid = sumaHorasGlobal === horasTotales && !hasAnyInvalidHoras && horasTotales > 0;
+  // Cada taller debe tener sus propias competencias sumando a horasTotales
+  const allTalleresValid = inputs.every(input => {
+    if (!input.competencias || input.competencias.length === 0) return false;
+    const sumaTaller = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
+    const hasInvalidHoras = input.competencias.some(c => Number(c.horas || 0) <= 0);
+    return sumaTaller === horasTotales && !hasInvalidHoras;
+  });
+  const isGlobalTotalValid = allTalleresValid && horasTotales > 0 && inputs.length > 0;
 
   const handleInputChange = (id, newValue) => {
     setInputs(
@@ -886,11 +885,7 @@ const EditarJornadaInnovacion = (props) => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <ContainerForm>
             {(() => {
-              const isAnyTallerInvalid = inputs.some(input => {
-                if (!input.competencias || input.competencias.length === 0) return true;
-                const hasZero = input.competencias.some(c => Number(c.horas || 0) <= 0);
-                return hasZero;
-              }) || !isGlobalTotalValid;
+              const isAnyTallerInvalid = !isGlobalTotalValid;
               
               return (
                 <>
@@ -1082,13 +1077,14 @@ const EditarJornadaInnovacion = (props) => {
                           {input.competencias.length > 0 && (() => {
                             const sumaHorasTaller = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
                             const hasInvalidHorasTaller = input.competencias.some(c => Number(c.horas || 0) <= 0);
+                            const isTallerTotalValid = sumaHorasTaller === horasTotales && !hasInvalidHorasTaller && horasTotales > 0;
                             
                             return (
                               <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg w-full">
                                 <div className="flex justify-between items-center mb-1">
                                   <span className="text-sm font-medium text-primary_text_1">Asignar horas</span>
-                                  <span className="text-xs text-primary_gray_4">
-                                    Este taller: {sumaHorasTaller} hrs
+                                  <span className={`text-xs ${isTallerTotalValid ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}`}>
+                                    Este taller: {sumaHorasTaller} / {horasTotales} hrs
                                   </span>
                                 </div>
                                 {input.competencias.map(comp => (
@@ -1115,6 +1111,9 @@ const EditarJornadaInnovacion = (props) => {
                                 ))}
                                 {input.enableEdit && hasInvalidHorasTaller && (
                                   <span className="text-red-600 text-xs mt-1 font-light">Asigne un valor mayor a 0 a todas las competencias.</span>
+                                )}
+                                {input.enableEdit && !isTallerTotalValid && !hasInvalidHorasTaller && horasTotales > 0 && (
+                                  <span className="text-red-600 text-xs mt-1 font-light">Llevas {sumaHorasTaller} de {horasTotales} horas asignadas. La suma debe ser exacta.</span>
                                 )}
                                 {input.enableEdit && horasTotales === 0 && (
                                   <span className="text-red-600 text-xs mt-1 font-light">Primero debe ingresar las Horas totales de la jornada.</span>
@@ -1349,20 +1348,7 @@ const EditarJornadaInnovacion = (props) => {
                 ))}
 
               </div>
-              {/* Resumen global de horas de competencias en la jornada */}
-              {horasTotales > 0 && inputs.some(input => input.competencias && input.competencias.length > 0) && (
-                <div className={`mt-2 p-3 rounded-lg border ${isGlobalTotalValid ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-primary_text_1">Total horas asignadas (todos los talleres)</span>
-                    <span className={`text-sm font-bold ${isGlobalTotalValid ? 'text-green-600' : 'text-red-600'}`}>
-                      {sumaHorasGlobal} / {horasTotales} hrs
-                    </span>
-                  </div>
-                  {!isGlobalTotalValid && !hasAnyInvalidHoras && (
-                    <span className="text-red-600 text-xs mt-1 font-light">La suma de horas de competencias de todos los talleres debe ser exactamente {horasTotales}.</span>
-                  )}
-                </div>
-              )}
+
             </div>
 
             {/**Footer */}
