@@ -75,7 +75,7 @@ const Login = () => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.data.error || "Error al iniciar sesión.",
+        message: error.data?.error || "Error al iniciar sesión.",
         type: "error",
       });
     }
