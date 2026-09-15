@@ -25,7 +25,6 @@ const VerCharla = (props) => {
     cupos,
     fechas,
     docentesInscritos,
-    docentesPendientes,
     horas,
     id,
     nombre,

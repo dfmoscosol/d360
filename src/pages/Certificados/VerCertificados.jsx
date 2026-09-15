@@ -229,6 +229,7 @@ const VerCertificados = ({ certificados, handleRefetch }) => {
             fechaCreacion={certificado.fecha_creacion}
             idCertificado={certificado.id}
             isApproved={certificado.aceptada}
+            competencia={certificado.competencia?.nombre || "-"}
             handleRefetch={handleRefetch}
           />
         ))}

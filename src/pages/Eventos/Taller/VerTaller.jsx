@@ -22,7 +22,6 @@ const VerTaller = (props) => {
     acreditacion,
     cupo,
     docentesInscritos,
-    docentesPendientes,
     fechas,
     horas,
     id,

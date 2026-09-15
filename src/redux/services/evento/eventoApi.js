@@ -81,6 +81,13 @@ export const eventoApi = createApi({
         //body: params.body,
       }),
     }),
+    editInscripcionEstado: builder.mutation({
+      query: (params) => ({
+        url: `/eventos/inscripcion/estado/${params.id}`,
+        method: "PATCH",
+        body: params.body,
+      }),
+    }),
     getAcreditaciones: builder.query({
       query: ({ id_evento, id_taller }) => {
         const baseUrl = `/eventos/acreditaciones/${id_evento}`;
@@ -174,6 +181,7 @@ export const {
   useEditObservadoresMutation,
   useDeleteObservadoresMutation,
   useEliminarInscripcionMutation,
+  useEditInscripcionEstadoMutation,
   useValidarInscripcionMasivaMutation,
 } = eventoApi;
 

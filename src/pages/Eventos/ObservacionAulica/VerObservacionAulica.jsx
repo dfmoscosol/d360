@@ -39,7 +39,6 @@ const VerObservacionAulica = (props) => {
     inscripcion,
     cupo,
     docentesInscritos,
-    docentesPendientes,
     fechas,
     horas,
     id,
@@ -109,6 +108,7 @@ const VerObservacionAulica = (props) => {
                   docentesInscritos={docentesInscritos}
                   idEvento={id}
                   handleRefetch={handleRefetch}
+                  isObservacionAulica={true}
                 />
               ),
             },

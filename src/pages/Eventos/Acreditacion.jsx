@@ -387,6 +387,11 @@ const Acreditacion = () => {
         </div>}
         {data.length !== 0 && <SectionContainer>
           <div className="w-full flex flex-col">
+            <div className="flex mb-2">
+              <span className="text-sm font-medium text-primary_gray_4 bg-primary_gray_1 px-3 py-1 rounded-full">
+                Total docentes cargados: {data.length}
+              </span>
+            </div>
             <div className="flex flex-col md:flex-row w-full justify-between items-center mb-4 space-y-4 md:space-y-0">
               <div className="flex w-full md:w-2/3 space-x-4">
                 {selectedEvent && selectedEvent.tipo !== 4 && (

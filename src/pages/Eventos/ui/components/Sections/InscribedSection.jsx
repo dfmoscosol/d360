@@ -8,14 +8,36 @@ import { Modal, Button } from "@components";
 import PillInscritos from "../PillInscritos/PillInscritos";
 import EventoView, { Header, SectionContainer } from "../EventoView/EventoView";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
-import { useEliminarInscripcionMutation } from "@redux/services/evento/eventoApi";
+import { useEliminarInscripcionMutation, useGetAllObservadoresQuery, useEditInscripcionEstadoMutation } from "@redux/services/evento/eventoApi";
+import Select from "react-select";
 
 const InscribedSection = (props) => {
-  const { docentesInscritos, idEvento, idTaller, handleRefetch } = props;
+  const { docentesInscritos, idEvento, idTaller, handleRefetch, isObservacionAulica } = props;
 
   // REDUX
   const dispatch = useDispatch();
   const token = useSelector((state) => state.authState.token);
+
+  const { data: observersData } = useGetAllObservadoresQuery(undefined, { skip: !isObservacionAulica });
+  const observersOptions = observersData?.respuesta?.map(obs => ({ value: obs.id, label: obs.nombre })) || [];
+
+  const [editInscripcionEstado] = useEditInscripcionEstadoMutation();
+
+  const handleObserverChange = (selectedOption, idInscripcion) => {
+    editInscripcionEstado({ id: idInscripcion, body: { id_observador: selectedOption?.value || null } })
+      .unwrap()
+      .then((res) => {
+        triggerNotification(dispatch, { message: res.respuesta || "Observador actualizado", type: "success" });
+        handleRefetch();
+      })
+      .catch((err) => {
+        triggerNotification(dispatch, { message: err.data?.error || "Error al actualizar observador", type: "error" });
+      });
+  };
+
+  const getSelectedObserver = (observerName) => {
+    return observersOptions.find(opt => opt.label === observerName) || null;
+  };
 
   // PARA ELIMINAR LA INSCRIPCION
   const [
@@ -154,17 +176,30 @@ const InscribedSection = (props) => {
                 index={index}
                 title={docente.nombre}
                 subTitle={docente.correo}
-                observador={docente.observador}
+                observador={!isObservacionAulica ? docente.observador : undefined}
               >
-                <Button
-                  value=""
-                  type="error"
+                <div className="flex items-center gap-2">
+                  {isObservacionAulica && (
+                    <div className="w-56">
+                      <Select
+                        options={observersOptions}
+                        value={getSelectedObserver(docente.observador)}
+                        onChange={(selected) => handleObserverChange(selected, docente.id_inscripcion)}
+                        placeholder="Asignar observador..."
+                        isClearable={true}
+                      />
+                    </div>
+                  )}
+                  <Button
+                    value=""
+                    type="error"
                   size="small"
                   icon="delete"
                   isPrimary={true}
                   onClick={() => handleAprobarEliminacion(docente.id_inscripcion)}
-                  isRadial={true}
-                />
+                    isRadial={true}
+                  />
+                </div>
               </PillInscritos>
             ))}
           </div>

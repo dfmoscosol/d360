@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { InfoPill, Button, Modal } from "@components";
 import { Link } from "react-router-dom";
-import { MdClass, MdDateRange, MdFileDownload, MdAccessTime, MdSchool, MdMoreTime } from "react-icons/md";
+import { MdClass, MdDateRange, MdFileDownload, MdAccessTime, MdSchool, MdMoreTime, MdStar } from "react-icons/md";
 import { useEditCertificadoMutation } from "@redux/services/certificado/certificadoApi";
 import { useDispatch } from "react-redux";
 import { triggerNotification } from "@redux/features/notification/notificationSlice";
@@ -18,6 +18,7 @@ const CertificadoCard = ({
   correo,
   idCertificado,
   isApproved,
+  competencia,
   handleRefetch,
 }) => {
   /**
@@ -197,6 +198,21 @@ const CertificadoCard = ({
                   <span className="text-primary_gray_2 text-xs">Ofertado por</span>
                   <span className="text-primary_text_1 font-medium text-sm">
                     {institucion}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Third Row: Competencia occupies full width */}
+            <div className="flex mt-1 gap-2 w-full">
+              <div className="bg-primary_gray_1 py-2 px-2 rounded-lg flex gap-2 items-center w-full">
+                <div className="p-2 bg-white rounded-lg text-primary_gray_4">
+                  <MdStar size={20} />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-primary_gray_2 text-xs">Competencia</span>
+                  <span className="text-primary_text_1 font-medium text-sm">
+                    {competencia}
                   </span>
                 </div>
               </div>

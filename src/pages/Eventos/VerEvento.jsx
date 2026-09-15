@@ -53,7 +53,6 @@ const VerEvento = () => {
         cupos={evento.cupos}
         fechas={evento.fechas}
         docentesInscritos={evento.docentes_inscritos}
-        docentesPendientes={evento.docentes_pendientes}
         horas={evento.horas}
         id={evento.id}
         modalidad={evento.modalidad}
@@ -77,7 +76,6 @@ const VerEvento = () => {
         inscripcion={evento.inscripcion}
         cupo={evento.cupos}
         docentesInscritos={evento.docentes_inscritos}
-        docentesPendientes={evento.docentes_pendientes}
         fechas={evento.fechas}
         horas={evento.horas}
         competencias={evento.competencias}
@@ -98,7 +96,6 @@ const VerEvento = () => {
         inscripcion={evento.inscripcion}
         cupo={evento.cupos}
         docentesInscritos={evento.docentes_inscritos}
-        docentesPendientes={evento.docentes_pendientes}
         fechas={evento.fechas}
         horas={evento.horas}
         id={evento.id}
