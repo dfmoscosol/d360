@@ -53,6 +53,7 @@ const EditarCharla = (props) => {
    */
 
   const [isValidDate, setValidDate] = useState(true);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const {
     register,
@@ -65,6 +66,7 @@ const EditarCharla = (props) => {
   const [formData, setFormData] = useState(null);
 
   const onSubmit = (data) => {
+    setIsSubmitted(true);
     console.log(data);
     let areValidDates;
     let validDatesList = [];
@@ -272,8 +274,12 @@ const EditarCharla = (props) => {
     setSelectedCompetencias(newItems);
   };
   const handleHorasChange = (id, value) => {
-    const intValue = value.replace(/[^0-9]/g, '');
-    setSelectedCompetencias(prev => prev.map(c => c.id === id ? { ...c, horas: Number(intValue) } : c));
+    const intValue = parseInt(value.replace(/[^0-9]/g, '')) || 0;
+    const horasTotales = Number(watch("horas") || 0);
+    const sumaOtras = selectedCompetencias.filter(c => c.id !== id).reduce((sum, c) => sum + Number(c.horas || 0), 0);
+    const maxAllowed = Math.max(0, horasTotales - sumaOtras);
+    const finalValue = Math.min(intValue, maxAllowed);
+    setSelectedCompetencias(prev => prev.map(c => c.id === id ? { ...c, horas: finalValue } : c));
   };
   
   const horasTotales = Number(watch("horas") || horas || 0); // fallback a prop original si no está touched
@@ -364,7 +370,7 @@ const EditarCharla = (props) => {
               className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
               {...register("nombre", { required: true })}
             />
-            {errors.nombre && (
+            {isSubmitted && errors.nombre && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un nombre válido.
               </span>
@@ -379,62 +385,10 @@ const EditarCharla = (props) => {
               className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
               {...register("descripcion", { required: true })}
             />
-            {errors.descripcion && (
+            {isSubmitted && errors.descripcion && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese una descripción válida.
               </span>
-            )}
-          </div>
-
-          {/**Competencia */}
-          <div className="col-span-6 flex flex-col gap-1">
-            <FormLabel value={"Competencias"} />
-            <div className="w-full">
-              <MultiSelectComboBox
-                items={competenciasList}
-                selectedItems={selectedCompetencias}
-                onSelectionChange={handleSelectCompetencia}
-              />
-            </div>
-            {selectedCompetencias.length > 0 && (
-              <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium text-primary_text_1">Asignar horas</span>
-                  <span className={`text-sm font-bold ${isTotalValid ? 'text-green-600' : 'text-red-600'}`}>
-                    Total: {sumaHoras} / {horasTotales} hrs
-                  </span>
-                </div>
-                {selectedCompetencias.map(comp => (
-                  <div key={comp.id} className="flex justify-between items-center gap-2">
-                    <span className="text-sm text-primary_text_1">{comp.nombre}</span>
-                    <div className="flex items-center gap-1">
-                      <input 
-                        type="number" 
-                        value={comp.horas === 0 ? '' : comp.horas} 
-                        onChange={(e) => handleHorasChange(comp.id, e.target.value)}
-                        onKeyDown={(e) => {
-                          if (['.', ',', '-', 'e', 'E'].includes(e.key)) {
-                            e.preventDefault();
-                          }
-                        }}
-                        className="w-20 focus:bg-white text-primary_gray_4 p-1 rounded text-sm bg-white outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                        min={0} max={horasTotales || 100}
-                        step={1}
-                      />
-                      <span className="text-sm text-primary_gray_4">hrs</span>
-                    </div>
-                  </div>
-                ))}
-                {hasInvalidHoras && (
-                  <span className="text-red-600 text-xs mt-1 font-light">Asigne un valor mayor a 0 a todas las competencias.</span>
-                )}
-                {!isTotalValid && !hasInvalidHoras && horasTotales > 0 && (
-                  <span className="text-red-600 text-xs mt-1 font-light">Llevas {sumaHoras} de {horasTotales} horas asignadas. La suma debe ser exacta.</span>
-                )}
-                {horasTotales === 0 && (
-                  <span className="text-red-600 text-xs mt-1 font-light">Primero debe ingresar las Horas totales del evento.</span>
-                )}
-              </div>
             )}
           </div>
 
@@ -452,7 +406,7 @@ const EditarCharla = (props) => {
           </div>
 
           {/**Microcredencial */}
-          <div className="col-span-12 flex flex-col gap-1">
+          <div className="col-span-6 flex flex-col gap-1">
             <FormLabel value={"Microcredencial (Opcional)"} />
             <input
               type="text"
@@ -484,7 +438,7 @@ const EditarCharla = (props) => {
                 format="YYYY-MM-DD"
                 render={<CustomInput />}
               />
-              {!isValidDate && (
+              {isSubmitted && !isValidDate && (
                 <span className="text-red-600 text-sm font-light px-1">
                   Ingrese una fecha válida.
                 </span>
@@ -505,7 +459,7 @@ const EditarCharla = (props) => {
                 step={1}
               />
             </div>
-            {errors.horas && (
+            {isSubmitted && errors.horas && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un valor válido
               </span>
@@ -525,7 +479,7 @@ const EditarCharla = (props) => {
                 step={1}
               />
             </div>
-            {errors.cupos && (
+            {isSubmitted && errors.cupos && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un valor válido
               </span>
@@ -557,7 +511,7 @@ const EditarCharla = (props) => {
                 {...register("ubicacion", { required: true })}
               />
             </div>
-            {errors.ubicacion && (
+            {isSubmitted && errors.ubicacion && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un valor válido
               </span>
@@ -575,7 +529,7 @@ const EditarCharla = (props) => {
                 {...register("hora_inicio", { required: true })}
               />
             </div>
-            {errors.hora_inicio && (
+            {isSubmitted && errors.hora_inicio && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un valor válido
               </span>
@@ -593,10 +547,62 @@ const EditarCharla = (props) => {
                 {...register("duracion", { required: true })}
               />
             </div>
-            {errors.duracion && (
+            {isSubmitted && errors.duracion && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un valor válido
               </span>
+            )}
+          </div>
+
+          {/**Competencias - full width */}
+          <div className="col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Competencias"} />
+            <div className="w-full">
+              <MultiSelectComboBox
+                items={competenciasList}
+                selectedItems={selectedCompetencias}
+                onSelectionChange={handleSelectCompetencia}
+              />
+            </div>
+            {selectedCompetencias.length > 0 && (
+              <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg w-full">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-primary_text_1">Asignar horas</span>
+                  <span className={`text-sm font-medium ${isTotalValid ? 'text-green-600' : 'text-primary_gray_4'}`}>
+                    Total: {sumaHoras} / {horasTotales} hrs
+                  </span>
+                </div>
+                {selectedCompetencias.map(comp => (
+                  <div key={comp.id} className="flex justify-between items-center gap-2">
+                    <span className="text-sm text-primary_text_1">{comp.nombre}</span>
+                    <div className="flex items-center gap-1">
+                      <input 
+                        type="number" 
+                        value={comp.horas === 0 ? '' : comp.horas} 
+                        onChange={(e) => handleHorasChange(comp.id, e.target.value)}
+                        onKeyDown={(e) => {
+                          if (['.', ',', '-', 'e', 'E'].includes(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
+                        className="w-20 focus:bg-white text-primary_gray_4 p-1 rounded text-sm bg-white outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                        min={0} max={horasTotales || 100}
+                        step={1}
+                      />
+                      <span className="text-sm text-primary_gray_4">hrs</span>
+                    </div>
+                  </div>
+                ))}
+                {isSubmitted && hasInvalidHoras && (
+                  <span className="text-red-600 text-xs mt-1 font-light">Asigne un valor mayor a 0 a todas las competencias.</span>
+                )}
+                {isSubmitted && !isTotalValid && !hasInvalidHoras && horasTotales > 0 && (
+                  <span className="text-red-600 text-xs mt-1 font-light">La suma de horas de las competencias ({sumaHoras}) debe ser igual al total de horas del evento ({horasTotales}).</span>
+                )}
+                {isSubmitted && horasTotales === 0 && (
+                  <span className="text-red-600 text-xs mt-1 font-light">Primero debe ingresar las Horas totales del evento.</span>
+                )}
+              </div>
             )}
           </div>
 
@@ -660,7 +666,7 @@ const EditarCharla = (props) => {
                       )}
                     </div>
                   </div>
-                  {input.isEmpty && (
+                  {isSubmitted && input.isEmpty && (
                     <span className="text-red-600 text-sm font-light px-1">
                       Complete todos los campos para el Ponente
                     </span>

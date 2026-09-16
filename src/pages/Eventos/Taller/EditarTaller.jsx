@@ -5,6 +5,7 @@ import MultiSelectComboBox from "../ui/components/MultiSelectComboBox/MultiSelec
 import { useGetCompetenciasQuery } from "@redux/services/competencia/competenciaApi";
 import FormLabel from "../ui/components/FormLabel/FormLabel";
 import DatePicker, { DateObject } from "react-multi-date-picker";
+import DatePanel from "react-multi-date-picker/plugins/date_panel";
 import { Link, useNavigate } from "react-router-dom";
 import { useEditEventoMutation } from "@redux/services/evento/eventoApi";
 import { useDispatch } from "react-redux";
@@ -46,6 +47,7 @@ const EditarTaller = (props) => {
 
   const [isValidDate, setValidDate] = useState(true);
   const [errorSesiones, setErrorSesiones] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const {
     register,
@@ -58,6 +60,7 @@ const EditarTaller = (props) => {
   const [formData, setFormData] = useState(null);
 
   const onSubmit = (data) => {
+    setIsSubmitted(true);
     let areValidDates;
 
     if (sesiones.length == 0) {
@@ -90,17 +93,25 @@ const EditarTaller = (props) => {
       return; // Detener la ejecución si algún campo está vacío
     }
 
-    if (areValidDates && areValidSesiones && selectedCompetencias.length > 0 && isTotalValid && areAllPonentesFilled) {
+    if (areValidDates && areValidSesiones && selectedCompetencias.length > 0 && isTotalValid && selectedMomento != "" && areAllPonentesFilled) {
       console.log("Se puede enviar el formulario");
-      data.sesiones = sesiones;
+      data.inscripcion = false;
       data.competencias = selectedCompetencias.map(c => ({ id: c.id, horas: Number(c.horas || 0) }));
       data.momento = listMomentos.indexOf(selectedMomento) + 1;
+      data.fechas = dates.map(d => d.format("YYYY-MM-DD"));
+      data.sesiones = sesiones.map(sesion => ({
+        fecha_id: sesion.fecha_id,
+        hora_inicio: sesion.hora_inicio,
+        duracion: Number(sesion.duracion),
+        modalidad: listModalidades.indexOf(sesion.modalidad) + 1,
+        ubicacion: sesion.ubicacion
+      }));
       data.horas = Number(data.horas);
       data.cupos = Number(data.cupos);
       data.ponentes = inputs.map(input => ({
         nombre: input.value,
       }));
-      console.log(data)
+      console.log(data);
       setFormData({
         id: id,
         body: data,
@@ -120,10 +131,14 @@ const EditarTaller = (props) => {
     const parts = sesion.fecha.split("-");
     // Cambia el orden de los elementos para adaptarse al formato MM-DD-YYYY
     const formattedDate = `${parts[1]}-${parts[2]}-${parts[0]}`;
-    let datefinal = new DateObject(new Date(formattedDate))
+    let datefinal = new DateObject(new Date(formattedDate));
+    const modText = sesion.modalidad === 1 || sesion.modalidad === "Presencial" ? "Presencial" : 
+                    sesion.modalidad === 2 || sesion.modalidad === "Virtual" ? "Virtual" : 
+                    sesion.modalidad === 3 || sesion.modalidad === "Híbrida" ? "Híbrida" : 
+                    (sesion.modalidad || "Presencial");
     return {
-      fecha: datefinal.format("YYYY-MM-DD"),
-      modalidad: Number(sesion.modalidad === "Presencial" ? 1 : sesion.modalidad === "Virtual" ? 2 : sesion.modalidad === "Híbrida" ? 3 : 0),
+      fecha_id: datefinal.format("YYYY-MM-DD"),
+      modalidad: modText,
       ubicacion: sesion.ubicacion,
       hora_inicio: sesion.hora_inicio,
       duracion: Number(sesion.duracion),
@@ -131,6 +146,9 @@ const EditarTaller = (props) => {
   });
 
   const [sesiones, setSesiones] = useState(formattedSesiones);
+  const [dates, setDates] = useState(() => {
+    return formattedSesiones.map(s => new DateObject(s.fecha_id));
+  });
   const today = new Date();
   const weekDays = ["D", "L", "M", "M", "J", "V", "S"];
   const months = [
@@ -149,22 +167,40 @@ const EditarTaller = (props) => {
   ];
 
   function handleDateChange(value) {
+    setDates(value);
+    setValidDate(value.length > 0);
     const selectedDatesSet = new Set(value.map(date => date.format("YYYY-MM-DD")));
-    const filteredSessions = sesiones.filter(session => selectedDatesSet.has(session.fecha));
-    let newSessions = value.map(date => ({
-      fecha: date.format("YYYY-MM-DD"),
-      modalidad: '',
-      hora_inicio: '',
-      duracion: '',
-      ubicacion: ''
-    }));
-    // Añadir las sesiones filtradas a newSessions si no están ya incluidas
-    newSessions = newSessions.map(newSession => {
-      const existingSession = filteredSessions.find(session => session.fecha === newSession.fecha);
-      return existingSession ? existingSession : newSession;
-    });
-    setSesiones(newSessions)
+    setSesiones(prev => prev.filter(session => selectedDatesSet.has(session.fecha_id)));
   }
+
+  const handleDateSwap = (oldFecha, newFecha) => {
+    setSesiones(prev => prev.map(s => {
+      if (s.fecha_id === oldFecha) {
+        return { ...s, fecha_id: newFecha };
+      }
+      return s;
+    }));
+  };
+
+  const handleAddSession = () => {
+    const usedDates = new Set(sesiones.map(s => s.fecha_id));
+    const allDates = dates.map(d => d.format("YYYY-MM-DD"));
+    const availableDate = allDates.find(d => !usedDates.has(d));
+    
+    if (availableDate) {
+      setSesiones([...sesiones, {
+        fecha_id: availableDate,
+        modalidad: "Presencial",
+        hora_inicio: "",
+        duracion: "",
+        ubicacion: ""
+      }]);
+    }
+  };
+
+  const handleRemoveSession = (fecha) => {
+    setSesiones(prev => prev.filter(s => s.fecha_id !== fecha));
+  };
 
   function CustomInput({ onFocus, value, onChange }) {
     return (
@@ -186,7 +222,7 @@ const EditarTaller = (props) => {
    * COMBOBOX
    */
 
-  const listModalidades = ["Presencial", "Virtual"];
+  const listModalidades = ["Presencial", "Virtual", "Híbrida"];
   const listMomentos = ["Explorador", "Integrador", "Innovador"];
 
   const { data: competenciasList = [] } = useGetCompetenciasQuery();
@@ -211,8 +247,12 @@ const EditarTaller = (props) => {
     setIsValidCompetencia(newItems.length > 0);
   };
   const handleHorasChange = (id, value) => {
-    const intValue = value.replace(/[^0-9]/g, '');
-    setSelectedCompetencias(prev => prev.map(c => c.id === id ? { ...c, horas: Number(intValue) } : c));
+    const intValue = parseInt(value.replace(/[^0-9]/g, '')) || 0;
+    const horasTotales = Number(watch("horas") || horas || 0);
+    const sumaOtras = selectedCompetencias.filter(c => c.id !== id).reduce((sum, c) => sum + Number(c.horas || 0), 0);
+    const maxAllowed = Math.max(0, horasTotales - sumaOtras);
+    const finalValue = Math.min(intValue, maxAllowed);
+    setSelectedCompetencias(prev => prev.map(c => c.id === id ? { ...c, horas: finalValue } : c));
   };
   
   const horasTotales = Number(watch("horas") || horas || 0);
@@ -224,28 +264,27 @@ const EditarTaller = (props) => {
   const [isValidMomento, setIsValidMomento] = useState(true);
   const handleSelectMomento = (value) => {
     setSelectedMomento(value);
-    setIsValidMomento(true)
+    setIsValidMomento(true);
   };
 
   // Estado para almacenar el valor seleccionado
 
   const handleSelect = (value, fecha) => {
-    let numValue = listModalidades.indexOf(value) + 1;
     let sesionesActualizadas = [...sesiones];
 
     // Encontrar la sesión correspondiente a la fecha
-    const sessionIndex = sesionesActualizadas.findIndex(session => session.fecha === fecha);
+    const sessionIndex = sesionesActualizadas.findIndex(session => session.fecha_id === fecha);
 
     // Si se encuentra la sesión, actualizar su modalidad
     if (sessionIndex !== -1) {
-      sesionesActualizadas[sessionIndex].modalidad = Number(numValue);
+      sesionesActualizadas[sessionIndex].modalidad = value;
     } else {
       console.error(`No se encontró una sesión para la fecha: ${fecha}`);
     }
 
     // Actualizar el estado de sesiones
     setSesiones(sesionesActualizadas);
-    setErrorSesiones(false)
+    setErrorSesiones(false);
   };
 
   const handleUpdateLocation = (value, fecha) => {
@@ -253,7 +292,7 @@ const EditarTaller = (props) => {
     let sesionesActualizadas = [...sesiones];
 
     // Encontrar la sesión correspondiente a la fecha
-    const sessionIndex = sesionesActualizadas.findIndex(session => session.fecha === fecha);
+    const sessionIndex = sesionesActualizadas.findIndex(session => session.fecha_id === fecha);
 
     // Si se encuentra la sesión, actualizar su ubicación
     if (sessionIndex !== -1) {
@@ -264,7 +303,7 @@ const EditarTaller = (props) => {
 
     // Actualizar el estado de sesiones
     setSesiones(sesionesActualizadas);
-    setErrorSesiones(false)
+    setErrorSesiones(false);
   };
 
   const handleUpdateHora = (value, fecha) => {
@@ -272,7 +311,7 @@ const EditarTaller = (props) => {
     let sesionesActualizadas = [...sesiones];
 
     // Encontrar la sesión correspondiente a la fecha
-    const sessionIndex = sesionesActualizadas.findIndex(session => session.fecha === fecha);
+    const sessionIndex = sesionesActualizadas.findIndex(session => session.fecha_id === fecha);
 
     // Si se encuentra la sesión, actualizar su ubicación
     if (sessionIndex !== -1) {
@@ -283,8 +322,7 @@ const EditarTaller = (props) => {
 
     // Actualizar el estado de sesiones
     setSesiones(sesionesActualizadas);
-    setErrorSesiones(false)
-
+    setErrorSesiones(false);
   };
 
   const handleUpdateDuration = (value, fecha) => {
@@ -292,7 +330,7 @@ const EditarTaller = (props) => {
     let sesionesActualizadas = [...sesiones];
 
     // Encontrar la sesión correspondiente a la fecha
-    const sessionIndex = sesionesActualizadas.findIndex(session => session.fecha === fecha);
+    const sessionIndex = sesionesActualizadas.findIndex(session => session.fecha_id === fecha);
 
     // Si se encuentra la sesión, actualizar su ubicación
     if (sessionIndex !== -1) {
@@ -303,8 +341,7 @@ const EditarTaller = (props) => {
 
     // Actualizar el estado de sesiones
     setSesiones(sesionesActualizadas);
-    setErrorSesiones(false)
-
+    setErrorSesiones(false);
   };
 
   /**
@@ -366,7 +403,7 @@ const EditarTaller = (props) => {
         return input;
       })
     );
-  }
+  };
 
   const handleAddInput = () => {
     const newInputs = inputs.map(input => ({
@@ -447,7 +484,7 @@ const EditarTaller = (props) => {
               placeholder=""
               {...register("nombre", { required: true })}
             />
-            {errors.nombre && (
+            {isSubmitted && errors.nombre && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un nombre válido.
               </span>
@@ -463,15 +500,82 @@ const EditarTaller = (props) => {
               placeholder=""
               {...register("descripcion", { required: true })}
             />
-            {errors.descripcion && (
+            {isSubmitted && errors.descripcion && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese una descripción válida.
               </span>
             )}
           </div>
 
-          {/**Competencia */}
+          {/**Momento */}
           <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Momento"} />
+            <div className="w-full">
+              <ComboBox items={listMomentos} onSelect={handleSelectMomento} hasBeenSelected={true}
+                selected={selectedMomento} />
+            </div>
+            {isSubmitted && !isValidMomento && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Seleccione una opción
+              </span>
+            )}
+          </div>
+
+          {/**Microcredencial */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Microcredencial (Opcional)"} />
+            <input
+              type="text"
+              maxLength={100}
+              defaultValue={microcredencial || ""}
+              placeholder="Microcredencial"
+              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+              {...register("microcredencial")}
+            />
+          </div>
+
+          {/**Horas */}
+          <div className="col-span-3 flex flex-col gap-1">
+            <FormLabel value={"Horas"} />
+            <div className="w-full">
+              <input
+                type="number"
+                defaultValue={horas}
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                {...register("horas", { required: true })}
+                min={1}
+                step={1}
+              />
+            </div>
+            {isSubmitted && errors.horas && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese un valor válido
+              </span>
+            )}
+          </div>
+
+          {/**Cupos */}
+          <div className="col-span-3 flex flex-col gap-1">
+            <FormLabel value={"Cupos"} />
+            <div className="w-full h-full ">
+              <input
+                defaultValue={cupos}
+                type="number"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                {...register("cupos", { required: true })}
+                min={1}
+                step={1}
+              />
+            </div>
+            {isSubmitted && errors.cupos && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese un valor válido
+              </span>
+            )}
+          </div>
+
+          {/**Competencias - full width */}
+          <div className="col-span-12 flex flex-col gap-1">
             <FormLabel value={"Competencias"} />
             <div className="w-full">
               <MultiSelectComboBox
@@ -480,16 +584,16 @@ const EditarTaller = (props) => {
                 onSelectionChange={handleSelectCompetencia}
               />
             </div>
-            {!isValidCompetencia && (
+            {isSubmitted && !isValidCompetencia && (
               <span className="text-red-600 text-sm font-light px-1">
                 Seleccione al menos una competencia
               </span>
             )}
             {selectedCompetencias.length > 0 && (
-              <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg">
+              <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg w-full">
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-sm font-medium text-primary_text_1">Asignar horas</span>
-                  <span className={`text-sm font-bold ${isTotalValid ? 'text-green-600' : 'text-red-600'}`}>
+                  <span className={`text-sm font-medium ${isTotalValid ? 'text-green-600' : 'text-primary_gray_4'}`}>
                     Total: {sumaHoras} / {horasTotales} hrs
                   </span>
                 </div>
@@ -514,198 +618,156 @@ const EditarTaller = (props) => {
                     </div>
                   </div>
                 ))}
-                {hasInvalidHoras && (
+                {isSubmitted && hasInvalidHoras && (
                   <span className="text-red-600 text-xs mt-1 font-light">Asigne un valor mayor a 0 a todas las competencias.</span>
                 )}
-                {!isTotalValid && !hasInvalidHoras && horasTotales > 0 && (
-                  <span className="text-red-600 text-xs mt-1 font-light">Llevas {sumaHoras} de {horasTotales} horas asignadas. La suma debe ser exacta.</span>
+                {isSubmitted && !isTotalValid && !hasInvalidHoras && horasTotales > 0 && (
+                  <span className="text-red-600 text-xs mt-1 font-light">La suma de horas de las competencias ({sumaHoras}) debe ser igual al total de horas del evento ({horasTotales}).</span>
                 )}
-                {horasTotales === 0 && (
+                {isSubmitted && horasTotales === 0 && (
                   <span className="text-red-600 text-xs mt-1 font-light">Primero debe ingresar las Horas totales del evento.</span>
                 )}
               </div>
             )}
           </div>
 
-          {/**Momento */}
-          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Momento"} />
-            <div className="w-full">
-              <ComboBox items={listMomentos} onSelect={handleSelectMomento} hasBeenSelected={true}
-                selected={selectedMomento} />
-            </div>
-            {!isValidMomento && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Seleccione una opción
-              </span>
-            )}
-          </div>
-
-          {/**Microcredencial */}
-          <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Microcredencial (Opcional)"} />
-            <input
-              type="text"
-              maxLength={100}
-              defaultValue={microcredencial || ""}
-              placeholder="Microcredencial"
-              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-              {...register("microcredencial")}
-            />
-          </div>
-
-          {/**Fecha */}
-          <div className="col-span-6 flex flex-col gap-1">
-            <FormLabel value={"Fecha"} />
+          {/**Fecha - Global Picker */}
+          <div className="col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Fechas"} />
             <div className="w-full flex flex-col">
               <DatePicker
                 multiple
+                plugins={[<DatePanel />]}
                 weekStartDayIndex={1}
                 showOtherDays={true}
-                minDate={today}
                 weekDays={weekDays}
                 months={months}
                 onChange={handleDateChange}
+                value={dates}
                 style={{
                   width: "100%",
+                  backgroundColor: "#F9FAFB",
+                  color: "#9CA3AF",
+                  borderRadius: "0.5rem",
+                  padding: "0.5rem",
+                  fontSize: "0.875rem",
+                  outline: "none",
+                  border: "none",
                 }}
-                format="YYYY-MM-DD"
-                value={sesiones.map((sesion) => sesion.fecha)}
                 render={<CustomInput />}
               />
-              {!isValidDate && (
+              {!isValidDate && isSubmitted && (
                 <span className="text-red-600 text-sm font-light px-1">
-                  Ingrese una fecha válida.
+                  Ingrese al menos una fecha.
                 </span>
               )}
             </div>
           </div>
 
-          {/**Horas */}
-          <div className="col-span-3 flex flex-col gap-1">
-            <FormLabel value={"Horas"} />
-            <div className="w-full">
-              <input
-                type="number"
-                defaultValue={horas}
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("horas", { required: true })}
-                min={1}
-                step={1}
-              />
-            </div>
-            {errors.horas && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Ingrese un valor válido
-              </span>
-            )}
+          {/**Sesiones */}
+          <div className="col-span-12 flex flex-col gap-4">
+            {(() => {
+              const allDates = dates.map(d => d.format("YYYY-MM-DD"));
+              const usedDates = sesiones.map(s => s.fecha_id);
+              const hasAvailableDates = allDates.length > usedDates.length;
+
+              return (
+                <div className="flex flex-col gap-4 w-full">
+                  {sesiones.map((sesion, index) => {
+                    const availableDatesForThisSession = allDates.filter(d => !usedDates.includes(d) || d === sesion.fecha_id).sort();
+
+                    return (
+                      <div key={`${sesion.fecha_id}-${index}`} className="flex flex-col gap-3 p-4 bg-primary_gray_1 rounded-lg border border-gray-200 relative">
+                        {sesiones.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveSession(sesion.fecha_id)}
+                            className="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-white rounded-full p-1 shadow-sm"
+                            title="Eliminar sesión"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        )}
+                        <div className="flex flex-col items-start justify-start w-full">
+                          <label className="text-sm font-medium text-primary_text_1 mb-1">Fecha</label>
+                          <ComboBox
+                            items={availableDatesForThisSession}
+                            onSelect={(value) => { if (value !== sesion.fecha_id) handleDateSwap(sesion.fecha_id, value); }}
+                            selected={sesion.fecha_id}
+                          />
+                        </div>
+                        <div className="flex flex-wrap gap-3">
+                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                            <label className="text-sm font-medium text-primary_text_1">Modalidad</label>
+                            <ComboBox
+                              items={listModalidades}
+                              onSelect={(value) => handleSelect(value, sesion.fecha_id)}
+                              selected={sesion.modalidad}
+                            />
+                            {isSubmitted && errorSesiones && (!sesion.modalidad || sesion.modalidad === "") && (
+                              <span className="text-red-600 text-sm font-light px-1">Seleccione una opción.</span>
+                            )}
+                          </div>
+                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                            <label className="text-sm font-medium text-primary_text_1">Hora</label>
+                            <input type="time"
+                              value={sesion.hora_inicio}
+                              onChange={(e) => handleUpdateHora(e.target.value, sesion.fecha_id)}
+                              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-white outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
+                            {isSubmitted && errorSesiones && sesion.hora_inicio === "" && (
+                              <span className="text-red-600 text-sm font-light px-1">Ingrese un valor.</span>
+                            )}
+                          </div>
+                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                            <label className="text-sm font-medium text-primary_text_1">Duración</label>
+                            <input type="number"
+                              value={sesion.duracion}
+                              onChange={(e) => handleUpdateDuration(e.target.value, sesion.fecha_id)}
+                              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-white outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
+                            {isSubmitted && errorSesiones && sesion.duracion === "" && (
+                              <span className="text-red-600 text-sm font-light px-1">Ingrese un valor.</span>
+                            )}
+                          </div>
+                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
+                            <label className="text-sm font-medium text-primary_text_1">Ubicación</label>
+                            <input type="text"
+                              value={sesion.ubicacion}
+                              onChange={(e) => handleUpdateLocation(e.target.value, sesion.fecha_id)}
+                              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-white outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5" />
+                            {isSubmitted && errorSesiones && sesion.ubicacion === "" && (
+                              <span className="text-red-600 text-sm font-light px-1">Ingrese un valor.</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {hasAvailableDates && (
+                    <div className="flex justify-start items-center gap-2">
+                      <span className="text-sm font-medium text-primary_text_1">Agregar Sesión</span>
+                      <Button
+                        type="ucuenca"
+                        onClick={handleAddSession}
+                        icon="add"
+                        buttonType="button"
+                        size="small"
+                        isRadial={true}
+                        isPrimary={false}
+                      />
+                    </div>
+                  )}
+                  {isSubmitted && sesiones.length === 0 && (
+                    <span className="text-red-600 text-sm font-light px-1">
+                      Agregue al menos una sesión.
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
           </div>
-
-          {/**Cupos */}
-          <div className="col-span-3 flex flex-col gap-1">
-            <FormLabel value={"Cupos"} />
-            <div className="w-full h-full ">
-              <input
-                defaultValue={cupos}
-                type="number"
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("cupos", { required: true })}
-                min={1}
-                step={1}
-              />
-            </div>
-            {errors.cupos && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Ingrese un valor válido
-              </span>
-            )}
-          </div>
-          {sesiones.map((sesion, index) => (
-            <>
-              <div className="col-span-12 flex flex-col gap-1 items-start justify-start">
-                <InfoPill
-                  value={sesion.fecha}
-                  size="small"
-                  type="date"
-                  icon="date"
-                />
-              </div>
-              <input
-                type="hidden"
-              />
-              {/* Modalidad */}
-              <div className="col-span-6 flex flex-col gap-1">
-                <FormLabel value={"Modalidad"} />
-                <div className="w-full">
-                  <ComboBox
-                    items={listModalidades}
-                    onSelect={(value) => handleSelect(value, sesion.fecha)}
-                    selected={sesion.modalidad === 1 ? "Presencial" : sesion.modalidad === 2 ? "Virtual" : sesion.modalidad === 3 ? "Híbrida" : ""}
-                  />
-                </div>
-                {errorSesiones && sesion.modalidad === "" && (
-                  <span className="text-red-600 text-sm font-light px-1">
-                    Seleccione una opción.
-                  </span>
-                )}
-              </div>
-              {/* Ubicación */}
-              <div className="col-span-6 flex flex-col gap-1">
-                <FormLabel value={"Ubicación"} />
-                <div className="w-full h-full">
-                  <input
-                    type="text"
-                    value={sesion.ubicacion}
-                    onChange={(e) => handleUpdateLocation(e.target.value, sesion.fecha)}
-                    className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                  />
-                </div>
-                {errorSesiones && sesion.ubicacion === "" && (
-                  <span className="text-red-600 text-sm font-light px-1">
-                    Ingrese un valor válido.
-                  </span>
-                )}
-              </div>
-
-              {/* Hora de inicio */}
-              <div className="col-span-6 flex flex-col gap-1">
-                <FormLabel value={"Hora de inicio"} />
-                <div className="w-full h-full">
-                  <input
-                    type="time"
-                    value={sesion.hora_inicio}
-                    onChange={(e) => handleUpdateHora(e.target.value, sesion.fecha)}
-                    className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                  />
-                </div>
-                {errorSesiones && sesion.hora_inicio === "" && (
-                  <span className="text-red-600 text-sm font-light px-1">
-                    Ingrese un valor válido.
-                  </span>
-                )}
-              </div>
-
-              {/* Duración */}
-              <div className="col-span-6 flex flex-col gap-1">
-                <FormLabel value={"Duración"} />
-                <div className="w-full h-full">
-                  <input
-                    type="number"
-                    value={sesion.duracion}
-                    className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                    onChange={(e) => handleUpdateDuration(e.target.value, sesion.fecha)}
-                    min={1}
-                    step={1}
-                  />
-                </div>
-                {errorSesiones && sesion.duracion === "" && (
-                  <span className="text-red-600 text-sm font-light px-1">
-                    Ingrese un valor válido.
-                  </span>
-                )}
-              </div>
-            </>
-          ))}
 
           <div className="flex flex-col col-span-12 gap-1">
             <FormLabel value={"Ponentes"} />
@@ -753,7 +815,7 @@ const EditarTaller = (props) => {
                       )}
                     </div>
                   </div>
-                  {input.isEmpty && (
+                  {isSubmitted && input.isEmpty && (
                     <span className="text-red-600 text-sm font-light px-1">
                       Complete todos los campos para el Ponente
                     </span>

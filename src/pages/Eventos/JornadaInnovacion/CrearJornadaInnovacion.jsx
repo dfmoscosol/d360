@@ -31,6 +31,7 @@ const CrearJornadaInnovacion = () => {
    * PARA EL FORMULARIO
    */
   const [isValidDate, setValidDate] = useState(true);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const {
     register,
@@ -43,6 +44,7 @@ const CrearJornadaInnovacion = () => {
 
 
   const onSubmit = (data) => {
+    setIsSubmitted(true);
     console.log(inputs);
     if (dates.length === 0) {
       console.log("ERROR: No se ha elegido más de una fecha.");
@@ -97,10 +99,10 @@ const CrearJornadaInnovacion = () => {
       microcredencial: input.microcredencial || null,
       sesiones: input.sesiones.map(sesion => ({
         fecha_id: sesion.fecha_id,
-        hora_inicio: sesion.modalidad === "Sin Sesión" ? "00:00" : sesion.hora_inicio,
-        duracion: sesion.modalidad === "Sin Sesión" ? 0 : sesion.duracion,
+        hora_inicio: sesion.hora_inicio,
+        duracion: sesion.duracion,
         modalidad: listModalidades.indexOf(sesion.modalidad) + 1,
-        ubicacion: sesion.modalidad === "Sin Sesión" ? "Sin ubicación" : sesion.ubicacion
+        ubicacion: sesion.ubicacion
       })),
       ponentes: input.ponentes.map(ponente => ({ nombre: ponente.value }))
     }));
@@ -186,12 +188,16 @@ const CrearJornadaInnovacion = () => {
   };
 
   const handleCompetenciaHorasChange = (tallerId, compId, value) => {
-    const intValue = value.replace(/[^0-9]/g, '');
+    const intValue = parseInt(value.replace(/[^0-9]/g, '')) || 0;
     setInputs(
       inputs.map((input) => {
         if (input.id === tallerId) {
+          const sumaOtras = input.competencias.filter(c => c.id !== compId).reduce((sum, c) => sum + Number(c.horas || 0), 0);
+          const maxAllowed = Math.max(0, horasTotales - sumaOtras);
+          const finalValue = Math.min(intValue, maxAllowed);
+          
           const updatedCompetencias = input.competencias.map(c => 
-            c.id === compId ? { ...c, horas: Number(intValue) } : c
+            c.id === compId ? { ...c, horas: finalValue } : c
           );
           return { ...input, competencias: updatedCompetencias };
         }
@@ -227,17 +233,20 @@ const CrearJornadaInnovacion = () => {
     const lastInput = newInputs[newInputs.length - 1];
     lastInput.hasAddButton = false;
     lastInput.hasRemoveButton = false;
+    const availableDate = dates.length > 0 ? dates[0].format("YYYY-MM-DD") : null;
+    const initialSesiones = availableDate ? [{
+      fecha_id: availableDate,
+      hora_inicio: "",
+      duracion: "",
+      modalidad: "Presencial",
+      ubicacion: "",
+    }] : [];
+
     newInputs.push({
       id: lastInput.id + 1,
       hasAddButton: true,
       hasRemoveButton: true,
-      sesiones: dates.map((date, index) => ({
-        fecha_id: date.format("YYYY-MM-DD"),
-        hora_inicio: "",
-        duracion: "",
-        modalidad: index === 0 ? "Presencial" : "Sin Sesión",
-        ubicacion: "",
-      })),
+      sesiones: initialSesiones,
       ponentes: [{ id: 1, value: "", hasAddButton: true, hasRemoveButton: false, }],
       value: "",
       descripcion: "",
@@ -264,38 +273,16 @@ const CrearJornadaInnovacion = () => {
     setInputs(newInputs);
   };
 
-  const handleDateSwap = (tallerId, oldFechaId, newFechaId) => {
+  const handleDateSwap = (tallerId, oldFecha, newFecha) => {
     setInputs(inputs => inputs.map(input => {
       if (input.id === tallerId) {
-        const oldSesion = input.sesiones.find(s => s.fecha_id === oldFechaId);
-        const newSesion = input.sesiones.find(s => s.fecha_id === newFechaId);
-
-        if (oldSesion && newSesion) {
-          const updatedNewSesion = {
-            ...newSesion,
-            modalidad: oldSesion.modalidad,
-            hora_inicio: oldSesion.hora_inicio,
-            duracion: oldSesion.duracion,
-            ubicacion: oldSesion.ubicacion
-          };
-
-          const updatedOldSesion = {
-            ...oldSesion,
-            modalidad: "Sin Sesión",
-            hora_inicio: "",
-            duracion: "",
-            ubicacion: ""
-          };
-
-          return {
-            ...input,
-            sesiones: input.sesiones.map(s => {
-              if (s.fecha_id === oldFechaId) return updatedOldSesion;
-              if (s.fecha_id === newFechaId) return updatedNewSesion;
-              return s;
-            })
-          };
-        }
+        const newSesiones = input.sesiones.map(s => {
+          if (s.fecha_id === oldFecha) {
+            return { ...s, fecha_id: newFecha };
+          }
+          return s;
+        });
+        return { ...input, sesiones: newSesiones };
       }
       return input;
     }));
@@ -304,13 +291,18 @@ const CrearJornadaInnovacion = () => {
   const handleAddSession = (tallerId) => {
     setInputs(inputs => inputs.map(input => {
       if (input.id === tallerId) {
-        const inactiveIndex = input.sesiones.findIndex(s => s.modalidad === "Sin Sesión" || s.modalidad === "");
-        if (inactiveIndex !== -1) {
-          const newSesiones = [...input.sesiones];
-          newSesiones[inactiveIndex] = {
-            ...newSesiones[inactiveIndex],
-            modalidad: "Presencial"
-          };
+        const usedDates = new Set(input.sesiones.map(s => s.fecha_id));
+        const allDates = dates.map(d => d.format("YYYY-MM-DD"));
+        const availableDate = allDates.find(d => !usedDates.has(d));
+
+        if (availableDate) {
+          const newSesiones = [...input.sesiones, {
+            fecha_id: availableDate,
+            hora_inicio: "",
+            duracion: "",
+            modalidad: "Presencial",
+            ubicacion: "",
+          }];
           return { ...input, sesiones: newSesiones };
         }
       }
@@ -318,24 +310,11 @@ const CrearJornadaInnovacion = () => {
     }));
   };
 
-  const handleRemoveSession = (tallerId, fechaId) => {
+  const handleRemoveSession = (tallerId, fecha) => {
     setInputs(inputs => inputs.map(input => {
       if (input.id === tallerId) {
-        return {
-          ...input,
-          sesiones: input.sesiones.map(s => {
-            if (s.fecha_id === fechaId) {
-              return {
-                ...s,
-                modalidad: "Sin Sesión",
-                hora_inicio: "",
-                duracion: "",
-                ubicacion: ""
-              };
-            }
-            return s;
-          })
-        };
+        const newSesiones = input.sesiones.filter(s => s.fecha_id !== fecha);
+        return { ...input, sesiones: newSesiones };
       }
       return input;
     }));
@@ -479,7 +458,7 @@ const CrearJornadaInnovacion = () => {
       let hasConflict = false;
       for (const input of inputs) {
         for (const sesion of input.sesiones) {
-          if (sesion.modalidad !== "Sin Sesión" && removedDates.includes(sesion.fecha_id)) {
+          if (removedDates.includes(sesion.fecha_id)) {
             hasConflict = true;
             break;
           }
@@ -503,30 +482,8 @@ const CrearJornadaInnovacion = () => {
     // Actualizar las sesiones en cada taller para alinearlas con las nuevas fechas
     setInputs(inputs => inputs.map(taller => ({
       ...taller,
-      sesiones: synchronizeSessions(taller.sesiones, value),
+      sesiones: taller.sesiones.filter(sesion => newDatesFormatted.includes(sesion.fecha_id)),
     })));
-  }
-
-  function synchronizeSessions(existingSessions, newDates) {
-    // Crear un mapa de las fechas existentes para acceso rápido
-    const existingDates = new Set(existingSessions.map(sesion => sesion.fecha_id));
-
-    // Añadir nuevas sesiones para fechas nuevas
-    const sessionsToAdd = newDates.filter(date => !existingDates.has(date.format('YYYY-MM-DD')))
-      .map(date => ({
-        fecha_id: date.format('YYYY-MM-DD'),
-        hora_inicio: '',
-        duracion: '',
-        modalidad: 'Sin Sesión',
-        ubicacion: '',
-      }));
-
-    // Filtrar las sesiones que ya no coinciden con ninguna fecha seleccionada
-    const updatedSessions = existingSessions.filter(session =>
-      newDates.some(date => date.format('YYYY-MM-DD') === session.fecha_id)
-    );
-
-    return [...updatedSessions, ...sessionsToAdd];
   }
 
   function CustomInput({ onFocus, value, onChange }) {
@@ -548,7 +505,7 @@ const CrearJornadaInnovacion = () => {
   /**
    * COMBOBOX
    */
-  const listModalidades = ["Presencial", "Virtual", "Sin Sesión"];
+  const listModalidades = ["Presencial", "Virtual"];
   const listMomentos = ["Explorador", "Integrador", "Innovador"];
 
   const { data: competenciasList = [] } = useGetCompetenciasQuery();
@@ -698,61 +655,6 @@ const CrearJornadaInnovacion = () => {
                           />
                         </div>
                         <div className="flex flex-wrap gap-3">
-
-                          <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)] w-full">
-                            <label className="text-sm font-medium text-primary_text_1">Competencias</label>
-                            <MultiSelectComboBox
-                              items={competenciasList}
-                              selectedItems={input.competencias}
-                              onSelectionChange={(items) => handleCompetenciaChange(input.id, items)}
-                            />
-                            {input.competencias && input.competencias.length > 0 && (() => {
-                              const sumaHorasTaller = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
-                              const hasInvalidHorasTaller = input.competencias.some(c => Number(c.horas || 0) <= 0);
-                              const isTallerTotalValid = sumaHorasTaller === horasTotales && !hasInvalidHorasTaller && horasTotales > 0;
-                              
-                              return (
-                                <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg w-full">
-                                  <div className="flex justify-between items-center mb-1">
-                                    <span className="text-sm font-medium text-primary_text_1">Asignar horas</span>
-                                    <span className={`text-xs ${isTallerTotalValid ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}`}>
-                                      Este taller: {sumaHorasTaller} / {horasTotales} hrs
-                                    </span>
-                                  </div>
-                                  {input.competencias.map(comp => (
-                                    <div key={comp.id} className="flex justify-between items-center gap-2">
-                                      <span className="text-sm text-primary_text_1">{comp.nombre}</span>
-                                      <div className="flex items-center gap-1">
-                                        <input 
-                                          type="number" 
-                                          value={comp.horas === 0 ? '' : comp.horas} 
-                                          onChange={(e) => handleCompetenciaHorasChange(input.id, comp.id, e.target.value)}
-                                          onKeyDown={(e) => {
-                                            if (['.', ',', '-', 'e', 'E'].includes(e.key)) {
-                                              e.preventDefault();
-                                            }
-                                          }}
-                                          className="w-20 focus:bg-white text-primary_gray_4 p-1 rounded text-sm bg-white outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                                          min={0} max={horasTotales || 100}
-                                          step={1}
-                                        />
-                                        <span className="text-sm text-primary_gray_4">hrs</span>
-                                      </div>
-                                    </div>
-                                  ))}
-                                  {hasInvalidHorasTaller && (
-                                    <span className="text-red-600 text-xs mt-1 font-light">Asigne un valor mayor a 0 a todas las competencias.</span>
-                                  )}
-                                  {!isTallerTotalValid && !hasInvalidHorasTaller && horasTotales > 0 && (
-                                    <span className="text-red-600 text-xs mt-1 font-light">Llevas {sumaHorasTaller} de {horasTotales} horas asignadas. La suma debe ser exacta.</span>
-                                  )}
-                                  {horasTotales === 0 && (
-                                    <span className="text-red-600 text-xs mt-1 font-light">Primero debe ingresar las Horas totales de la jornada.</span>
-                                  )}
-                                </div>
-                              );
-                            })()}
-                          </div>
                           <div className="flex flex-col flex-1 min-w-[calc(50%-0.75rem)]">
                             <label className="text-sm font-medium text-primary_text_1">Momento</label>
                             <ComboBox items={listMomentos} onSelect={(value) => handleMomentoChange(input.id, value)}
@@ -771,19 +673,75 @@ const CrearJornadaInnovacion = () => {
                           />
                         </div>
 
+                        <div className="flex flex-col w-full">
+                          <label className="text-sm font-medium text-primary_text_1">Competencias</label>
+                          <MultiSelectComboBox
+                            items={competenciasList}
+                            selectedItems={input.competencias}
+                            onSelectionChange={(items) => handleCompetenciaChange(input.id, items)}
+                          />
+                          {input.competencias && input.competencias.length > 0 && (() => {
+                            const sumaHorasTaller = input.competencias.reduce((sum, c) => sum + Number(c.horas || 0), 0);
+                            const hasInvalidHorasTaller = input.competencias.some(c => Number(c.horas || 0) <= 0);
+                            const isTallerTotalValid = sumaHorasTaller === horasTotales && !hasInvalidHorasTaller && horasTotales > 0;
+                            
+                            return (
+                              <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg w-full">
+                                <div className="flex justify-between items-center mb-1">
+                                  <span className="text-sm font-medium text-primary_text_1">Asignar horas</span>
+                                  <span className={`text-xs ${isTallerTotalValid ? 'text-green-600 font-bold' : 'text-primary_gray_4 font-medium'}`}>
+                                    Este taller: {sumaHorasTaller} / {horasTotales} hrs
+                                  </span>
+                                </div>
+                                {input.competencias.map(comp => (
+                                  <div key={comp.id} className="flex justify-between items-center gap-2">
+                                    <span className="text-sm text-primary_text_1">{comp.nombre}</span>
+                                    <div className="flex items-center gap-1">
+                                      <input 
+                                        type="number" 
+                                        value={comp.horas === 0 ? '' : comp.horas} 
+                                        onChange={(e) => handleCompetenciaHorasChange(input.id, comp.id, e.target.value)}
+                                        onKeyDown={(e) => {
+                                          if (['.', ',', '-', 'e', 'E'].includes(e.key)) {
+                                            e.preventDefault();
+                                          }
+                                        }}
+                                        className="w-20 focus:bg-white text-primary_gray_4 p-1 rounded text-sm bg-white outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                                        min={0} max={horasTotales || 100}
+                                        step={1}
+                                      />
+                                      <span className="text-sm text-primary_gray_4">hrs</span>
+                                    </div>
+                                  </div>
+                                ))}
+                                {isSubmitted && hasInvalidHorasTaller && (
+                                  <span className="text-red-600 text-xs mt-1 font-light">Asigne un valor mayor a 0 a todas las competencias.</span>
+                                )}
+                                {isSubmitted && !isTallerTotalValid && !hasInvalidHorasTaller && horasTotales > 0 && (
+                                  <span className="text-red-600 text-xs mt-1 font-light">Llevas {sumaHorasTaller} de {horasTotales} horas asignadas. La suma debe ser exacta.</span>
+                                )}
+                                {isSubmitted && horasTotales === 0 && (
+                                  <span className="text-red-600 text-xs mt-1 font-light">Primero debe ingresar las Horas totales de la jornada.</span>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </div>
+
                         {(() => {
-                          const activeSesiones = input.sesiones.filter(s => s.modalidad !== "Sin Sesión");
-                          const inactiveSesiones = input.sesiones.filter(s => s.modalidad === "Sin Sesión");
+                          const allDates = dates.map(d => d.format("YYYY-MM-DD"));
+                          const usedDates = input.sesiones.map(s => s.fecha_id);
+                          const hasAvailableDates = allDates.length > usedDates.length;
 
                           return (
                             <div className="flex flex-col gap-4 w-full">
-                              {activeSesiones.map((sesion, activeIndex) => {
+                              {input.sesiones.map((sesion, index) => {
                                 const originalIndex = input.sesiones.findIndex(s => s.fecha_id === sesion.fecha_id);
-                                const availableDates = [sesion.fecha_id, ...inactiveSesiones.map(s => s.fecha_id)].sort();
+                                const availableDatesForThisSession = allDates.filter(d => !usedDates.includes(d) || d === sesion.fecha_id).sort();
 
                                 return (
-                                  <div key={sesion.fecha_id} className="flex flex-col gap-3 p-4 bg-primary_gray_1 rounded-lg border border-gray-200 relative">
-                                    {activeSesiones.length > 1 && (
+                                  <div key={`${sesion.fecha_id}-${index}`} className="flex flex-col gap-3 p-4 bg-primary_gray_1 rounded-lg border border-gray-200 relative">
+                                    {input.sesiones.length > 1 && (
                                       <button
                                         type="button"
                                         onClick={() => handleRemoveSession(input.id, sesion.fecha_id)}
@@ -798,7 +756,7 @@ const CrearJornadaInnovacion = () => {
                                     <div className="flex flex-col items-start justify-start w-full">
                                       <label className="text-sm font-medium text-primary_text_1 mb-1">Fecha</label>
                                       <ComboBox
-                                        items={availableDates}
+                                        items={availableDatesForThisSession}
                                         onSelect={(value) => { if (value !== sesion.fecha_id) handleDateSwap(input.id, sesion.fecha_id, value); }}
                                         selected={sesion.fecha_id}
                                       />
@@ -838,19 +796,24 @@ const CrearJornadaInnovacion = () => {
                                 );
                               })}
 
-                              {inactiveSesiones.length > 0 && (
-                                <div className="flex justify-start">
-                                  <button
-                                    type="button"
+                              {hasAvailableDates && (
+                                <div className="flex justify-start items-center gap-2">
+                                  <span className="text-sm font-medium text-primary_text_1">Agregar Sesión</span>
+                                  <Button
+                                    type="ucuenca"
                                     onClick={() => handleAddSession(input.id)}
-                                    className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 bg-blue-50 px-3 py-2 rounded-lg border border-blue-100"
-                                  >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>Agregar Fecha</span>
-                                  </button>
+                                    icon="add"
+                                    buttonType="button"
+                                    size="small"
+                                    isRadial={true}
+                                    isPrimary={false}
+                                  />
                                 </div>
+                              )}
+                              {isSubmitted && input.sesiones.length === 0 && (
+                                <span className="text-red-600 text-sm font-light px-1">
+                                  Agregue al menos una sesión.
+                                </span>
                               )}
                             </div>
                           );

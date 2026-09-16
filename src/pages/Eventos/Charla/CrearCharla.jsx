@@ -31,6 +31,7 @@ const CrearCharla = () => {
    */
 
   const [isValidDate, setValidDate] = useState(true);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const {
     register,
@@ -40,6 +41,7 @@ const CrearCharla = () => {
   } = useForm();
 
   const onSubmit = (data) => {
+    setIsSubmitted(true);
     //console.log(data);
     let areValidDates;
     let validDatesList = [];
@@ -170,8 +172,12 @@ const CrearCharla = () => {
   };
 
   const handleHorasChange = (id, value) => {
-    const intValue = value.replace(/[^0-9]/g, '');
-    setSelectedCompetencias(prev => prev.map(c => c.id === id ? { ...c, horas: Number(intValue) } : c));
+    const intValue = parseInt(value.replace(/[^0-9]/g, '')) || 0;
+    const horasTotales = Number(watch("horas") || 0);
+    const sumaOtras = selectedCompetencias.filter(c => c.id !== id).reduce((sum, c) => sum + Number(c.horas || 0), 0);
+    const maxAllowed = Math.max(0, horasTotales - sumaOtras);
+    const finalValue = Math.min(intValue, maxAllowed);
+    setSelectedCompetencias(prev => prev.map(c => c.id === id ? { ...c, horas: finalValue } : c));
   };
   
   const horasTotales = Number(watch("horas") || 0);
@@ -285,7 +291,7 @@ const CrearCharla = () => {
               className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
               {...register("nombre", { required: true })}
             />
-            {errors.nombre && (
+            {isSubmitted && errors.nombre && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese un nombre válido.
               </span>
@@ -299,15 +305,168 @@ const CrearCharla = () => {
               className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
               {...register("descripcion", { required: true })}
             />
-            {errors.descripcion && (
+            {isSubmitted && errors.descripcion && (
               <span className="text-red-600 text-sm font-light px-1">
                 Ingrese una descripción válida.
               </span>
             )}
           </div>
 
-          {/**Competencia */}
+          {/**Momento */}
           <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Momentos"} />
+            <div className="w-full">
+              <ComboBox items={listMomentos} onSelect={handleSelectMomento} />
+            </div>
+            {isSubmitted && !isValidMomento && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Seleccione una opción
+              </span>
+            )}
+          </div>
+
+          {/**Microcredencial */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Microcredencial (Opcional)"} />
+            <input
+              type="text"
+              maxLength={100}
+              placeholder="Microcredencial"
+              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+              {...register("microcredencial")}
+            />
+          </div>
+
+          {/**Fecha */}
+          <div className="col-span-6 flex flex-col gap-1">
+            <FormLabel value={"Fecha"} />
+            <div className="w-full flex flex-col">
+              <DatePicker
+                plugins={[<DatePanel />]}
+                weekStartDayIndex={1}
+                showOtherDays={true}
+                minDate={today}
+                weekDays={weekDays}
+                months={months}
+                onChange={handleDateChange}
+                style={{
+                  width: "100%",
+                }}
+                format="YYYY-MM-DD"
+                render={<CustomInput />}
+              />
+              {isSubmitted && !isValidDate && (
+                <span className="text-red-600 text-sm font-light px-1">
+                  Ingrese una fecha válida.
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/**Horas */}
+          <div className="col-span-3 flex flex-col gap-1">
+            <FormLabel value={"Horas"} />
+            <div className="w-full">
+              <input
+                type="number"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                {...register("horas", { required: true })}
+                min={1}
+                step={1}
+              />
+            </div>
+            {isSubmitted && errors.horas && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese un valor válido
+              </span>
+            )}
+          </div>
+
+          {/**Cupos */}
+          <div className="col-span-3 flex flex-col">
+            <FormLabel value={"Cupos"} />
+            <div className="w-full h-full ">
+              <input
+                type="number"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                {...register("cupos", { required: true })}
+                min={1}
+                step={1}
+              />
+            </div>
+            {isSubmitted && errors.cupos && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese un valor válido
+              </span>
+            )}
+          </div>
+
+          {/**Modalidad */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Modalidad"} />
+            <div className="w-full">
+              <ComboBox items={listModalidades} onSelect={handleSelect} />
+            </div>
+            {isSubmitted && !isValidModalidad && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Seleccione una opción
+              </span>
+            )}
+          </div>
+
+          {/**Ubicación */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Ubicación"} />
+            <div className="w-full">
+              <input
+                type="text"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                {...register("ubicacion", { required: true })}
+              />
+            </div>
+            {isSubmitted && errors.ubicacion && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese una ubicación válida.
+              </span>
+            )}
+          </div>
+
+          {/**Hora_Inicio */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Hora de Inicio"} />
+            <div className="w-full">
+              <input
+                type="time"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                {...register("hora_inicio", { required: true })}
+              />
+            </div>
+            {isSubmitted && errors.hora_inicio && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese una hora válida.
+              </span>
+            )}
+          </div>
+
+          {/**Duración */}
+          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
+            <FormLabel value={"Duración"} />
+            <div className="w-full">
+              <input
+                type="number"
+                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
+                {...register("duracion", { required: true })}
+              />
+            </div>
+            {isSubmitted && errors.duracion && (
+              <span className="text-red-600 text-sm font-light px-1">
+                Ingrese la duración en horas.
+              </span>
+            )}
+          </div>
+
+          {/**Competencias - full width, before ponentes */}
+          <div className="col-span-12 flex flex-col gap-1">
             <FormLabel value={"Competencias"} />
             <div className="w-full">
               <MultiSelectComboBox
@@ -316,16 +475,16 @@ const CrearCharla = () => {
                 onSelectionChange={handleSelectCompetencia}
               />
             </div>
-            {!isValidCompetencia && (
+            {isSubmitted && !isValidCompetencia && (
               <span className="text-red-600 text-sm font-light px-1">
                 Seleccione al menos una competencia
               </span>
             )}
             {selectedCompetencias.length > 0 && (
-              <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg">
+              <div className="mt-2 flex flex-col gap-2 p-3 bg-primary_gray_1 rounded-lg w-full">
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-sm font-medium text-primary_text_1">Asignar horas</span>
-                  <span className={`text-sm font-bold ${isTotalValid ? 'text-green-600' : 'text-red-600'}`}>
+                  <span className={`text-sm font-medium ${isTotalValid ? 'text-green-600' : 'text-primary_gray_4'}`}>
                     Total: {sumaHoras} / {horasTotales} hrs
                   </span>
                 </div>
@@ -350,173 +509,19 @@ const CrearCharla = () => {
                     </div>
                   </div>
                 ))}
-                {hasInvalidHoras && (
+                {isSubmitted && hasInvalidHoras && (
                   <span className="text-red-600 text-xs mt-1 font-light">Asigne un valor mayor a 0 a todas las competencias.</span>
                 )}
-                {!isTotalValid && !hasInvalidHoras && horasTotales > 0 && (
-                  <span className="text-red-600 text-xs mt-1 font-light">Llevas {sumaHoras} de {horasTotales} horas asignadas. La suma debe ser exacta.</span>
+                {isSubmitted && !isTotalValid && !hasInvalidHoras && horasTotales > 0 && (
+                  <span className="text-red-600 text-xs mt-1 font-light">La suma de horas de las competencias ({sumaHoras}) debe ser igual al total de horas del evento ({horasTotales}).</span>
                 )}
-                {horasTotales === 0 && (
+                {isSubmitted && horasTotales === 0 && (
                   <span className="text-red-600 text-xs mt-1 font-light">Primero debe ingresar las Horas totales del evento.</span>
                 )}
               </div>
             )}
           </div>
 
-          {/**Momento */}
-          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Momentos"} />
-            <div className="w-full">
-              <ComboBox items={listMomentos} onSelect={handleSelectMomento} />
-            </div>
-            {!isValidMomento && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Seleccione una opción
-              </span>
-            )}
-          </div>
-
-          {/**Microcredencial */}
-          <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Microcredencial (Opcional)"} />
-            <input
-              type="text"
-              maxLength={100}
-              placeholder="Microcredencial"
-              className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-              {...register("microcredencial")}
-            />
-          </div>
-
-          {/**Fecha */}
-          <div className="col-span-6 flex flex-col gap-1">
-            <FormLabel value={"Fecha"} />
-            <div className="w-full flex flex-col">
-              <DatePicker
-                //multiple
-                plugins={[<DatePanel />]}
-                weekStartDayIndex={1}
-                showOtherDays={true}
-                minDate={today}
-                weekDays={weekDays}
-                months={months}
-                onChange={handleDateChange}
-                style={{
-                  width: "100%",
-                }}
-                format="YYYY-MM-DD"
-                render={<CustomInput />}
-              />
-              {!isValidDate && (
-                <span className="text-red-600 text-sm font-light px-1">
-                  Ingrese una fecha válida.
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/**Horas */}
-          <div className="col-span-3 flex flex-col gap-1">
-            <FormLabel value={"Horas"} />
-            <div className="w-full">
-              <input
-                type="number"
-                //value={10}
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1 outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("horas", { required: true })}
-                min={1}
-                step={1}
-              />
-            </div>
-            {errors.horas && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Ingrese un valor válido
-              </span>
-            )}
-          </div>
-
-          {/**Cupos */}
-          <div className="col-span-3 flex flex-col">
-            <FormLabel value={"Cupos"} />
-            <div className="w-full h-full ">
-              <input
-                //value={5}
-                type="number"
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("cupos", { required: true })}
-                min={1}
-                step={1}
-              />
-            </div>
-            {errors.cupos && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Ingrese un valor válido
-              </span>
-            )}
-          </div>
-
-          {/**Modalidad */}
-          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Modalidad"} />
-            <div className="w-full">
-              <ComboBox items={listModalidades} onSelect={handleSelect} />
-            </div>
-            {!isValidModalidad && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Seleccione una opción
-              </span>
-            )}
-          </div>
-
-
-          {/**Ubicación */}
-          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Ubicación"} />
-            <div className="w-full">
-              <input
-                type="text"
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("ubicacion", { required: true })}
-              />
-            </div>
-            {errors.ubicacion && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Ingrese una ubicación válida.
-              </span>
-            )}
-          </div>
-          {/**Hora_Inicio */}
-          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Hora de Inicio"} />
-            <div className="w-full">
-              <input
-                type="time"
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("hora_inicio", { required: true })}
-              />
-            </div>
-            {errors.hora_inicio && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Ingrese una hora válida.
-              </span>
-            )}
-          </div>
-          {/**Duración */}
-          <div className="md:col-span-6 col-span-12 flex flex-col gap-1">
-            <FormLabel value={"Duración"} />
-            <div className="w-full">
-              <input
-                type="number"
-                className="focus:bg-white text-primary_gray_4 font-light p-2 rounded-lg text-sm w-full bg-primary_gray_1  outline-none focus:ring-1 focus:ring-inset focus:ring-primary_gray_5"
-                {...register("duracion", { required: true })}
-              />
-            </div>
-            {errors.duracion && (
-              <span className="text-red-600 text-sm font-light px-1">
-                Ingrese la duración en horas.
-              </span>
-            )}
-          </div>
           <div className="flex flex-col col-span-12 gap-1">
             <FormLabel value={"Ponentes"} />
             <div className="flex flex-col gap-3">
@@ -577,7 +582,7 @@ const CrearCharla = () => {
                       )}
                     </div>
                   </div>
-                  {input.isEmpty && (
+                  {isSubmitted && input.isEmpty && (
                     <span className="text-red-600 text-sm font-light px-1">
                       Complete todos los campos para el Ponente
                     </span>
