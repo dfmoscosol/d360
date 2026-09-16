@@ -63,14 +63,13 @@ const CrearJornadaInnovacion = () => {
       input.competencias.length > 0 &&
       !input.competencias.some(c => Number(c.horas || 0) <= 0) &&
       input.momento.trim() !== "" &&
+      input.sesiones.length > 0 &&
       input.sesiones.every(sesion =>
         sesion.fecha_id &&
         sesion.modalidad.trim() !== "" &&
-        (sesion.modalidad === "Sin Sesión" || (
-          sesion.hora_inicio.trim() !== "" &&
-          sesion.duracion.trim() !== "" &&
-          sesion.ubicacion.trim() !== ""
-        ))
+        (sesion.hora_inicio.trim() !== "" &&
+        sesion.duracion.trim() !== "" &&
+        sesion.ubicacion.trim() !== "")
       ) &&
       input.ponentes.every(ponente => ponente.value.trim() !== "")
     );
@@ -81,7 +80,7 @@ const CrearJornadaInnovacion = () => {
         ...input,
         isEmpty: input.value.trim() === "" || input.descripcion.trim() === "" || input.competencias.length === 0 || 
                  input.competencias.some(c => Number(c.horas || 0) <= 0) || 
-                 input.momento.trim() === "" || input.sesiones.some(sesion =>
+                 input.momento.trim() === "" || input.sesiones.length === 0 || input.sesiones.some(sesion =>
           !sesion.fecha_id || sesion.hora_inicio.trim() === "" ||
           sesion.duracion.trim() === "" || sesion.modalidad.trim() === "" ||
           sesion.ubicacion.trim() === ""
@@ -536,7 +535,7 @@ const CrearJornadaInnovacion = () => {
 
   return (
     <ContainerPage>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit, () => setIsSubmitted(true))}>
         <ContainerForm>
           {/**Nombre */}
           <div className="md:col-span-12 col-span-12 flex flex-col gap-1">

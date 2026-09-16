@@ -59,7 +59,7 @@ const CrearTaller = () => {
     setIsValidMomento(selectedMomento != "")
 
     let areValidSesiones = false
-    if (sesiones.every(element => element.modalidad !== "" && element.ubicacion !== "" && element.duracion !== "" && element.hora_inicio !== "")) {
+    if (sesiones.length > 0 && sesiones.every(element => element.modalidad !== "" && element.ubicacion !== "" && element.duracion !== "" && element.hora_inicio !== "")) {
       setErrorSesiones(false)
       areValidSesiones = true
     } else {
@@ -335,7 +335,7 @@ const CrearTaller = () => {
 
   return (
     <ContainerPage>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit, () => setIsSubmitted(true))}>
         <ContainerForm>
           {/**Nombre */}
           <div className="md:col-span-12 col-span-12 flex flex-col gap-1">

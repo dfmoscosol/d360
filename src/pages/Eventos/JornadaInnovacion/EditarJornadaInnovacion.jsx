@@ -523,13 +523,13 @@ const EditarJornadaInnovacion = (props) => {
       && (!inputs[index].competencias.some(c => Number(c.horas || 0) <= 0))
       && isGlobalTotalValid
       && (inputs[index].momento.trim() !== "")
+      && inputs[index].sesiones.length > 0
       && inputs[index].sesiones.every(sesion =>
-        sesion.fecha_id &&
+        sesion.fecha &&
         sesion.modalidad.trim() !== "" &&
-        (sesion.modalidad === "Sin Sesión" ||
-          (sesion.hora_inicio.trim() !== "" &&
-            sesion.duracion.trim() !== "" &&
-            sesion.ubicacion.trim() !== ""))
+        (sesion.hora_inicio.trim() !== "" &&
+        sesion.duracion !== "" &&
+        sesion.ubicacion.trim() !== "")
       )
       && inputs[index].ponentes.every(ponente => ponente.nombre.trim() !== "");
     console.log(areAllInputsFilled)
@@ -584,8 +584,8 @@ const EditarJornadaInnovacion = (props) => {
               cupos_extra: Number(input.cupos_extra),
               sesiones: input.sesiones.map(({ fecha, fecha_id, ...sesion }) => ({
                 id: sesion.id,
-                hora_inicio: sesion.modalidad === "Sin Sesión" ? "00:00" : sesion.hora_inicio,
-                duracion: sesion.modalidad === "Sin Sesión" ? 0 : sesion.duracion,
+                hora_inicio: sesion.hora_inicio,
+                duracion: Number(sesion.duracion),
                 modalidad: listModalidades.indexOf(sesion.modalidad) + 1,
                 ubicacion: sesion.modalidad === "Sin Sesión" ? "N/A" : sesion.ubicacion
               })),
@@ -856,7 +856,7 @@ const EditarJornadaInnovacion = (props) => {
           )}
         </Modal>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit, () => setIsSubmitted(true))}>
           <ContainerForm>
             {(() => {
               const isAnyTallerInvalid = !isGlobalTotalValid;

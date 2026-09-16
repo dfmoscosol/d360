@@ -358,7 +358,7 @@ const EditarCharla = (props) => {
           />
         )}
       </Modal>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit, () => setIsSubmitted(true))}>
         <ContainerForm>
 
           {/**Nombre */}
