@@ -89,6 +89,24 @@ const CrearJornadaInnovacion = () => {
       return; // Detener la ejecución si algún campo está vacío
     }
 
+    const allSesiones = inputs.flatMap(input => input.sesiones);
+    const unassignedDates = validDatesList.filter(date => !allSesiones.some(s => s.fecha_id === date));
+    if (unassignedDates.length > 0) {
+      triggerNotification(dispatch, {
+        message: `La fecha ${unassignedDates[0]} no tiene ninguna sesión asignada en ningún taller.`,
+        type: "error",
+      });
+      return;
+    }
+    const orphanedSessions = allSesiones.filter(s => !validDatesList.includes(s.fecha_id));
+    if (orphanedSessions.length > 0) {
+      triggerNotification(dispatch, {
+        message: `Hay sesiones asignadas a fechas que ya no están seleccionadas (${orphanedSessions[0].fecha_id}). Elimínelas.`,
+        type: "error",
+      });
+      return;
+    }
+
     console.log("Todos los talleres están completos.");
     const validInputsList = inputs.map(input => ({
       nombre: input.value,

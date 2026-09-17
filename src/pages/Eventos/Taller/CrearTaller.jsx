@@ -78,6 +78,24 @@ const CrearTaller = () => {
       return; // Detener la ejecución si algún campo está vacío
     }
 
+    const validDatesList = dates.map(d => d.format("YYYY-MM-DD"));
+    const unassignedDates = validDatesList.filter(date => !sesiones.some(s => s.fecha_id === date));
+    if (unassignedDates.length > 0) {
+      triggerNotification(dispatch, {
+        message: `La fecha ${unassignedDates[0]} no tiene ninguna sesión asignada.`,
+        type: "error",
+      });
+      return;
+    }
+    const orphanedSessions = sesiones.filter(s => !validDatesList.includes(s.fecha_id));
+    if (orphanedSessions.length > 0) {
+      triggerNotification(dispatch, {
+        message: `Hay sesiones asignadas a fechas que ya no están seleccionadas (${orphanedSessions[0].fecha_id}). Elimínelas.`,
+        type: "error",
+      });
+      return;
+    }
+
     if (isValidDate && areValidSesiones && selectedCompetencias.length > 0 && isTotalValid && selectedMomento != "" && areAllPonentesFilled) {
       data.inscripcion = false
       data.competencias = selectedCompetencias.map(c => ({ id: c.id, horas: Number(c.horas || 0) }))
