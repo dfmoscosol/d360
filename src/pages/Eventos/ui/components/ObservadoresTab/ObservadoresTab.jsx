@@ -77,7 +77,7 @@ const ObservadoresTab = ({ id, idTaller }) => {
       setNombreForm("")
     } else if (isErrorAdd && errorAdd) {
       triggerNotification(dispatch, {
-        message: errorAdd.data.error || "Error al actualizar la capacitación",
+        message: errorAdd?.data?.error || "Error al actualizar la capacitación",
         type: "error",
       });
     }
@@ -97,7 +97,7 @@ const ObservadoresTab = ({ id, idTaller }) => {
       setNombreForm("")
     } else if (isErrorEdit && errorEdit) {
       triggerNotification(dispatch, {
-        message: errorEdit.data.error || "Error al actualizar la capacitación",
+        message: errorEdit?.data?.error || "Error al actualizar la capacitación",
         type: "error",
       });
     }
@@ -117,7 +117,7 @@ const ObservadoresTab = ({ id, idTaller }) => {
       setEliminar(false)
     } else if (isErrorDelete && errorDelete) {
       triggerNotification(dispatch, {
-        message: errorDelete.data.error || "Error al actualizar la capacitación",
+        message: errorDelete?.data?.error || "Error al actualizar la capacitación",
         type: "error",
       });
     }

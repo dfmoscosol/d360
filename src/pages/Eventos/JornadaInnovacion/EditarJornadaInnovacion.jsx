@@ -610,7 +610,7 @@ const EditarJornadaInnovacion = (props) => {
       handleRefetch();
     } else if (isErrorAddTaller && errorAddTaller) {
       triggerNotification(dispatch, {
-        message: error.data.error || "Error al crear el taller.",
+        message: errorAddTaller?.data?.error || "Error al crear el taller.",
         type: "error",
       });
     }
@@ -625,7 +625,7 @@ const EditarJornadaInnovacion = (props) => {
       handleRefetch();
     } else if (isErrorTaller && errorTaller) {
       triggerNotification(dispatch, {
-        message: error.data.error || "Error al editar el taller.",
+        message: errorTaller?.data?.error || "Error al editar el taller.",
         type: "error",
       });
     }
@@ -660,7 +660,7 @@ const EditarJornadaInnovacion = (props) => {
       //navigate(-1);
     } else if (isErrorDeleteTaller && errorDeleteTaller) {
       triggerNotification(dispatch, {
-        message: errorDeleteTaller.data.error || "Error al borrar el taller.",
+        message: errorDeleteTaller?.data?.error || "Error al borrar el taller.",
         type: "error",
       });
     }
@@ -781,7 +781,7 @@ const EditarJornadaInnovacion = (props) => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.data.error || "Error al editar la capacitación.",
+        message: error?.data?.error || "Error al editar la capacitación.",
         type: "error",
       });
     }

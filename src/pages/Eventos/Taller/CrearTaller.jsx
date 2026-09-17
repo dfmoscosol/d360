@@ -327,7 +327,7 @@ const CrearTaller = () => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.data.error && "Error al crear el taller",
+        message: error?.data?.error || "Error al crear el taller",
         type: "error",
       });
     }

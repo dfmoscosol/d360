@@ -315,7 +315,7 @@ const EditarCharla = (props) => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.data.error || "Error al editar la charla",
+        message: error?.data?.error || "Error al editar la charla",
         type: "error",
       });
     }

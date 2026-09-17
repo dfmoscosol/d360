@@ -91,7 +91,7 @@ const InscribedSection = (props) => {
       handleRefetch();
     } else if (isErrorEliminar && errorEliminar) {
       triggerNotification(dispatch, {
-        message: errorEliminar.data.error || "Error al eliminar la inscripción",
+        message: errorEliminar?.data?.error || "Error al eliminar la inscripción",
         type: "error",
       });
     }

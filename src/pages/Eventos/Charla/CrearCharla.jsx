@@ -273,7 +273,7 @@ const CrearCharla = () => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.data.error || "Error al crear la charla",
+        message: error?.data?.error || "Error al crear la charla",
         type: "error",
       });
     }

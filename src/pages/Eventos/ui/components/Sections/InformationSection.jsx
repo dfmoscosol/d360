@@ -104,7 +104,7 @@ const InformationSection = (props) => {
       navigate("/eventos");
     } else if (isErrorDelete && errorDelete) {
       triggerNotification(dispatch, {
-        message: errorDelete.data.error || "Error al eliminar la capacitación",
+        message: errorDelete?.data?.error || "Error al eliminar la capacitación",
         type: "error",
       });
     }
@@ -135,7 +135,7 @@ const InformationSection = (props) => {
       handleRefetch();
     } else if (isErrorEdit && errorEdit) {
       triggerNotification(dispatch, {
-        message: errorEdit.data.error || "Error al actualizar el evento",
+        message: errorEdit?.data?.error || "Error al actualizar el evento",
         type: "error",
       });
     }

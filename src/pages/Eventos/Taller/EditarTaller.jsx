@@ -369,7 +369,7 @@ const EditarTaller = (props) => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.data.error || "Error al editar el taller",
+        message: error?.data?.error || "Error al editar el taller",
         type: "error",
       });
     }

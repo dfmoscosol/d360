@@ -49,7 +49,7 @@ const InscripcionesTab = ({ id, handleRefetch, idTaller, docentesInscritos }) =>
       handleRefetch();
     } else if (isErrorAdd && errorAdd) {
       triggerNotification(dispatch, {
-        message: errorAdd.data.error || "Error al actualizar la capacitación",
+        message: errorAdd?.data?.error || "Error al actualizar la capacitación",
         type: "error",
       });
     }

@@ -131,7 +131,7 @@ const CrearObservacionAulica = () => {
     } else if (isError && error) {
       console.log(error);
       triggerNotification(dispatch, {
-        message: error.data.error || "Error al crear la observación",
+        message: error?.data?.error || "Error al crear la observación",
         type: "error",
       });
     }
