@@ -595,16 +595,7 @@ const CrearJornadaInnovacion = () => {
                 plugins={[<DatePanel />]}
                 weekStartDayIndex={1}
                 showOtherDays={true}
-                mapDays={({ date }) => {
-                  const now = new Date();
-                  now.setHours(0, 0, 0, 0);
-                  if (date.toDate() < now) {
-                    return {
-                      disabled: true,
-                      style: { color: "#ccc" }
-                    };
-                  }
-                }}
+minDate={today}
                 weekDays={weekDays}
                 months={months}
                 onChange={handleDateChange}
