@@ -102,6 +102,10 @@ const EditarJornadaInnovacion = (props) => {
       console.log("ERROR: No se ha elegido más de una fecha.");
       setValidDate(false);
       areValidDates = false;
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
     } else {
       console.log("Se ha elegido más de una fecha.");
       setValidDate(true);
@@ -856,7 +860,13 @@ const EditarJornadaInnovacion = (props) => {
           )}
         </Modal>
 
-        <form onSubmit={handleSubmit(onSubmit, () => setIsSubmitted(true))}>
+        <form onSubmit={handleSubmit(onSubmit, () => {
+          setIsSubmitted(true);
+          triggerNotification(dispatch, {
+            message: "Por favor, complete todos los campos requeridos correctamente.",
+            type: "error",
+          });
+        })}>
           <ContainerForm>
             {(() => {
               const isAnyTallerInvalid = !isGlobalTotalValid;

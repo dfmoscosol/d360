@@ -50,6 +50,10 @@ const CrearCharla = () => {
       console.log("ERROR: No se ha elegido más de una fecha.");
       setValidDate(false);
       areValidDates = false;
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
     } else {
       console.log("Se ha elegido más de una fecha.");
       setValidDate(true);
@@ -72,6 +76,10 @@ const CrearCharla = () => {
         ...input,
         isEmpty: input.value.trim() === "" || input.charla.trim() === ""
       })));
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
       return; // Detener la ejecución si algún campo está vacío
     }
 
@@ -95,6 +103,10 @@ const CrearCharla = () => {
       console.log("Enviado");
     } else {
       console.log("No se puede enviar el formulario");
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
     }
   };
 
@@ -281,7 +293,13 @@ const CrearCharla = () => {
 
   return (
     <ContainerPage>
-      <form onSubmit={handleSubmit(onSubmit, () => setIsSubmitted(true))}>
+      <form onSubmit={handleSubmit(onSubmit, () => {
+        setIsSubmitted(true);
+        triggerNotification(dispatch, {
+          message: "Por favor, complete todos los campos requeridos correctamente.",
+          type: "error",
+        });
+      })}>
         <ContainerForm>
           {/**Nombre */}
           <div className="md:col-span-12 col-span-12 flex flex-col gap-1">

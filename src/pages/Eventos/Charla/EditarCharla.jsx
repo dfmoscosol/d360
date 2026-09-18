@@ -77,6 +77,10 @@ const EditarCharla = (props) => {
       console.log("ERROR: No se ha elegido más de una fecha.");
       setValidDate(false);
       areValidDates = false;
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
     } else {
       console.log("Se ha elegido más de una fecha.");
       setValidDate(true);
@@ -95,6 +99,10 @@ const EditarCharla = (props) => {
         ...input,
         isEmpty: input.value.trim() === "" || input.charla.trim() === ""
       })));
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
       return; // Detener la ejecución si algún campo está vacío
     }
 
@@ -116,8 +124,13 @@ const EditarCharla = (props) => {
           tipo: "charlas"
         });
       setModalOpen(true);
+      console.log("Enviado");
     } else {
       console.log("No se puede enviar el formulario");
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
     }
   };
 
@@ -358,7 +371,13 @@ const EditarCharla = (props) => {
           />
         )}
       </Modal>
-      <form onSubmit={handleSubmit(onSubmit, () => setIsSubmitted(true))}>
+      <form onSubmit={handleSubmit(onSubmit, () => {
+        setIsSubmitted(true);
+        triggerNotification(dispatch, {
+          message: "Por favor, complete todos los campos requeridos correctamente.",
+          type: "error",
+        });
+      })}>
         <ContainerForm>
 
           {/**Nombre */}

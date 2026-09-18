@@ -66,6 +66,10 @@ const EditarTaller = (props) => {
     if (sesiones.length == 0) {
       console.log("ERROR: No se ha elegido más de una fecha.");
       setValidDate(false);
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
       return;
     } else {
       console.log("Se ha elegido más de una fecha.");
@@ -79,6 +83,10 @@ const EditarTaller = (props) => {
       areValidSesiones = true
     } else {
       setErrorSesiones(true)
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
       return;
     }
 
@@ -90,6 +98,10 @@ const EditarTaller = (props) => {
         ...input,
         isEmpty: input.value.trim() === ""
       })));
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
       return; // Detener la ejecución si algún campo está vacío
     }
 
@@ -490,7 +502,13 @@ const EditarTaller = (props) => {
         )}
       </Modal>
 
-      <form onSubmit={handleSubmit(onSubmit, () => setIsSubmitted(true))}>
+      <form onSubmit={handleSubmit(onSubmit, () => {
+        setIsSubmitted(true);
+        triggerNotification(dispatch, {
+          message: "Por favor, complete todos los campos requeridos correctamente.",
+          type: "error",
+        });
+      })}>
         <ContainerForm>
           {/**Nombre */}
           <div className="md:col-span-12 col-span-12 flex flex-col gap-1">

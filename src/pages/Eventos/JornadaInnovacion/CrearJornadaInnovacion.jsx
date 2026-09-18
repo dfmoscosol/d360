@@ -49,6 +49,10 @@ const CrearJornadaInnovacion = () => {
     if (dates.length === 0) {
       console.log("ERROR: No se ha elegido más de una fecha.");
       setValidDate(false);
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
       return; // Detener la ejecución si no hay fechas
     }
 
@@ -86,6 +90,10 @@ const CrearJornadaInnovacion = () => {
           sesion.ubicacion.trim() === ""
         )
       })));
+      triggerNotification(dispatch, {
+        message: "Por favor, complete todos los campos requeridos correctamente.",
+        type: "error",
+      });
       return; // Detener la ejecución si algún campo está vacío
     }
 
@@ -553,7 +561,13 @@ const CrearJornadaInnovacion = () => {
 
   return (
     <ContainerPage>
-      <form onSubmit={handleSubmit(onSubmit, () => setIsSubmitted(true))}>
+      <form onSubmit={handleSubmit(onSubmit, () => {
+        setIsSubmitted(true);
+        triggerNotification(dispatch, {
+          message: "Por favor, complete todos los campos requeridos correctamente.",
+          type: "error",
+        });
+      })}>
         <ContainerForm>
           {/**Nombre */}
           <div className="md:col-span-12 col-span-12 flex flex-col gap-1">
