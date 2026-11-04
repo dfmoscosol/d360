@@ -8,6 +8,7 @@ import {
   MdOutlineTextSnippet,
   MdFormatListBulleted,
   MdEventNote,
+  MdAltRoute,
 } from "react-icons/md";
 
 import { BsClockHistory } from "react-icons/bs";
@@ -18,6 +19,7 @@ const Eventos = React.lazy(() => import("@pages"));
 const Acreditacion = React.lazy(() => import("@pages"));
 const Certificados = React.lazy(() => import("@pages"));
 const HorasFormacionReport = React.lazy(() => import("@pages"));
+const RutasPendientesPage = React.lazy(() => import("@pages"));
 
 // SOLO PARA EL SIDEBAR
 const routes = [
@@ -43,6 +45,17 @@ const routes = [
         element: <Certificados />,
         name: "Certificados",
         icon: <MdOutlineTextSnippet size={20} />,
+      },
+    ],
+  },
+  {
+    title: "INNOVACIÓN EDUCATIVA",
+    routes: [
+      {
+        path: PathConstants.RUTAS_APRENDIZAJE,
+        element: <RutasPendientesPage />,
+        name: "Validación de Rutas",
+        icon: <MdAltRoute size={20} />,
       },
     ],
   },

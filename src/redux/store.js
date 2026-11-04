@@ -14,6 +14,7 @@ import { certificadoApi } from "./services/certificado/certificadoApi";
 import { loginApi } from "./services/login/loginApi";
 import { reportesApi } from "./services/reportes/reportesApi";
 import { competenciaApi } from "./services/competencia/competenciaApi";
+import { rutasAprendizajeApi } from "./services/rutasAprendizaje/rutasAprendizajeApi";
 
 export const store = configureStore({
   reducer: {
@@ -29,6 +30,7 @@ export const store = configureStore({
     [reportesApi.reducerPath]: reportesApi.reducer,
     [loginApi.reducerPath]: loginApi.reducer,
     [competenciaApi.reducerPath]: competenciaApi.reducer,
+    [rutasAprendizajeApi.reducerPath]: rutasAprendizajeApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([
@@ -40,7 +42,8 @@ export const store = configureStore({
       certificadoApi.middleware,
       loginApi.middleware,
       reportesApi.middleware,
-      competenciaApi.middleware
+      competenciaApi.middleware,
+      rutasAprendizajeApi.middleware,
     ]),
 });
 

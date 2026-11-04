@@ -28,6 +28,8 @@ import {
   Keywords,
   Certificados,
   Login,
+  RutasPendientesPage,
+  RutaBuilderPage,
 } from "@pages";
 
 import { PathConstants } from "@routes/pathConstants";
@@ -120,6 +122,14 @@ function App() {
             {
               path: "/reportes/capacitaciones",
               element: <Certificados />,
+            },
+            {
+              path: "/rutas-aprendizaje",
+              element: <RutasPendientesPage />,
+            },
+            {
+              path: "/rutas-aprendizaje/validar/:idDocente",
+              element: <RutaBuilderPage />,
             },
 
             {

@@ -15,3 +15,5 @@ export { default as NuevoEvento } from "./Eventos/NuevoEvento";
 export { default as Keywords } from "./Keywords/Keywords";
 export { default as Certificados } from "./Certificados/Certificados";
 export { default as Login } from "./Login/Login";
+export { default as RutasPendientesPage } from "./RutasAprendizaje/RutasPendientesPage";
+export { default as RutaBuilderPage } from "./RutasAprendizaje/RutaBuilderPage";
