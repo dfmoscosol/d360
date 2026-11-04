@@ -119,6 +119,13 @@ const RutaBuilderPage = () => {
     }
   }, [data]);
 
+  const isRutaValidada = Boolean(
+    data?.respuesta?.estado === "validada" ||
+      data?.respuesta?.validacion?.validada === true
+  );
+  const versionCurada = Number(data?.respuesta?.validacion?.version_curada || 1);
+  const expertoValidador = data?.respuesta?.validacion?.validado_por?.nombre;
+
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
@@ -335,10 +342,16 @@ const RutaBuilderPage = () => {
               />
               <HiOutlinePencilAlt className="text-slate-400 shrink-0" />
             </div>
-            <p className="text-xs text-slate-500">
-              Docente:{" "}
-              <strong className="text-slate-700">{docenteNombre}</strong> •{" "}
-              {facultadNombre} • Período {periodoActual}
+            <p className="text-xs text-slate-500 flex flex-wrap items-center gap-1.5 mt-0.5">
+              <span>
+                Docente: <strong className="text-slate-700">{docenteNombre}</strong> •{" "}
+                {facultadNombre} • Período {periodoActual}
+              </span>
+              {isRutaValidada && (
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 inline-flex items-center gap-1 shadow-sm">
+                  ✓ Validada (v{versionCurada}) • Modo Consulta / Edición
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -399,7 +412,8 @@ const RutaBuilderPage = () => {
             disabled={learningPath.length === 0 || isSaving}
             className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition disabled:opacity-50"
           >
-            <HiOutlineCheck className="text-base" /> Validar y Guardar
+            <HiOutlineCheck className="text-base" />{" "}
+            {isRutaValidada ? "Actualizar Validación" : "Validar y Guardar"}
           </button>
         </div>
       </header>
@@ -568,9 +582,15 @@ const RutaBuilderPage = () => {
                 🖐️
               </span>
               <span>
-                <strong>Lienzo Interactivo:</strong> Arrastra recursos aquí para
-                encadenarlos, cambia su orden con las flechas o define si son
-                obligatorios.
+                {isRutaValidada ? (
+                  <>
+                    <strong>Ruta Validada (v{versionCurada}):</strong> Estás consultando un itinerario ya certificado. Puedes reordenar bloques, añadir nuevos recursos y guardar para actualizar la versión curada.
+                  </>
+                ) : (
+                  <>
+                    <strong>Lienzo Interactivo:</strong> Arrastra recursos aquí para encadenarlos, cambia su orden con las flechas o define si son obligatorios.
+                  </>
+                )}
               </span>
             </div>
             <button
@@ -808,6 +828,8 @@ const RutaBuilderPage = () => {
           totalBlocks={learningPath.length}
           totalDuration={formatDuration(totalMinutos)}
           docente={docenteNombre}
+          isValidada={isRutaValidada}
+          versionCurada={versionCurada}
           isSaving={isSaving}
           errorMessage={saveErrorMessage}
           onClose={() => setIsPublishModalOpen(false)}

@@ -6,9 +6,20 @@ import {
 } from "../../redux/services/rutasAprendizaje/rutasAprendizajeApi";
 import { Loader } from "@components";
 import Select from "react-select";
-import { MdSearch, MdAltRoute, MdPendingActions } from "react-icons/md";
+import {
+  MdSearch,
+  MdAltRoute,
+  MdPendingActions,
+  MdCheckCircleOutline,
+  MdFormatListBulleted,
+} from "react-icons/md";
 import { BiTimeFive } from "react-icons/bi";
-import { HiOutlineChevronLeft, HiOutlineChevronRight } from "react-icons/hi";
+import {
+  HiOutlineChevronLeft,
+  HiOutlineChevronRight,
+  HiOutlinePencilAlt,
+  HiOutlineCheckCircle,
+} from "react-icons/hi";
 
 const RutasPendientesPage = () => {
   const navigate = useNavigate();
@@ -21,6 +32,7 @@ const RutasPendientesPage = () => {
     value: "Todos",
     label: "Todos los Períodos",
   });
+  const [estadoFilter, setEstadoFilter] = useState("todas"); // 'todas' | 'pendientes' | 'validadas'
   const [page, setPage] = useState(1);
 
   // RTK Queries
@@ -29,6 +41,7 @@ const RutasPendientesPage = () => {
     busqueda,
     facultad: facultad.value,
     periodo: periodo.value,
+    estado: estadoFilter,
     page,
     per_page: 10,
   });
@@ -48,6 +61,8 @@ const RutasPendientesPage = () => {
 
   const totalPages = data?.total_pages || 1;
   const totalItems = data?.total || 0;
+  const totalPendientes = data?.total_pendientes ?? 0;
+  const totalValidadas = data?.total_validadas ?? 0;
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
@@ -56,18 +71,73 @@ const RutasPendientesPage = () => {
         <div>
           <h1 className="text-2xl font-bold text-primary_text_1 flex items-center gap-2">
             <MdAltRoute className="text-primary_color_1 text-3xl" />
-            Validación de Rutas Docentes
+            Gestión y Validación de Rutas Docentes
           </h1>
           <p className="text-sm text-primary_gray_3 mt-1">
-            Revisión y curaduría pedagógica de itinerarios formativos generados por IA (EduVoz360).
+            Revisión, consulta y curaduría pedagógica de itinerarios formativos generados por IA (EduVoz360).
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="px-3.5 py-1.5 bg-amber-50 border border-amber-200 text-amber-800 rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-sm">
-            <MdPendingActions className="text-amber-600 text-base" />
-            {totalItems} {totalItems === 1 ? "Ruta Pendiente" : "Rutas Pendientes"} de Validación
+
+        {/* Resumen de Estado en Cabecera */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-700 rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+            <MdFormatListBulleted className="text-slate-500 text-sm" />
+            Total: {totalPendientes + totalValidadas} Rutas
+          </span>
+          <span className="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+            <MdPendingActions className="text-amber-600 text-sm" />
+            {totalPendientes} Pendientes
+          </span>
+          <span className="px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+            <MdCheckCircleOutline className="text-emerald-600 text-sm" />
+            {totalValidadas} Validadas
           </span>
         </div>
+      </div>
+
+      {/* Pestañas de Filtro Rápido por Estado */}
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+        <button
+          onClick={() => {
+            setEstadoFilter("todas");
+            setPage(1);
+          }}
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition ${
+            estadoFilter === "todas"
+              ? "bg-primary_color_1 text-white shadow-sm"
+              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          }`}
+        >
+          Todas las Rutas ({totalPendientes + totalValidadas})
+        </button>
+        <button
+          onClick={() => {
+            setEstadoFilter("pendientes");
+            setPage(1);
+          }}
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
+            estadoFilter === "pendientes"
+              ? "bg-amber-600 text-white shadow-sm"
+              : "bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200"
+          }`}
+        >
+          <MdPendingActions className="text-sm" />
+          Pendientes de Validación ({totalPendientes})
+        </button>
+        <button
+          onClick={() => {
+            setEstadoFilter("validadas");
+            setPage(1);
+          }}
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
+            estadoFilter === "validadas"
+              ? "bg-emerald-600 text-white shadow-sm"
+              : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200"
+          }`}
+        >
+          <MdCheckCircleOutline className="text-sm" />
+          Validadas por DIE ({totalValidadas})
+        </button>
       </div>
 
       {/* Barra de Filtros */}
@@ -127,7 +197,7 @@ const RutasPendientesPage = () => {
         </div>
       </div>
 
-      {/* Tabla de Docentes Pendientes */}
+      {/* Tabla de Docentes */}
       <div className="bg-white rounded-xl border border-primary_gray_5 shadow-sm overflow-hidden">
         {isLoading || isFetching ? (
           <div className="p-12 flex justify-center">
@@ -135,12 +205,14 @@ const RutasPendientesPage = () => {
           </div>
         ) : !data?.respuesta || data.respuesta.length === 0 ? (
           <div className="p-12 text-center text-primary_gray_3">
-            <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2 text-xl font-bold">
-              ✓
+            <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center mx-auto mb-2 text-xl font-bold">
+              ℹ
             </div>
-            <p className="text-base font-semibold text-primary_text_1">¡Todo al día!</p>
+            <p className="text-base font-semibold text-primary_text_1">
+              No se encontraron rutas
+            </p>
             <p className="text-sm mt-1">
-              No hay docentes con rutas pendientes de validación para los filtros seleccionados.
+              No hay docentes registrados con los filtros seleccionados.
             </p>
           </div>
         ) : (
@@ -158,72 +230,100 @@ const RutasPendientesPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-primary_gray_5">
-                {data.respuesta.map((row) => (
-                  <tr
-                    key={row.id_ruta || `${row.id_docente}-${row.periodo}`}
-                    className="hover:bg-slate-50 transition"
-                  >
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-primary_color_1">
-                        {row.nombre_docente}
-                      </div>
-                      <div className="text-xs text-primary_gray_3 mt-0.5">
-                        {row.id_docente} • {row.correo}
-                      </div>
-                    </td>
-                    <td
-                      className="py-3.5 px-4 text-xs text-primary_gray_4 max-w-[220px] truncate"
-                      title={row.facultad}
+                {data.respuesta.map((row) => {
+                  const isValidada = row.estado === "validada" || row.is_validada;
+                  return (
+                    <tr
+                      key={row.id_ruta || `${row.id_docente}-${row.periodo}`}
+                      className="hover:bg-slate-50 transition"
                     >
-                      {row.facultad}
-                    </td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-center text-slate-700">
-                      {row.periodo}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <div className="flex flex-wrap gap-1">
-                        {row.brechas_resumen?.slice(0, 2).map((b, i) => (
-                          <span
-                            key={i}
-                            className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[11px] font-medium"
-                          >
-                            {b}
+                      <td className="py-3.5 px-4">
+                        <div className="font-semibold text-primary_color_1">
+                          {row.nombre_docente}
+                        </div>
+                        <div className="text-xs text-primary_gray_3 mt-0.5">
+                          {row.id_docente} • {row.correo}
+                        </div>
+                      </td>
+                      <td
+                        className="py-3.5 px-4 text-xs text-primary_gray_4 max-w-[220px] truncate"
+                        title={row.facultad}
+                      >
+                        {row.facultad}
+                      </td>
+                      <td className="py-3.5 px-4 text-xs font-semibold text-center text-slate-700">
+                        {row.periodo}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <div className="flex flex-wrap gap-1">
+                          {row.brechas_resumen?.slice(0, 2).map((b, i) => (
+                            <span
+                              key={i}
+                              className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[11px] font-medium"
+                            >
+                              {b}
+                            </span>
+                          ))}
+                          {(row.brechas_resumen?.length || 0) > 2 && (
+                            <span className="text-[10px] text-primary_gray_3 self-center font-medium">
+                              +{(row.brechas_resumen?.length || 0) - 2} más
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-center font-semibold text-xs">
+                        <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-700 px-2 py-1 rounded">
+                          <BiTimeFive className="text-primary_color_1" />{" "}
+                          {row.total_horas}h
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        {isValidada ? (
+                          <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-full text-xs font-semibold inline-flex items-center gap-1 shadow-sm">
+                            <HiOutlineCheckCircle className="text-emerald-700 text-sm" />
+                            Validada (v{row.version_curada || 1})
                           </span>
-                        ))}
-                        {(row.brechas_resumen?.length || 0) > 2 && (
-                          <span className="text-[10px] text-primary_gray_3 self-center font-medium">
-                            +{(row.brechas_resumen?.length || 0) - 2} más
+                        ) : (
+                          <span className="px-2.5 py-1 bg-amber-100 text-amber-800 border border-amber-200 rounded-full text-xs font-semibold inline-flex items-center gap-1 shadow-sm">
+                            <MdPendingActions className="text-amber-700 text-sm" />
+                            Pendiente
                           </span>
                         )}
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4 text-center font-semibold text-xs">
-                      <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-700 px-2 py-1 rounded">
-                        <BiTimeFive className="text-primary_color_1" />{" "}
-                        {row.total_horas}h
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">
-                        Pendiente
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-right">
-                      <button
-                        onClick={() =>
-                          navigate(
-                            `/rutas-aprendizaje/validar/${encodeURIComponent(
-                              row.id_docente
-                            )}?periodo=${encodeURIComponent(row.periodo)}`
-                          )
-                        }
-                        className="px-3.5 py-1.5 bg-primary_color_1 hover:bg-[#001D3D] text-white rounded-lg text-xs font-semibold shadow-sm transition inline-flex items-center gap-1"
-                      >
-                        Validar Ruta →
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        {isValidada ? (
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/rutas-aprendizaje/validar/${encodeURIComponent(
+                                  row.id_docente
+                                )}?periodo=${encodeURIComponent(row.periodo)}`
+                              )
+                            }
+                            className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-sm transition inline-flex items-center gap-1.5"
+                            title="Consultar y editar ruta validada"
+                          >
+                            <HiOutlinePencilAlt className="text-amber-400 text-sm" />
+                            Consultar / Editar
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/rutas-aprendizaje/validar/${encodeURIComponent(
+                                  row.id_docente
+                                )}?periodo=${encodeURIComponent(row.periodo)}`
+                              )
+                            }
+                            className="px-3.5 py-1.5 bg-primary_color_1 hover:bg-[#001D3D] text-white rounded-lg text-xs font-semibold shadow-sm transition inline-flex items-center gap-1"
+                          >
+                            Validar Ruta →
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

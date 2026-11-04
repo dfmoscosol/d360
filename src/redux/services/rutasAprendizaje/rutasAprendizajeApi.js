@@ -6,9 +6,9 @@ export const rutasAprendizajeApi = createApi({
   baseQuery: baseQueryWithAuth,
   tagTypes: ["RutasPendientes", "RutaDocente"],
   endpoints: (builder) => ({
-    // Obtener lista de rutas pendientes de validación
+    // Obtener lista de rutas (todas, pendientes o validadas)
     getRutasPendientes: builder.query({
-      query: ({ busqueda, facultad, periodo, page = 1, per_page = 10 } = {}) => {
+      query: ({ busqueda, facultad, periodo, estado, page = 1, per_page = 10 } = {}) => {
         const params = new URLSearchParams();
         if (busqueda && busqueda.trim()) {
           params.append("busqueda", busqueda.trim());
@@ -18,6 +18,9 @@ export const rutasAprendizajeApi = createApi({
         }
         if (periodo && periodo !== "Todos" && periodo !== "Todos los Períodos") {
           params.append("periodo", periodo.trim());
+        }
+        if (estado) {
+          params.append("estado", estado.trim().toLowerCase());
         }
         params.append("page", page);
         params.append("per_page", per_page);

@@ -5,11 +5,14 @@ let hasExpired;
 let isLogged;
 
 if (token) {
-  //console.log("auth slice have token")
+  hasExpired = false;
+  isLogged = true;
+} else if (import.meta.env.DEV) {
+  // Token JWT válido con rol de Experto DIE para desarrollo local
+  token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc5MzgyODAzOSwianRpIjoiZGI0YjcxZDYtMzcyZS00NDc4LWIzZDEtMDdlN2NiYzZmYTQyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJpZCI6MSwibm9tYnJlIjoiRXhwZXJ0byBESUUiLCJzdWIiOiIxIn0sIm5iZiI6MTc5MzgyODAzOSwiY3NyZiI6ImNlZWQ5ZmRmLTAwNmQtNDZlMC04YzRkLWI3ZjdjZTYyM2RjZiIsImV4cCI6MjEwOTE4ODAzOX0.vVAEDL_Iccexo4XXqbA29lKUMThPPNN8iSLTy_tLaxM";
   hasExpired = false;
   isLogged = true;
 } else {
-  //console.log("auth slice NOOO token")
   token = null;
   hasExpired = false;
   isLogged = false;

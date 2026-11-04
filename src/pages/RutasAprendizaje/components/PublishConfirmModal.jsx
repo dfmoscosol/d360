@@ -6,6 +6,8 @@ const PublishConfirmModal = ({
   totalBlocks,
   totalDuration,
   docente,
+  isValidada = false,
+  versionCurada = 1,
   isSaving,
   errorMessage,
   onClose,
@@ -28,11 +30,20 @@ const PublishConfirmModal = ({
             </div>
             <div>
               <h2 className="font-bold text-base text-slate-800">
-                Validar y Publicar Ruta
+                {isValidada ? "Actualizar Curaduría de Ruta" : "Validar y Publicar Ruta"}
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Esta acción actualizará la ruta formativa de{" "}
-                <strong className="text-slate-700">{docente}</strong> con el itinerario curado.
+                {isValidada ? (
+                  <>
+                    Esta acción actualizará los ajustes pedagógicos en la ruta de{" "}
+                    <strong className="text-slate-700">{docente}</strong> (Versión {versionCurada} &rarr; {versionCurada + 1}).
+                  </>
+                ) : (
+                  <>
+                    Esta acción certificará y publicará la ruta formativa de{" "}
+                    <strong className="text-slate-700">{docente}</strong> con el itinerario curado.
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -65,14 +76,16 @@ const PublishConfirmModal = ({
               <span className="font-bold text-slate-800 text-xs">{totalDuration}</span>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px]">Persistencia DB</span>
-              <span className="font-bold text-emerald-600 text-xs">Upsert Atómico</span>
+              <span className="text-slate-400 block text-[10px]">Estado Destino</span>
+              <span className="font-bold text-emerald-600 text-xs">
+                {isValidada ? `Validada (v${versionCurada + 1})` : "Validada"}
+              </span>
             </div>
           </div>
 
           <div>
             <label className="font-semibold text-slate-700 block mb-1">
-              Observaciones de la Validación (Opcional)
+              {isValidada ? "Observaciones de la Actualización (Opcional)" : "Observaciones de la Validación (Opcional)"}
             </label>
             <textarea
               rows="3"
@@ -86,7 +99,11 @@ const PublishConfirmModal = ({
           <div className="p-2.5 bg-blue-50/70 rounded-xl border border-blue-100 text-[11px] text-blue-700 flex items-center gap-2">
             <span>ℹ️</span>
             <span>
-              La ruta pasará a estado <strong>Validada</strong> y el docente podrá visualizar sus recursos en EduVoz360.
+              {isValidada ? (
+                <>La ruta permanecerá <strong>Validada</strong> y se registrará la nueva versión curada.</>
+              ) : (
+                <>La ruta pasará a estado <strong>Validada</strong> y el docente podrá visualizar sus recursos en EduVoz360.</>
+              )}
             </span>
           </div>
         </div>
@@ -130,6 +147,8 @@ const PublishConfirmModal = ({
                 </svg>
                 Guardando...
               </>
+            ) : isValidada ? (
+              "Confirmar Actualización"
             ) : (
               "Confirmar Validación"
             )}
